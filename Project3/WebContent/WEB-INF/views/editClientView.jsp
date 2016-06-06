@@ -12,47 +12,47 @@
 <c:if test="${not empty client}">
 	<form method="POST" action="doEditClient">
 	  
-	  <p style="color:red;">Client Id: ${client.id}</p>
+	  <p style="color:red;">Client Id: ${id}</p>
 	  
 	  <p style="color: red;">${errorStrFirstName}</p> 
 	  First name:<br>
-	  <input type="text" name="firstName" value="${client.firstName}"><br>
+	  <input type="text" name="firstName" value="${firstName}"><br>
 	  
 	  <p style="color: red;">${errorStrLastName}</p>
 	  Last name:<br>
-	  <input type="text" name="lastName" value="${client.lastName}"><br>
+	  <input type="text" name="lastName" value="${lastName}"><br>
   	  
   	 
-  	  <input type="hidden" name="SSN" value="${client.SSN}">
+  	  <input type="hidden" name="SSN" value="${SSN}">
   	 
   	 
   	  <p style="color: red;">${errorStrAddress}</p>
   	  Address:<br>
-  	  <input type="text" name="address"value="${client.address}"><br>
+  	  <input type="text" name="address"value="${address}"><br>
   
   	  <p style="color: red;">${errorStrZipCode}</p>
   	  Zip Code:<br>
-  	  <input type="number" name="zipCode" min="1" max="99999"value="${client.zipCode}"><br>
+  	  <input type="number" name="zipCode" min="1" max="99999"value="${zipCode}"><br>
   
   	  <p style="color: red;">${errorStrTelephone}</p>
   	  Telephone:<br>
-  	  <input type="text" name= "telephone" min="1" max="9999999999" value="${client.telephone}"><br>
+  	  <input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}"><br>
   
   
   
-  	  <input type="hidden" name="id" value="${client.id}">
+  	  <input type="hidden" name="id" value="${id}">
  
   	  <p style="color: red;">${errorStrEmail}</p>
   	  Email:<br>  
-	  <input type="text" name="email" value="${client.email}"><br>
+	  <input type="text" name="email" value="${email}"><br>
 
 	  <p style="color: red;">${errorStrRating}</p>
   	  Rating:<br>  
-	  <input type="number" name="rating" value="${client.rating}"><br>
+	  <input type="number" name="rating" value="${rating}"><br>
 	  
 	  <p style="color: red;">${errorStrCreditCardNumber}</p>
   	  Credit Card Number:<br>  
-	  <input type="text" name="creditCardNumber" value="${client.creditCardNumber}"><br>
+	  <input type="text" name="creditCardNumber" value="${creditCardNumber}"><br>
 	  
 
   	  <input type="submit" value="Submit"/>

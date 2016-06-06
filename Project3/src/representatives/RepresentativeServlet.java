@@ -1,4 +1,4 @@
-package servlet;
+package representatives;
 
 import java.io.IOException;
 
@@ -9,28 +9,26 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns = { "/manager/employeeList/createEmployee"})
-public class CreateEmployeeServlet extends HttpServlet{
+@WebServlet(urlPatterns={"/representative"})
+public class RepresentativeServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
-	public CreateEmployeeServlet(){
+	public RepresentativeServlet(){
 		super();
 	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException{
-		
-		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/createEmployeeView.jsp");
+            throws ServletException, IOException {
+		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/representativeView.jsp");
 		
 		dispatcher.forward(request, response);
-		
 	}
+		 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException{
-		doGet(request, response);
-	}
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
+    }
 	
 }
-
-

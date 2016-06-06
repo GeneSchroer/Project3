@@ -1,4 +1,4 @@
-package servlet;
+package customers;
 
 public class StockSuggestionServlet {
 

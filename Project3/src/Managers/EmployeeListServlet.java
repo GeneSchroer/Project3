@@ -1,8 +1,9 @@
-package servlet;
+package Managers;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,48 +16,37 @@ import beans.Employee;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/editEmployee"})
-public class EditEmployeeServlet extends HttpServlet{
+@WebServlet(urlPatterns = { "/employeeList"})
+public class EmployeeListServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
-	public EditEmployeeServlet(){
+	public EmployeeListServlet(){
 		super();
 	}
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException{
-	
-		// connect to the database
+			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		
-		//find the employee with this id
-		String s= (String)request.getParameter("id");
-		
-		System.out.println("Value =" +  s);
-		int id = Integer.parseInt(s);
-		
-		Employee employee = null;
 		String errorString = null;
+		List<Employee> list = null;
 		try{
-			employee = ManagerUtils.findEmployee(conn, id);
+			list = ManagerUtils.getEmployeeList(conn);
 		}catch(SQLException e){
 			e.printStackTrace();
-			errorString=e.getMessage();
-		}
-		//Check if there was an error
-		// or if the Employee does not exist
-		// Redirect to employeeList page if that happens
-		if(errorString!=null && employee == null){
-			response.sendRedirect(request.getServletPath() + "/employeeList");
-			return;
+			errorString = e.getMessage();
 		}
 		
-		// Store errorString in request attribute, before forward to views.
+		
+		// store the information before forwarding
+		
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("employee", employee);
-
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/editEmployeeView.jsp");
+		request.setAttribute("employeeList", list);
+		
+		//Forward to employeeListView.jsp
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/employeeListView.jsp");
 		dispatcher.forward(request, response);
+		 
 	}
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

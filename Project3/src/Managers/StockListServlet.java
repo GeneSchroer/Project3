@@ -1,8 +1,9 @@
-package servlet;
+package Managers;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,45 +16,34 @@ import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/updateStockPrice"})
-public class UpdateStockServlet extends HttpServlet{
+@WebServlet({"/stockList"})
+public class StockListServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
-	public UpdateStockServlet(){
+	
+	public StockListServlet(){
 		super();
 	}
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException{
-		//Connect to the database
+			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		
-		//Find the Stock with the given symbol
-		String stockSymbol = request.getParameter("stockSymbol");
-		
-		Stock stock = null;
-		String errorString = null;
-		
+		String errorString=null;
+		List<Stock> list=null;
 		try{
-			stock = ManagerUtils.findStock(conn, stockSymbol);	
+			list = ManagerUtils.getStockList(conn);
 		}catch(SQLException e){
 			e.printStackTrace();
-			errorString=e.getMessage();
+			errorString = e.getMessage();
 		}
-		//Check if there's an error, 
-		// or if the Stock exists
 		
-		if(errorString!=null && stock==null){
-			response.sendRedirect(request.getServletPath() + "/stockList");
-			return;
-		}
-		//Store errorString in request
+		//Store the information before forwarding
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("stock", stock);
-		
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/updateStockPriceView.jsp");
-		dispatcher.forward(request, response);	
+		request.setAttribute("stockList", list);
+		//Forward to stockListView.jsp
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/stockListView.jsp");
+		dispatcher.forward(request, response);
 	}
-	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{

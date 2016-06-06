@@ -1,24 +1,24 @@
 package beans;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Orders {
-	private int numShares;
-	private float pricePerShare;
-	private int id;
-	private Date dateTime;
-	private double percentage;
-	private String price;
-	private String order;
+	private Integer numShares;
+	private Float pricePerShare;
+	private Integer id;
+	private Timestamp dateTime;
+	private Double percentage;
+	private String priceType;
+	protected String orderType;
 	
-	public Orders(int numShares, float pricePerShare, int id, Date dateTime, double percentage, String price, String order){
+	public Orders(int numShares, float pricePerShare, int id, Timestamp dateTime, double percentage, String price, String order){
 		this.numShares = numShares;
 		this.pricePerShare = pricePerShare;
 		this.id = id;
 		this.dateTime = dateTime;
 		this.percentage = percentage;
-		this.price = price;
-		this.order = order;
+		this.priceType = price;
+		this.orderType = order;
 	}
 	
 	public int getNumShares(){ return numShares; }
@@ -30,17 +30,17 @@ public class Orders {
 	public int getId(){ return id; }
 	public void setId(int id){ this.id = id; }
 	
-	public Date getDateTime(){ return dateTime; }
-	public void setDateTime(Date dateTime){ this.dateTime = dateTime; }
+	public Timestamp getDateTime(){ return dateTime; }
+	public void setDateTime(Timestamp dateTime){ this.dateTime = dateTime; }
 	
 	public double getPercentage(){ return percentage; }
 	public void setPercentage(double percentage){ this.percentage = percentage; }
 	
-	public String getPrice(){ return price; }
-	public void setPrice(String price){ this.price = price; }
+	public String getPriceType(){ return priceType; }
+	public void setPriceType(String price){ this.priceType = price; }
 	
-	public String getOrder(){ return order; }
-	public void setOrder(String order){ this.order = order; }
+	public String getOrderType(){ return orderType; }
+	public void setOrderType(String order){ this.orderType = order; }
 	
 	
 }

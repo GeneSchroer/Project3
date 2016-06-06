@@ -7,6 +7,11 @@ public class Employee extends Person {
 	private Integer id;
 	private Date startDate;
 	private Integer hourlyRate;
+	public Employee(){
+		id=null;
+		startDate=null;
+		hourlyRate=null;
+	}
 	public Employee(int SSN, String firstName, String lastName, String address, int zipCode, String telephone, int id, Date startDate, int hourlyRate){
 		this.SSN = SSN;
 		this.lastName = lastName;

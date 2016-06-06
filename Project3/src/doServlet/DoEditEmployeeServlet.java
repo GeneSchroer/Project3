@@ -28,59 +28,53 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		
-		String firstName = request.getParameter("firstName");
-		String lastName = request.getParameter("lastName");
-		String address = request.getParameter("address");
-		int SSN=Integer.parseInt(request.getParameter("SSN"));
-		int zipCode=Integer.parseInt(request.getParameter("zipCode"));
-		String telephone=request.getParameter("telephone");
-		int id = Integer.parseInt(request.getParameter("id"));
-		int hourlyRate = Integer.parseInt(request.getParameter("hourlyRate"));
-		Date startDate=Date.valueOf(request.getParameter("startDate"));
+		String SSN				= request.getParameter("SSN");		
+		String firstName 		= request.getParameter("firstName");
+		String lastName 		= request.getParameter("lastName");
+		String address 			= request.getParameter("address");
+		String zipCodeStr		= request.getParameter("zipCode");
+		String telephone 		= request.getParameter("telephone");
+		String id 				= request.getParameter("id");
+		String startDate		=(request.getParameter("startDate"));
+		String hourlyRateStr 	= request.getParameter("hourlyRate");
+		
 		boolean hasError=false;
-		String errorStrSSN, errorStrLastName, errorStrFirstName, errorStrAddress, errorStrZipCode, errorStrTelephone,
-			errorStrId, errorStrStartDate, errorStrHourlyRate;
+		
+		int zipCode=0;
+		int hourlyRate=0;
+		String errorStrLastName, errorStrFirstName, errorStrAddress, errorStrZipCode, errorStrTelephone,
+			errorStrHourlyRate;
 
 		Employee employee=null;
 		
 		// check for errors before adding an Employee to the database
 		
-		//SSN
-		// Check if user input is an integer
-	/*	try{
-			errorStrSSN=null;
-			SSN = Integer.parseInt(request.getParameter("SSN"));
-			if(SSN<0 || SSN>999999999){
-				hasError=true;
-				errorStrSSN="Invalid SSN!";
-			}
-				
-		}catch(Exception e){
-			hasError = true;
-			errorStrSSN="Invalid SSN!";
-		}*/
 		//LastName
 		String regex=null;
 		regex="[a-zA-Z]+";
 		errorStrLastName=null;
-		if(lastName==null || !lastName.matches(regex))
+		if(lastName==null || !lastName.matches(regex)){
+			hasError=true;
 			errorStrLastName="Last Name invalid!";
+			}
 		
 		//FirstName
 		errorStrFirstName=null;
-		if(firstName==null || !firstName.matches(regex))
+		if(firstName==null || !firstName.matches(regex)){
+			hasError=true;
 			errorStrFirstName="First Name invalid!";
-		
+		}
 		//Address
-		regex="//w+";
+		regex="[0-9]+?[\\s[a-zA-Z]]{1,}[\\s[a-zA-Z]\\x2E]?";
 		errorStrAddress=null;
-		if(address==null )
+		if(address==null ||!address.matches(regex)){
+			hasError=true;
 			errorStrAddress="Address invalid!";
-		
+		}
 		//Zip Code
 		try{
 			errorStrZipCode=null;
-			zipCode = Integer.parseInt(request.getParameter("zipCode"));
+			zipCode = Integer.parseInt(zipCodeStr);
 			if(zipCode<0 || zipCode>99999){
 				hasError=true;
 				errorStrZipCode = "Invalid Zip Code";
@@ -125,7 +119,7 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		//Hourly Rate
 		try{
 			errorStrHourlyRate=null;
-			hourlyRate = Integer.parseInt(request.getParameter("hourlyRate"));
+			hourlyRate = Integer.parseInt(hourlyRateStr);
 			if(hourlyRate<0){
 				errorStrHourlyRate="Invalid Hourly Rate";
 			}
@@ -158,7 +152,7 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		}*/
 		
 		if(!hasError){
-			employee = new Employee(SSN, firstName, lastName, address, zipCode, telephone, id, startDate, hourlyRate );
+			employee = new Employee(Integer.parseInt(SSN), firstName, lastName, address, zipCode, telephone, Integer.parseInt(id), Date.valueOf(startDate), hourlyRate );
 			
 			try{
 				ManagerUtils.updateEmployee(conn, employee);
@@ -169,13 +163,25 @@ public class DoEditEmployeeServlet extends HttpServlet{
 				System.out.println("Error occured");
 			}
 		}
-		request.setAttribute("errorStrFirstName", errorStrFirstName);
-		request.setAttribute("errorStrLastName", errorStrLastName);
-		request.setAttribute("errorStrAddress", errorStrAddress);
-		request.setAttribute("errorStrZipCode", errorStrZipCode);
-		request.setAttribute("errorStrHourlyRate", errorStrHourlyRate);
-		request.setAttribute("employee", employee);
-	
+		if(hasError){
+			employee = new Employee();
+			request.setAttribute("errorStrFirstName", errorStrFirstName);
+			request.setAttribute("errorStrLastName", errorStrLastName);
+			request.setAttribute("errorStrAddress", errorStrAddress);
+			request.setAttribute("errorStrZipCode", errorStrZipCode);
+			request.setAttribute("errorStrHourlyRate", errorStrHourlyRate);
+			request.setAttribute("SSN", SSN);
+			request.setAttribute("lastName", lastName);
+			request.setAttribute("firstName", firstName);
+			request.setAttribute("address", address);
+			request.setAttribute("zipCode", zipCode);
+			request.setAttribute("telephone", telephone);
+			request.setAttribute("id", id);
+			request.setAttribute("startDate", startDate);
+			request.setAttribute("hourlyRate", hourlyRate);
+			request.setAttribute("employee", employee);
+		}
+
 		// If there's an error, forward the information back to the edit page
 		if(hasError){
 			System.out.println("Not valid");

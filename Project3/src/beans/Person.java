@@ -1,7 +1,7 @@
 package beans;
 
 public class Person {
-
+	protected String something;
 	protected Integer SSN;
 	protected String lastName;
 	protected String firstName;
@@ -9,6 +9,7 @@ public class Person {
 	protected Integer zipCode;
 	protected String telephone;
 	public Person(){
+		something = "";
 		this.SSN = null;
 		this.lastName = null;
 		this.firstName=null;

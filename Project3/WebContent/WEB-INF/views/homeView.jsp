@@ -12,8 +12,8 @@
 
 	<a href="${pageContext.request.contextPath}/manager"> Managers</a><br>
 	<a href="${pageContext.request.contextPath}/representative">Customer Representatives</a><br>
-	<a href="${pageContext.request.contextPath}/customer">Customers</a>
-      
- 
+	<a href="${pageContext.request.contextPath}/customer">Customers</a><br>
+    <a href="${pageContext.request.contextPath}/debugPage">Debug Options</a><br>
+ 	<a href="${pageContext.request.contextPath}/loginPage">Login Page</a><br>
   </body>
 </html>

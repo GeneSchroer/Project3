@@ -11,7 +11,7 @@
 	
 	<br>
 	<a href="${pageContext.request.contextPath}/clientList">View List of Clients</a><br>
-	<a href="${pageContext.request.contextPath}/recordOrder">Place an order</a><br>
+	<a href="${pageContext.request.contextPath}/openOrderList">View list of open orders</a><br>
 	<a href="${pageContext.request.contextPath}/mailingList">Produce customer mailing list</a><br>	
 	<a href="${pageContext.request.contextPath}">Return to main page</a>
 </body>

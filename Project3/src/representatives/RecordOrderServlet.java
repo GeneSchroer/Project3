@@ -1,4 +1,4 @@
-package servlet;
+package representatives;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,39 +12,35 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import beans.Client;
-import utils.RepresentativeUtils;
+import beans.Stock;
 import utils.MyUtils;
+import utils.RepresentativeUtils;
 
-@WebServlet(urlPatterns = { "/clientList"})
-public class ClientListServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/recordOrder"})
+public class RecordOrderServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
-	public ClientListServlet(){
+	public RecordOrderServlet(){
 		super();
 	}
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		
 		String errorString = null;
-		List<Client> list = null;
+		List<Stock> list = null;
 		try{
-			list = RepresentativeUtils.getClientList(conn);
+			list=RepresentativeUtils.getStockList(conn);
 		}catch(SQLException e){
-		e.printStackTrace();
+			e.printStackTrace();
 			errorString = e.getMessage();
 		}
 		
-		
-		// store the information before forwarding
-		
-		request.setAttribute("errorString", errorString);
-		request.setAttribute("clientList", list);
-		
-		//Forward to employeeListView.jsp
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/clientListView.jsp");
+		request.setAttribute("errorSting", errorString);
+		request.setAttribute("stockList", list);
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/recordOrder.jsp");
 		dispatcher.forward(request, response);
+		
+		
 	}
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

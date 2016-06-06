@@ -1,4 +1,4 @@
-package servlet;
+package representatives;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,14 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import utils.ManagerUtils;
+import utils.RepresentativeUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/deleteEmployee" })
-public class DeleteEmployeeServlet extends HttpServlet {
+@WebServlet(urlPatterns = { "/deleteClient" })
+public class DeleteClientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
  
-    public DeleteEmployeeServlet() {
+    public DeleteClientServlet() {
         super();
     }
  
@@ -32,7 +32,7 @@ public class DeleteEmployeeServlet extends HttpServlet {
         String errorString = null;
  
         try {
-            ManagerUtils.deleteEmployee(conn, id);
+            RepresentativeUtils.deleteClient(conn, id);
         } catch (SQLException e) {
             e.printStackTrace();
             errorString = e.getMessage();
@@ -46,14 +46,14 @@ public class DeleteEmployeeServlet extends HttpServlet {
             request.setAttribute("errorString", errorString);
             //
             RequestDispatcher dispatcher = request.getServletContext()
-                    .getRequestDispatcher("/WEB-INF/views/deleteEmployeeErrorView.jsp");
+                    .getRequestDispatcher("/WEB-INF/views/deleteClientErrorView.jsp");
             dispatcher.forward(request, response);
         }
  
         // If everything nice.
         // Redirect to the product listing page.        
         else {
-            response.sendRedirect(request.getContextPath() + "/employeeList");
+            response.sendRedirect(request.getContextPath() + "/clientList");
         }
  
     }

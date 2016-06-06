@@ -29,8 +29,8 @@ public class DoEditClientServlet extends HttpServlet{
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
 		
-		String firstName		= request.getParameter("lastName");
-		String lastName 		= request.getParameter("firstName"); 
+		String firstName		= request.getParameter("firstName");
+		String lastName 		= request.getParameter("lastName"); 
 		String address 			= request.getParameter("address");
 		String zipCodeStr		= request.getParameter("zipCode");
 		String telephone		= request.getParameter("telephone");
@@ -55,20 +55,23 @@ public class DoEditClientServlet extends HttpServlet{
 		String regex, regex2;
 		regex="[a-zA-Z]+";
 		errorStrLastName=null;
-		if(lastName==null || !lastName.matches(regex))
+		if(lastName==null || !lastName.matches(regex)){
+			hasError=true;
 			errorStrLastName="Last Name invalid!";
-		
+		}
 		//FirstName
 		errorStrFirstName=null;
-		if(firstName==null || !firstName.matches(regex))
+		if(firstName==null || !firstName.matches(regex)){
+			hasError=true;
 			errorStrFirstName="First Name invalid!";
-		
+		}
 		//Address
-		regex="//w+";
+		regex="[0-9]+?[\\s[a-zA-Z]]{1,}[\\s[a-zA-Z]\\x2E]?";
 		errorStrAddress=null;
-		if(address==null || !address.matches(regex))
+		if(address==null || !address.matches(regex)){
+			hasError=true;
 			errorStrAddress="Address invalid!";
-		
+		}
 		//Zip Code
 		try{
 			errorStrZipCode=null;
@@ -138,9 +141,7 @@ public class DoEditClientServlet extends HttpServlet{
 		if(!hasError){
 			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber);
 			try{
-				System.out.println("before update");
 				RepresentativeUtils.updateClient(conn, client);
-				System.out.println("after update");
 			}
 			catch(SQLException e){
 				e.printStackTrace();

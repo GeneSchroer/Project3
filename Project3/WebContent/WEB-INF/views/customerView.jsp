@@ -12,6 +12,7 @@
 	<br>
 	<a href="${pageContext.request.contextPath}/stockHolding">View your stock portfolio</a><br>
 	<a href="${pageContext.request.contextPath}/suggestedStock">View list of suggested stocks</a><br>
+	<a href="${pageContext.request.contextPath}/customerOrderList">View your current and past orders</a><br>
 	<a href="${pageContext.request.contextPath}">Return to main page</a>
 </body>
 </html>

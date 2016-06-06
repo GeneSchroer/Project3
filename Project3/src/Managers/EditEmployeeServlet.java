@@ -1,4 +1,4 @@
-package servlet;
+package Managers;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,14 +11,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import beans.Client;
+import beans.Employee;
+import utils.ManagerUtils;
 import utils.MyUtils;
-import utils.RepresentativeUtils;
 
-@WebServlet(urlPatterns ={"/editClient"})
-public class EditClientServlet extends HttpServlet{
+@WebServlet(urlPatterns = { "/editEmployee"})
+public class EditEmployeeServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
-	public EditClientServlet(){
+	
+	public EditEmployeeServlet(){
 		super();
 	}
 	@Override
@@ -34,10 +35,10 @@ public class EditClientServlet extends HttpServlet{
 		System.out.println("Value =" +  s);
 		int id = Integer.parseInt(s);
 		
-		Client client= null;
+		Employee employee = null;
 		String errorString = null;
 		try{
-			client = RepresentativeUtils.findClient(conn, id);
+			employee = ManagerUtils.findEmployee(conn, id);
 		}catch(SQLException e){
 			e.printStackTrace();
 			errorString=e.getMessage();
@@ -45,16 +46,24 @@ public class EditClientServlet extends HttpServlet{
 		//Check if there was an error
 		// or if the Employee does not exist
 		// Redirect to employeeList page if that happens
-		if(errorString!=null && client == null){
-			response.sendRedirect(request.getServletPath() + "/clientList");
+		if(errorString!=null && employee == null){
+			response.sendRedirect(request.getServletPath() + "/employeeList");
 			return;
 		}
 		
 		// Store errorString in request attribute, before forward to views.
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("client", client);
-
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/editClientView.jsp");
+		request.setAttribute("id", employee.getId());
+		request.setAttribute("SSN", employee.getSSN());
+		request.setAttribute("startDate", employee.getStartDate());
+		request.setAttribute("firstName", employee.getFirstName());
+		request.setAttribute("lastName", employee.getLastName());
+		request.setAttribute("address", employee.getAddress());
+		request.setAttribute("zipCode", employee.getZipCode());
+		request.setAttribute("telephone", employee.getTelephone());
+		request.setAttribute("hourlyRate", employee.getHourlyRate());
+		request.setAttribute("employee", employee);
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/editEmployeeView.jsp");
 		dispatcher.forward(request, response);
 	}
 	@Override
@@ -62,4 +71,7 @@ public class EditClientServlet extends HttpServlet{
 			throws ServletException, IOException{
 		doGet(request, response);
 	}
+	
 }
+
+

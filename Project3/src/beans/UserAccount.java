@@ -7,6 +7,7 @@ public class UserAccount {
 	   public static final String PERSON_REP = "R"; 
 	   private String userName;
 	   private String password;
+	   private String userType;
 	    
 	 
 	   public UserAccount() {
@@ -27,5 +28,11 @@ public class UserAccount {
 	 
 	   public void setPassword(String password) {
 	       this.password = password;
+	   }
+	   public String getUserType(){
+		   return userType;
+	   }
+	   public void setUserType(String userType){
+		   this.userType = userType;
 	   }
 }

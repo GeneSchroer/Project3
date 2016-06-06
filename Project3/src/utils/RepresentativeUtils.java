@@ -5,12 +5,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import beans.Client;
-import beans.Employee;
 import beans.MailingList;
+import beans.OpenOrder;
 import beans.Person;
 import beans.Stock;
 
@@ -128,7 +130,7 @@ public class RepresentativeUtils {
 	
 	private static Integer getMostRecentOrderId(Connection conn) throws SQLException{
 		
-		String sql = "Select Id from Order by Id desc";
+		String sql = "Select Id from Orders order by Id desc";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		ResultSet rs = pstm.executeQuery();
 		if(rs.next())
@@ -136,7 +138,18 @@ public class RepresentativeUtils {
 		else 
 			return null;
 	}
-
+private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
+		
+		String sql = "Select Id from Transaction by Id desc";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		ResultSet rs = pstm.executeQuery();
+		if(rs.next())
+			return rs.getInt("id");
+			
+		
+		else 
+			return null;
+	}
 	public static void deleteClient(Connection conn, int id) throws SQLException {
 		String sql = "delete from Client where id = ?";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -189,6 +202,77 @@ public class RepresentativeUtils {
 			Stock stock = new Stock(stockSymbol, companyName, type, pricePerShare);
 			list.add(stock);
 			
+		}
+		return list;
+}
+
+	public static void recordOrder(Connection conn, String stockSymbol, String orderType, String priceType, Timestamp timestamp,
+			int numSharesParsed, double percentageParsed, int accountId, int brokerId) throws SQLException {
+		
+		String sql = "SELECT PricePerShare FROM Stock WHERE StockSymbol=?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setString(1, stockSymbol);
+		ResultSet rs = pstm.executeQuery();
+		float pricePerShare=0;
+		if(rs.next()){
+			pricePerShare = rs.getFloat("PricePerShare");
+		}
+		sql = "INSERT INTO Orders (NumShares, PricePerShare, Id, DateTime, Percentage, PriceType, OrderType)"
+				+ " VALUES(?, ? ,?, ?, ?, ?, ?)";
+		pstm = conn.prepareStatement(sql);
+		if(priceType.equals("Hidden Stop"))
+			pstm.setInt(1, numSharesParsed);
+		else
+			pstm.setNull(1, Types.FLOAT);
+		pstm.setFloat(2, pricePerShare);
+		
+		int orderId = getMostRecentOrderId(conn) + 1;
+		
+		pstm.setInt(3, orderId);
+		System.out.println("good");
+		pstm.setTimestamp(4, timestamp);
+		if(priceType.equals("Trailing Stop"))
+			pstm.setDouble(5, percentageParsed);
+		else
+			pstm.setNull(5, Types.DOUBLE);;
+		pstm.setString(6, priceType);
+		pstm.setString(7, orderType);
+		pstm.executeUpdate();
+	}
+	public static void completeOrder(Connection conn, String stockSymbol, String orderType, String priceType, Timestamp timestamp,
+			int numSharesParsed, double percentageParsed, int accountId, int brokerId) throws SQLException {
+	
+		String sql = "INSERT INTO Trade(AccountId, BrokerId, TransactionId, OrderId, StockId)"
+				+" VALUES(?, ?, null, ?, ?)";
+		
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, accountId);
+		pstm.setInt(2, brokerId);
+		//pstm.setInt(3, orderId);
+		pstm.setString(4, stockSymbol);
+		pstm.executeUpdate();
+	}
+	public static List<OpenOrder> getOpenOrderList(Connection conn, int brokerId) throws SQLException{
+		String sql = "SELECT O.*, Trd.AccountId AS AccountId, S.StockSymbol, S.CompanyName"
+				+ " FROM Orders O, Trade Trd, Transaction Trns, Stock S"
+				+ " WHERE Trd.OrderId = O.Id AND Trd.StockId=S.StockSymbol AND Trd.TransactionId=Trns.Id AND Trns.DateTime is null; ";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		ResultSet rs = pstm.executeQuery();
+		
+		List<OpenOrder> list = new ArrayList<OpenOrder>();
+		while(rs.next()){
+			Integer numShares = rs.getInt("NumShares");
+			Float pricePerShare = rs.getFloat("PricePerShare");
+			int orderId = rs.getInt("Id");
+			Timestamp dateTime = rs.getTimestamp("DateTime");
+			Double percentage = rs.getDouble("Percentage");
+			String priceType = rs.getString("PriceType");
+			String orderType = rs.getString("OrderType");
+			int accountId = rs.getInt("AccountId");
+			String stockSymbol = rs.getString("StockSymbol");
+			String companyName = rs.getString("CompanyName");
+			OpenOrder openOrder = new OpenOrder(numShares, pricePerShare, orderId, dateTime, percentage, priceType, orderType, accountId, stockSymbol, companyName);
+			list.add(openOrder);
 		}
 		return list;
 }

@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Orders;
 import beans.Portfolio;
 public class CustomerUtils {
 
@@ -39,6 +41,29 @@ public class CustomerUtils {
 	
 	
 	return list;
+	}
+
+	public static List<Orders> getOrderList(Connection conn, int clientId) throws SQLException {
+		String sql = "SELECT O.*"
+				+ " FROM Account A, Trade Trd, Orders O"
+				+ " WHERE A.Client = ? AND A.Id = Trd.AccountId AND Trd.OrderId = O.Id"
+				+ " ORDER BY DateTime DESC";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, clientId);
+		ResultSet rs = pstm.executeQuery();
+		List<Orders> list = new ArrayList<Orders>();
+		while(rs.next()){
+			int numShares = rs.getInt("NumShares");
+			int pricePerShare = rs.getInt("PricePerShare");
+			int id = rs.getInt("Id");
+			Timestamp dateTime = rs.getTimestamp("DateTime");
+			double percentage = rs.getDouble("percentage");
+			String priceType = rs.getString("PriceType");
+			String orderType = rs.getString("OrderType");
+			Orders orders = new Orders(numShares, pricePerShare, id, dateTime, percentage, priceType, orderType);
+			list.add(orders);
+		}
+		return list;
 	}
 	
 }

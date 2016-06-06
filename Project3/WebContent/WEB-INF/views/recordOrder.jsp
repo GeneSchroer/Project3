@@ -10,30 +10,35 @@
 <body>
 <form method="POST" action="doRecordOrder">
 	Select a Stock:
-	<select name="stockBox">
+	<select name="stockSymbol">
 		<c:forEach items="${stockList}" var="stock">
 			<option value = "${stock.stockSymbol }">${stock.companyName } ${stock.stockSymbol }</option> 
 		
 		</c:forEach>
 	</select><br>
 	Order Type:
-	<select name="OrderBox">
-		<option name="Buy">Buy</option>
-		<option>Sell</option>
+	<select name="orderType">
+		<option value="Buy">Buy</option>
+		<option value="Sell">Sell</option>
 	</select><br>
 	Price Type:
-	<select name="PriceType">
-	<option>Market</option>
-	<option>Market on Close</option>
-	<option>Trailing Stop</option>
-	<option>Hidden Stop</option>
+	<select name="priceType">
+	<option value="Market">Market</option>
+	<option value="Market On Close">Market on Close</option>
+	<option value="Trailing Stop">Trailing Stop</option>
+	<option value="Hidden Stop">Hidden Stop</option>
 	</select><br>
 	
+	Date and Time<br>
+	(YYYY-MM-DD HH:MI:SS):<br>
+	<input type="text" name="dateTime"> 
+	<input type ="checkbox" name="now" value="now"/> now<br>
+	
 	NumShares:
-	<input type ="number" name="#shares" min="1"/><br>
+	<input type ="text" name="numShares" min="1"/><br>
 	
 	Percentage:
-	<input type="number" name="percent" min="0"/><br>
+	<input type="number" name="percentage" min="0"/><br>
 	<input type=submit value="Submit"/>
 	
 	</form>

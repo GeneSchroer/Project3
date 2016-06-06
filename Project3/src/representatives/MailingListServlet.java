@@ -1,4 +1,4 @@
-package servlet;
+package representatives;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -12,15 +12,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import beans.Employee;
-import utils.ManagerUtils;
+import beans.MailingList;
+import utils.RepresentativeUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/employeeList"})
-public class EmployeeListServlet extends HttpServlet{
+@WebServlet(urlPatterns = { "/mailingList"})
+public class MailingListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	public EmployeeListServlet(){
+	public MailingListServlet(){
 		super();
 	}
 	@Override
@@ -29,11 +28,11 @@ public class EmployeeListServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		
 		String errorString = null;
-		List<Employee> list = null;
+		List<MailingList> list = null;
 		try{
-			list = ManagerUtils.getEmployeeList(conn);
+			list = RepresentativeUtils.getMailingList(conn);
 		}catch(SQLException e){
-			e.printStackTrace();
+		e.printStackTrace();
 			errorString = e.getMessage();
 		}
 		
@@ -41,19 +40,15 @@ public class EmployeeListServlet extends HttpServlet{
 		// store the information before forwarding
 		
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("employeeList", list);
+		request.setAttribute("mailingListList", list);
 		
 		//Forward to employeeListView.jsp
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/employeeListView.jsp");
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/mailingListView.jsp");
 		dispatcher.forward(request, response);
-		 
 	}
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		doGet(request, response);
 	}
-	
 }
-
-

@@ -16,12 +16,13 @@ import beans.Client;
 import utils.RepresentativeUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/clientList"})
+@WebServlet(urlPatterns = { "/representatives/clientList"})
 public class ClientListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public ClientListServlet(){
 		super();
 	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
@@ -43,7 +44,7 @@ public class ClientListServlet extends HttpServlet {
 		request.setAttribute("clientList", list);
 		
 		//Forward to employeeListView.jsp
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/clientListView.jsp");
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/clientListView.jsp");
 		dispatcher.forward(request, response);
 	}
 	@Override

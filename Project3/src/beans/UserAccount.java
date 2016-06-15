@@ -1,8 +1,14 @@
 package beans;
 
-public class UserAccount {
+import java.io.Serializable;
 
-	   public static final String PERSON_CLIENT ="C";
+public class UserAccount implements Serializable {
+
+	   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final String PERSON_CLIENT ="C";
 	   public static final String PERSON_MANAGER = "M";
 	   public static final String PERSON_REP = "R"; 
 	   private String userName;
@@ -10,8 +16,10 @@ public class UserAccount {
 	   private String userType;
 	    
 	 
-	   public UserAccount() {
-	        
+	   public UserAccount(String userName, String password, String userType) {
+	        this.userName = userName;
+	        this.password = password;
+	        this.userType = userType;
 	   }
 	    
 	   public String getUserName() {

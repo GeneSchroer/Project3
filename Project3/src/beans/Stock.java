@@ -1,6 +1,12 @@
 package beans;
 
-public class Stock {
+import java.io.Serializable;
+
+public class Stock implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String stockSymbol;
 	private String companyName;
 	private String type;

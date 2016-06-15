@@ -16,7 +16,7 @@ import beans.MailingList;
 import utils.RepresentativeUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/mailingList"})
+@WebServlet(urlPatterns = { "/representatives/mailingList"})
 public class MailingListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public MailingListServlet(){
@@ -43,7 +43,7 @@ public class MailingListServlet extends HttpServlet {
 		request.setAttribute("mailingListList", list);
 		
 		//Forward to employeeListView.jsp
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/mailingListView.jsp");
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/mailingListView.jsp");
 		dispatcher.forward(request, response);
 	}
 	@Override

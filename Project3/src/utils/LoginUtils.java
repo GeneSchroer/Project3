@@ -18,8 +18,8 @@ import beans.UserAccount;
 public class LoginUtils {
 	  public static UserAccount findUser(Connection conn, String userName, String password) throws SQLException {
 		  
-	      String sql = "Select a.User_Name, a.Password, a.Gender from User_Account a "
-	              + " where a.User_Name = ? and a.password= ?";
+	      String sql = "SELECT UserName, Password, UserType FROM UserAccount"
+	              + " WHERE UserName = ? AND Password= ?";
 	 
 	      PreparedStatement pstm = conn.prepareStatement(sql);
 	      pstm.setString(1, userName);
@@ -27,36 +27,15 @@ public class LoginUtils {
 	      ResultSet rs = pstm.executeQuery();
 	 
 	      if (rs.next()) {
-	          String userType = rs.getString("UserType");
-	          UserAccount user = new UserAccount();
-	          user.setUserName(userName);
-	          user.setPassword(password);
-	          user.setUserType(userType);
+	          UserAccount user = new UserAccount(
+	        		  rs.getString("UserName"),
+	        		  rs.getString("Password"),
+	        		  rs.getString("UserType"));
 	          return user;
 	      }
 	      return null;
 	  }
 	 
-	  public static UserAccount findUser(Connection conn, String userName) throws SQLException {
-	 
-	      String sql = "Select a.User_Name, a.Password, a.Gender from User_Account a " + " where a.User_Name = ? ";
-	 
-	      PreparedStatement pstm = conn.prepareStatement(sql);
-	      pstm.setString(1, userName);
-	 
-	      ResultSet rs = pstm.executeQuery();
-	 
-	      if (rs.next()) {
-	          String password = rs.getString("Password");
-	          String userType= rs.getString("userType");
-	          UserAccount user = new UserAccount();
-	          user.setUserName(userName);
-	          user.setPassword(password);
-	          user.setUserType(userType);
-	          return user;
-	      }
-	      return null;
-	  }
 
 	 
 	   public static final String ATT_NAME_CONNECTION = "ATTRIBUTE_FOR_CONNECTION";

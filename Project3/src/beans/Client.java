@@ -1,6 +1,10 @@
 package beans;
 
 public class Client extends Person {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String email;
 	private Integer rating;
 	private String creditCardNumber;
@@ -16,12 +20,6 @@ public class Client extends Person {
 	
 	public Client(int SSN, String firstName, String lastName, String address, int zipCode, String telephone, String email, int rating, String creditCardNumber){
 		super(SSN, firstName, lastName, address, zipCode, telephone);
-/*		this.SSN = SSN;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.address = address;
-		this.zipCode = zipCode;
-		this.telephone = telephone;*/
 		this.email = email;
 		this.rating = rating;
 		this.creditCardNumber = creditCardNumber;

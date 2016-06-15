@@ -17,7 +17,7 @@ import utils.LoginUtils;
 import utils.MyUtils;
 
 
-@WebServlet(urlPatterns = {"/doLogin"})
+//@WebServlet(urlPatterns = {"/doLoginPage "})
 public class DoLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
@@ -68,7 +68,7 @@ public class DoLoginServlet extends HttpServlet {
 						request.setAttribute("user", user);
 						
 						RequestDispatcher dispatcher 
-						= this.getServletContext().getRequestDispatcher("/WEB-INF/views/loginView.jsp");
+						= this.getServletContext().getRequestDispatcher("/WEB-INF/views/login/loginView.jsp");
 						dispatcher.forward(request, response);
 			}
 			else{

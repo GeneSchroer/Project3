@@ -1,8 +1,9 @@
 package beans;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.sql.Date;
 
-public class Account {
+public class Account implements Serializable {
 	private int id;
 	private Date dateOpened;
 	private int clientId;

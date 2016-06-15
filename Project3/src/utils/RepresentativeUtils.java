@@ -10,7 +10,9 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Account;
 import beans.Client;
+import beans.Location;
 import beans.MailingList;
 import beans.OpenOrder;
 import beans.Person;
@@ -33,10 +35,19 @@ public class RepresentativeUtils {
 		return list;
 	}
 
-	public static void addClient(Connection conn, Client client) throws SQLException {
-		String sql = "insert into Person(SSN, LastName, FirstName, Address, ZipCode, Telephone)"
-				+" values(?, ?, ?, ?, ?, ?)";
+	public static void addClient(Connection conn, Client client, Location location) throws SQLException {
+		String sql = "INSERT IGNORE Location(ZipCode, City, State)"
+				+ " VALUES(?, ?, ?)";
 		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, location.getZipCode());
+		pstm.setString(2, location.getCity());
+		pstm.setString(3, location.getState());
+		pstm.executeUpdate();
+		
+		
+		 sql = "insert into Person(SSN, LastName, FirstName, Address, ZipCode, Telephone)"
+				+" values(?, ?, ?, ?, ?, ?)";
+		pstm = conn.prepareStatement(sql);
 		
 		pstm.setInt		(1, client.getSSN());
 		pstm.setString	(2, client.getLastName());
@@ -106,10 +117,18 @@ public class RepresentativeUtils {
 				return null;
 		}
 
-	public static void updateClient(Connection conn, Client client) throws SQLException {
-		String sql = "update Person set LastName=?, FirstName=?, Address=?, ZipCode=?,"
+	public static void updateClient(Connection conn, Client client, Location location) throws SQLException {
+		String sql = "INSERT IGNORE INTO Location(ZipCode, City, State)"
+				+ "VALUES(?, ?, ?)";
+		PreparedStatement pstm = conn.prepareCall(sql);
+		pstm.setInt(1, location.getZipCode());
+		pstm.setString(2, location.getCity());
+		pstm.setString(3, location.getState());
+		pstm.executeUpdate();
+		
+		sql = "update Person set LastName=?, FirstName=?, Address=?, ZipCode=?,"
 				+	" Telephone=? where SSN=?";
-			PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm = conn.prepareStatement(sql);
 			
 			pstm.setString	(1, client.getLastName());
 			pstm.setString	(2, client.getFirstName());
@@ -148,7 +167,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			
 		
 		else 
-			return null;
+			return 0;
 	}
 	public static void deleteClient(Connection conn, int id) throws SQLException {
 		String sql = "delete from Client where id = ?";
@@ -275,6 +294,61 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			list.add(openOrder);
 		}
 		return list;
-}
+	}
+	public static List<Stock> getStockSuggestionList(Connection conn, int customerId) throws SQLException{
+		String sql = "SELECT * FROM Stock"
+				+ " WHERE Type = "
+				+ "(SELECT S.Type FROM Account A, Client C, Orders O, Stock S, Trade Trd"
+				+ " WHERE C.Id = ?"
+				+ " AND A.Client = C.Id"
+				+ " AND Trd.AccountId = A.Id"
+				+ " AND Trd.OrderId = O.Id"
+				+ " AND S.StockSymbol = Trd.StockId"
+				+ " GROUP BY S.Type)"
+				+ " LIMIT 20";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, customerId);
+		ResultSet rs = pstm.executeQuery();
+		
+		List<Stock> list = new ArrayList<Stock>();
+		while(rs.next()){
+			Stock stock = new Stock(
+							rs.getString("stockSymbol"),
+							rs.getString("companyName"),
+							rs.getString("type"),
+							rs.getFloat("pricePerShare"));
+			list.add(stock);
+		}
+		return list;
+		
+	}
+
+	public static List<Account> getAccountList(Connection conn, int clientId) throws SQLException {
+		String sql="SELECT * FROM Account WHERE Client = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, clientId);
+		ResultSet rs = pstm.executeQuery();
+		List<Account> list = new ArrayList<Account>(); 
+		while(rs.next()){
+			Account account = new Account(
+									rs.getInt("Id"),
+									rs.getDate("DateOpened"),
+									rs.getInt("Client"));
+			list.add(account);
+		}
+		
+		return list;
+	}
+
+	public static void addAccount(Connection conn, Account account, int clientId) throws SQLException {
+		String sql = "INSERT INTO Account(Id, DateOpened, Client)"
+				+ " VALUES(?, ?, ?)";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, account.getId());
+		pstm.setDate(2, account.getDateOpened());
+		pstm.setInt(3, account.getClientId());
+		pstm.executeUpdate();
+	}
+	
 }
 

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import utils.RepresentativeUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/deleteClient" })
+@WebServlet(urlPatterns = { "/representatives/deleteClient" })
 public class DeleteClientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
  
@@ -46,14 +46,14 @@ public class DeleteClientServlet extends HttpServlet {
             request.setAttribute("errorString", errorString);
             //
             RequestDispatcher dispatcher = request.getServletContext()
-                    .getRequestDispatcher("/WEB-INF/views/deleteClientErrorView.jsp");
+                    .getRequestDispatcher("/WEB-INF/views/representatives/deleteClientErrorView.jsp");
             dispatcher.forward(request, response);
         }
  
         // If everything nice.
         // Redirect to the product listing page.        
         else {
-            response.sendRedirect(request.getContextPath() + "/clientList");
+            response.sendRedirect(request.getContextPath() + "/representatives/clientList");
         }
  
     }

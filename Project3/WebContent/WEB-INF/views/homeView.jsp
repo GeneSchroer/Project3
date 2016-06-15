@@ -10,9 +10,9 @@
  
     <h3> Basic Home Page </h3><br>
 
-	<a href="${pageContext.request.contextPath}/manager"> Managers</a><br>
-	<a href="${pageContext.request.contextPath}/representative">Customer Representatives</a><br>
-	<a href="${pageContext.request.contextPath}/customer">Customers</a><br>
+	<a href="${pageContext.request.contextPath}/managers"> Managers</a><br>
+	<a href="${pageContext.request.contextPath}/representatives">Customer Representatives</a><br>
+	<a href="${pageContext.request.contextPath}/customers">Customers</a><br>
     <a href="${pageContext.request.contextPath}/debugPage">Debug Options</a><br>
  	<a href="${pageContext.request.contextPath}/loginPage">Login Page</a><br>
   </body>

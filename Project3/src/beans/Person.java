@@ -1,7 +1,12 @@
 package beans;
 
-public class Person {
-	protected String something;
+import java.io.Serializable;
+
+public class Person implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Integer SSN;
 	protected String lastName;
 	protected String firstName;
@@ -9,7 +14,6 @@ public class Person {
 	protected Integer zipCode;
 	protected String telephone;
 	public Person(){
-		something = "";
 		this.SSN = null;
 		this.lastName = null;
 		this.firstName=null;

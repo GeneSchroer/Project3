@@ -1,8 +1,13 @@
 package beans;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Orders {
+public class Orders implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer numShares;
 	private Float pricePerShare;
 	private Integer id;

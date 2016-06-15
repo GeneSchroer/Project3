@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(urlPatterns={"/representative"})
+@WebServlet(urlPatterns={"/representatives"})
 public class RepresentativeServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
@@ -20,7 +20,7 @@ public class RepresentativeServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/representativeView.jsp");
+		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/representativeView.jsp");
 		
 		dispatcher.forward(request, response);
 	}

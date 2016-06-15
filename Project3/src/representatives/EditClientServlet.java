@@ -12,10 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import beans.Client;
+import beans.Location;
+import utils.ManagerUtils;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
-@WebServlet(urlPatterns ={"/editClient"})
+@WebServlet(urlPatterns ={"/representatives/editClient"})
 public class EditClientServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	public EditClientServlet(){
@@ -34,9 +36,12 @@ public class EditClientServlet extends HttpServlet{
 		int id = Integer.parseInt(s);
 		
 		Client client= null;
+		Location location=null;
 		String errorString = null;
 		try{
 			client = RepresentativeUtils.findClient(conn, id);
+			location = ManagerUtils.findLocation(conn, client.getZipCode());
+
 		}catch(SQLException e){
 			e.printStackTrace();
 			errorString=e.getMessage();
@@ -52,20 +57,20 @@ public class EditClientServlet extends HttpServlet{
 		// Store errorString in request attribute, before forward to views.
 		request.setAttribute("errorString", errorString);
 		
-		request.setAttribute("client", client);
-		request.setAttribute("id", client.getId());
-		request.setAttribute("firstName", client.getFirstName());
-		request.setAttribute("lastName", client.getLastName());
-		request.setAttribute("address", client.getAddress());
-		request.setAttribute("zipCode", client.getZipCode());
-		request.setAttribute("telephone", client.getTelephone());
-
-		request.setAttribute("email", client.getEmail());
-
-		request.setAttribute("rating", client.getRating());
-
+		request.setAttribute("client",		client);
+		request.setAttribute("id", 			client.getId());
+		request.setAttribute("firstName", 	client.getFirstName());
+		request.setAttribute("lastName", 	client.getLastName());
+		request.setAttribute("address", 	client.getAddress());
+		request.setAttribute("city", 		location.getCity());
+		request.setAttribute("state", 		location.getState());
+		request.setAttribute("zipCode", 	client.getZipCode());
+		request.setAttribute("telephone", 	client.getTelephone());
+		request.setAttribute("email", 		client.getEmail());
+		request.setAttribute("rating", 		client.getRating());
 		request.setAttribute("creditCardNumber", client.getCreditCardNumber());
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/editClientView.jsp");
+		
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/editClientView.jsp");
 		dispatcher.forward(request, response);
 	}
 	@Override

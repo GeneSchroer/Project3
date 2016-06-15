@@ -13,10 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import beans.Client;
+import beans.Location;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
-@WebServlet(urlPatterns = {"/doEditClient"})
+@WebServlet(urlPatterns = {"/representatives/doEditClient"})
 public class DoEditClientServlet extends HttpServlet{
 	/**
 	 * 
@@ -32,6 +33,8 @@ public class DoEditClientServlet extends HttpServlet{
 		String firstName		= request.getParameter("firstName");
 		String lastName 		= request.getParameter("lastName"); 
 		String address 			= request.getParameter("address");
+		String city				= request.getParameter("city");
+		String state			= request.getParameter("state");
 		String zipCodeStr		= request.getParameter("zipCode");
 		String telephone		= request.getParameter("telephone");
 		String email 			= request.getParameter("email");
@@ -44,8 +47,9 @@ public class DoEditClientServlet extends HttpServlet{
 		
 		
 		boolean hasError=false;
-		String errorStrLastName, errorStrFirstName, errorStrAddress, errorStrZipCode, errorStrTelephone,
-			errorStrEmail, errorStrRating, errorStrCreditCardNumber, errorStrId;
+		String errorStrLastName, errorStrFirstName, errorStrAddress, 
+		errorStrCity, errorStrState, errorStrZipCode, errorStrTelephone,	
+		errorStrEmail, errorStrRating, errorStrCreditCardNumber, errorStrId;
 
 		Client client = null;
 		
@@ -72,6 +76,22 @@ public class DoEditClientServlet extends HttpServlet{
 			hasError=true;
 			errorStrAddress="Address invalid!";
 		}
+		//City
+		regex = "[[A-Z][a-zA-z]]+[\\s[A-Z][a-zA-Z]]*";	//regex = One or more words, 
+															  	//each beginning with a capital letter 
+		errorStrCity=null;
+		if(city==null|| !city.matches(regex)){
+			hasError=true;
+			errorStrCity = "Error: Invalid City!";
+		}
+		
+		//State
+		errorStrState=null;
+		if(state==null|| !state.matches(regex)){
+			hasError=true;
+			errorStrState = "Error: Invalid State!";
+		}
+		
 		//Zip Code
 		try{
 			errorStrZipCode=null;
@@ -85,8 +105,8 @@ public class DoEditClientServlet extends HttpServlet{
 			errorStrZipCode="Invalid Zip Code!";
 		}
 		// Telephone
-		regex="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]";
-		regex2="[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]";
+		regex="[0-9]{10}";
+		regex2="[0-9]{3}\\x2D[0-9]{3}\\x2D[0-9]{4}";
 		errorStrTelephone=null;
 			telephone = request.getParameter("telephone");
 		if(telephone==null|| (!telephone.matches(regex)&&!telephone.matches(regex2) )){
@@ -94,9 +114,13 @@ public class DoEditClientServlet extends HttpServlet{
 			errorStrTelephone="Invalid Telephone Number!";
 		}
 		//Email
-		//regex="\\w+"; // this needs to be changed later
+		regex="\\w+\\x40\\w+[\\x2E[a-z]+]+"; 
+		//regex= series of letters and numbers,
+		// followed by an ampersand @, 
+		//followed by more letters and numbers
+		//ending in a lowercase word (e.g.  .com)
 		errorStrEmail=null;
-		if(email==null/*||!email.matches(regex)*/){
+		if(email==null||!email.matches(regex)){
 			hasError=true;
 			errorStrEmail="Error: Invalid email!";
 		}
@@ -107,13 +131,12 @@ public class DoEditClientServlet extends HttpServlet{
 		}
 		catch(Exception e){
 			hasError=true;
-			errorStrRating="Invalid Id!";
+			errorStrRating="Invalid Rating!";
 		}
 		
 		//Credit Card Number
 		System.out.println(hasError);
-		regex="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]"
-				+"[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]";
+		regex="[0-9]{16}";
 		regex2="[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
 				+"-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]";
 		errorStrCreditCardNumber=null;
@@ -140,8 +163,9 @@ public class DoEditClientServlet extends HttpServlet{
 		
 		if(!hasError){
 			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber);
+			Location location = new Location(zipCode, city, state);
 			try{
-				RepresentativeUtils.updateClient(conn, client);
+				RepresentativeUtils.updateClient(conn, client, location);
 			}
 			catch(SQLException e){
 				e.printStackTrace();
@@ -155,6 +179,8 @@ public class DoEditClientServlet extends HttpServlet{
 			request.setAttribute("errorStrLastName", errorStrLastName);
 			request.setAttribute("errorStrFirstName", errorStrFirstName);
 			request.setAttribute("errorStrAddress", errorStrAddress);
+			request.setAttribute("errorStrCity", errorStrCity);
+			request.setAttribute("errorStrState", errorStrState);
 			request.setAttribute("errorStrZipCode", errorStrZipCode);
 			request.setAttribute("errorStrTelephone", errorStrTelephone);
 			request.setAttribute("errorStrEmail", errorStrEmail);
@@ -164,6 +190,8 @@ public class DoEditClientServlet extends HttpServlet{
 			request.setAttribute("lastName", lastName);
 			request.setAttribute("firstName", firstName);
 			request.setAttribute("address", address);
+			request.setAttribute("city", city);
+			request.setAttribute("state", state);
 			request.setAttribute("zipCode", zipCodeStr);
 			request.setAttribute("telephone", telephone);
 			request.setAttribute("email", email);
@@ -172,13 +200,13 @@ public class DoEditClientServlet extends HttpServlet{
 			request.setAttribute("id", idStr);
 			request.setAttribute("client", client);	
 			RequestDispatcher dispatcher = request.getServletContext()
-					.getRequestDispatcher("/WEB-INF/views/editClientView.jsp");
+					.getRequestDispatcher("/WEB-INF/views/representatives/editClientView.jsp");
 			dispatcher.forward(request, response);
 		}
 		
 		//If everything worked, redirect to the employeeList
 		else{
-			response.sendRedirect(request.getContextPath() + "/clientList");
+			response.sendRedirect(request.getContextPath() + "/representatives/clientList");
 		}
 		
 	}

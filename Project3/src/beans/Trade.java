@@ -1,6 +1,12 @@
 package beans;
 
-public class Trade {
+import java.io.Serializable;
+
+public class Trade implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int accountId;
 	private int brokerId;
 	private int transactionId;

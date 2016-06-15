@@ -16,7 +16,7 @@ import beans.SalesReport;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/doSalesReport"})
+@WebServlet(urlPatterns = {"/managers/doSalesReport"})
 public class DoSalesReportServlet extends HttpServlet {
 
 	/**
@@ -68,7 +68,7 @@ public class DoSalesReportServlet extends HttpServlet {
 		request.setAttribute("salesReportList", list);
 		//Forward to customerOrderListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext()
-				.getRequestDispatcher("/WEB-INF/views/salesReportView.jsp");
+				.getRequestDispatcher("/WEB-INF/views/managers/salesReportView.jsp");
 		dispatcher.forward(request, response);
 	}
 	

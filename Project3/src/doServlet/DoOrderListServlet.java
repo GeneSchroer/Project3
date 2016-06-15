@@ -17,7 +17,7 @@ import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/doOrderList"})
+@WebServlet(urlPatterns = {"/managers/doOrderList"})
 public class DoOrderListServlet extends HttpServlet {
 
 	/**
@@ -93,7 +93,7 @@ public class DoOrderListServlet extends HttpServlet {
 		request.setAttribute("stockList", stockList);
 		//Forward to customerOrderListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext()
-				.getRequestDispatcher("/WEB-INF/views/orderListView.jsp");
+				.getRequestDispatcher("/WEB-INF/views/managers/orderListView.jsp");
 		dispatcher.forward(request, response);
 	}
 	

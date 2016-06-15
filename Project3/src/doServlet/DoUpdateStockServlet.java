@@ -15,7 +15,7 @@ import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns={"/doUpdateStock"})
+@WebServlet(urlPatterns={"/managers/doUpdateStock"})
 public class DoUpdateStockServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	public DoUpdateStockServlet(){
@@ -59,11 +59,11 @@ public class DoUpdateStockServlet extends HttpServlet{
 		request.setAttribute("errorStrPricePerShare", errorStrPricePerShare);
 		if(hasError){
 			RequestDispatcher dispatcher = request.getServletContext()
-					.getRequestDispatcher("/WEB-INF/views/updateStockPriceView.jsp");
+					.getRequestDispatcher("/WEB-INF/views/managers/updateStockPriceView.jsp");
 			dispatcher.forward(request, response);
 		}
 		else{
-			response.sendRedirect(request.getContextPath() + "/stockList");
+			response.sendRedirect(request.getContextPath() + "/managers/stockList");
 		}
 	} 
 	@Override

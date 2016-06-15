@@ -13,6 +13,7 @@ import java.util.List;
 import beans.Employee;
 import beans.FullOrder;
 import beans.HighRoller;
+import beans.Location;
 import beans.Orders;
 import beans.Person;
 import beans.SalesReport;
@@ -24,8 +25,9 @@ public class ManagerUtils {
 	public static List<Employee> getEmployeeList(Connection conn) throws SQLException{
 		String sql = "SELECT E.*,P.* "
 				+ " FROM Employee E, Person P "
-				+ "	WHERE P.SSN=E.SSN";
-		
+				+ "	WHERE P.SSN=E.SSN"
+				+ " ORDER BY P.LastName ASC";
+				
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		
 		ResultSet rs = pstm.executeQuery();
@@ -33,8 +35,8 @@ public class ManagerUtils {
 		while(rs.next()){
 			Employee employee = new Employee(
 					rs.getInt("SSN"), 
-					rs.getString("LastName"), 
 					rs.getString("FirstName"), 
+					rs.getString("LastName"), 
 					rs.getString("Address"), 
 					rs.getInt("ZipCode"), 
 					rs.getString("Telephone"),
@@ -46,11 +48,19 @@ public class ManagerUtils {
 		return list;
 	}
 	
-	public static void addEmployee(Connection conn, Employee employee) throws SQLException{
-		String sql = "INSERT INTO Person(SSN, LastName, FirstName, Address, ZipCode,"
+	public static void addEmployee(Connection conn, Employee employee, Location location) throws SQLException{
+		String sql = "INSERT IGNORE INTO Location(ZipCode, City, State)"
+				+ " VALUES(?, ?, ?)";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, location.getZipCode());
+		pstm.setString(2, location.getCity());
+		pstm.setString(3, location.getState());
+		pstm.executeUpdate();
+		
+		sql = "INSERT INTO Person(SSN, LastName, FirstName, Address, ZipCode,"
 				+ " Telephone) "
 				+ "VALUES (?, ?, ?, ?, ?, ?)";
-		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm = conn.prepareStatement(sql);
 		
 		pstm.setInt		(1, employee.getSSN());
 		pstm.setString	(2, employee.getLastName());
@@ -93,7 +103,7 @@ public class ManagerUtils {
 			String address = person.getAddress();
 			int zipCode = person.getZipCode();
 			String telephone = person.getTelephone();
-			Employee employee = new Employee(SSN, lastName, firstName, address, 
+			Employee employee = new Employee(SSN, firstName, lastName, address, 
 				zipCode, telephone, eId, startDate, hourlyRate);
 			return employee;
 		}
@@ -123,12 +133,20 @@ public class ManagerUtils {
 			return null;
 	}
 
-	public static void updateEmployee(Connection conn, Employee employee) throws SQLException{
-		String sql = "UPDATE EmployeeInfo "
+	public static void updateEmployee(Connection conn, Employee employee, Location location) throws SQLException{
+		String sql = "INSERT IGNORE INTO Location(ZipCode, City, State)"
+				+ "VALUES(?, ?, ?)";
+		PreparedStatement pstm = conn.prepareCall(sql);
+		pstm.setInt(1, location.getZipCode());
+		pstm.setString(2, location.getCity());
+		pstm.setString(3, location.getState());
+		pstm.executeUpdate();
+		
+		sql = "UPDATE EmployeeInfo "
 				+ "SET LastName=?, FirstName=?, Address=?, ZipCode=?,"
 				+ " Telephone=? "
 				+ " WHERE Id=?";
-		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm = conn.prepareStatement(sql);
 		
 		pstm.setString	(1, employee.getLastName());
 		pstm.setString	(2, employee.getFirstName());
@@ -293,7 +311,7 @@ public class ManagerUtils {
 		int parameter=1;
 		//if we only select based on stockSymbol, we can use a simpler statement
 		if(lastName==null && firstName==null){
-			sql = "SELECT DISTINCT O.*, Trd.AccountId, Trd.BrokerId,"
+			sql = "SELECT DISTINCT O.*,  Trd.AccountId, Trd.BrokerId,"
 					+ " Trd.StockId, Trns.Id AS TransactionId,"
 					+ " Trns.Fee, Trns.DateTime AS FinalDateTime,"
 					+ " Trns.PricePerShare as FinalPricePerShare"
@@ -345,12 +363,14 @@ public class ManagerUtils {
 					rs.getDouble("Percentage"), 
 					rs.getString("PriceType"), 
 					rs.getString("OrderType"), 
-					rs.getInt("AccountId"),
-					rs.getInt("BrokerId"),
-					rs.getString("StockId"),
+					rs.getInt("TransactionId"),
 					rs.getInt("Fee"), 
 					rs.getTimestamp("FinalDateTime"), 
-					rs.getFloat("FinalPricePerShare"));
+					rs.getFloat("FinalPricePerShare"),
+					rs.getInt("AccountId"),
+					rs.getInt("BrokerId"),
+					rs.getString("StockId")
+					);
 			list.add(order);
 		}
 		return list;
@@ -369,9 +389,8 @@ public class ManagerUtils {
 	}
 	public static void getSummaryListing
 	(Connection conn, String lastName, String firstName, String type, String stockSymbol){
-		String sql;
-		sql="SELECT S.*, (SUM(Trns.PricePerShare) * SUM(O.NumShares)) AS Revenue"
-				+ " FRO Stock S, Trade Trd, Transaction Trns,"
+		String sql="SELECT S.*, (SUM(Trns.PricePerShare) * SUM(O.NumShares)) AS Revenue"
+				+ " FROM Stock S, Trade Trd, Transaction Trns,"
 				+ " WHERE Trd.StockId=S.StockSymbol"
 				+ " AND Trd.TransactionId = Trns.Id"
 				+ " And Trns.DateTime IS NOT NULL" ;
@@ -389,16 +408,17 @@ public class ManagerUtils {
 	}
 	
 	public static HighRoller findCustomerWithMostRevenue(Connection conn) throws SQLException{
-		String sql = "SELECT P.LastName, P.FirstName, Trd.BrokerId,"
-				+ " (SUM(Trns.Price)*SUM(O.NumShares)) AS Revenue"
-				+ " FROM Employee E, Orders O, Person P, Trade Trd, Transaction Trns"
-				+ " WHERE E.SSN = P.SSN"
+		String sql = "SELECT P.LastName, P.FirstName, C.Id,"
+				+ " (SUM(Trns.PricePerShare)*SUM(O.NumShares)) AS Revenue"
+				+ " FROM Account A, Client C, Orders O, Person P, Trade Trd, Transaction Trns"
+				+ " WHERE C.Id = P.SSN"
+				+ " AND A.Client = C.Id"
+				+ " AND Trd.AccountId = A.Id"
 				+ " AND Trd.OrderId = O.Id"
-				+ " AND Trd.BrokerId = E.Id"
 				+ " AND	Trd.TransactionId = Trns.Id"
 				+ " AND Trns.DateTime IS NOT NULL"
-				+ " GROUP BY E.Id"
-				+ " ORDER BUY DESC Revenue"
+				+ " GROUP BY C.Id"
+				+ " ORDER BY Revenue DESC"
 				+ " LIMIT 1";
 		
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -415,8 +435,8 @@ public class ManagerUtils {
 		return null;
 	}
 	public static HighRoller findRepresentativeWithMostRevenue(Connection conn) throws SQLException{
-		String sql = "SELECT P.LastName, P.FirstName, Trd.BrokerId,"
-				+ " (SUM(Trns.Price)*SUM(O.NumShares)) AS Revenue"
+		String sql = "SELECT P.LastName, P.FirstName, E.Id,"
+				+ " (SUM(Trns.PricePerShare)*SUM(O.NumShares)) AS Revenue"
 				+ " FROM Employee E, Orders O, Person P, Trade Trd, Transaction Trns"
 				+ " WHERE E.SSN = P.SSN"
 				+ " AND Trd.OrderId = O.Id"
@@ -424,7 +444,7 @@ public class ManagerUtils {
 				+ " AND	Trd.TransactionId = Trns.Id"
 				+ " AND Trns.DateTime IS NOT NULL"
 				+ " GROUP BY E.Id"
-				+ " ORDER BUY DESC Revenue"
+				+ " ORDER BY Revenue DESC"
 				+ " LIMIT 1";
 		
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -439,6 +459,65 @@ public class ManagerUtils {
 			return hr;
 		}
 		return null;
+	}
+
+	public static Location findLocation(Connection conn, Integer zipCode) throws SQLException {
+		String sql = "SELECT * FROM Location L WHERE L.ZipCode = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, zipCode);
+		ResultSet rs = pstm.executeQuery();
+		if(rs.next()){
+			Location location = new Location(
+								rs.getInt("ZipCode"),
+								rs.getString("City"),
+								rs.getString("State"));
+			return location;
+		}
+		return null;
+	}
+
+	public static void addStock(Connection conn, Stock stock) throws SQLException {
+		String sql = "INSERT INTO Stock(StockSymbol, CompanyName, Type, PricePerShare)"
+				+ " VALUES(?, ?, ?, ?)";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setString(1, stock.getStockSymbol());
+		pstm.setString(2, stock.getCompanyName());
+		pstm.setString(3, stock.getType());
+		pstm.setFloat(4, stock.getPricePerShare());
+		pstm.executeUpdate();
+	}
+
+	public static void updateStock(Connection conn, Stock stock) throws SQLException {
+		String sql = "UPDATE Stock"
+				+ " SET CompanyName = ?, TYPE = ?"
+				+ " WHERE StockSymbol = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setString(1, stock.getCompanyName());
+		pstm.setString(2, stock.getType());
+		pstm.setString(3, stock.getStockSymbol());
+		pstm.executeUpdate();
+		
+	}
+	public static List<Stock> getMostActivelyTradedStock(Connection conn) throws SQLException{
+		String sql = "SELECT COUNT(*) AS TimesTrades, S.*"
+				+ " FROM Stock S, Trade Trd"
+				+ " WHERE S.StockSymbol = Trd.StockId"
+				+ " GROUPS BY S.StockSymbol"
+				+ " ORDER BY TimesTraded DESC"
+				+ " LIMIT BY 20";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		ResultSet rs = pstm.executeQuery();
+		List<Stock> list = new ArrayList<Stock>();
+		while(rs.next()){
+			Stock stock = new Stock(
+							rs.getString("StockSymbol"),
+							rs.getString("CompanyName"),
+							rs.getString("Type"),
+							rs.getFloat("PricePerShare")
+							);
+			list.add(stock);
+		}
+		return list;
 	}
 
 }

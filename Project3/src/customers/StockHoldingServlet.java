@@ -16,7 +16,7 @@ import beans.Portfolio;
 import utils.CustomerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = { "/stockHolding"})
+@WebServlet(urlPatterns = { "/customers/stockHolding"})
 public class StockHoldingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public StockHoldingServlet(){
@@ -43,7 +43,7 @@ public class StockHoldingServlet extends HttpServlet {
 		request.setAttribute("stockPortfolio", list);
 		
 		//Forward to employeeListView.jsp
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/stockHoldingView.jsp");
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/stockHoldingView.jsp");
 		dispatcher.forward(request, response);
 	}
 	@Override

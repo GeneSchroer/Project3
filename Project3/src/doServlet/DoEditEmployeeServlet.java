@@ -13,10 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import beans.Employee;
+import beans.Location;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/doEditEmployee"})
+@WebServlet(urlPatterns = {"/managers/doEditEmployee"})
 public class DoEditEmployeeServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
@@ -32,6 +33,8 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		String firstName 		= request.getParameter("firstName");
 		String lastName 		= request.getParameter("lastName");
 		String address 			= request.getParameter("address");
+		String city				= request.getParameter("city");
+		String state			= request.getParameter("state");
 		String zipCodeStr		= request.getParameter("zipCode");
 		String telephone 		= request.getParameter("telephone");
 		String id 				= request.getParameter("id");
@@ -42,15 +45,17 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		
 		int zipCode=0;
 		int hourlyRate=0;
-		String errorStrLastName, errorStrFirstName, errorStrAddress, errorStrZipCode, errorStrTelephone,
+		String errorStrLastName, errorStrFirstName, errorStrAddress, errorStrCity, errorStrState, errorStrZipCode, errorStrTelephone,
 			errorStrHourlyRate;
 
 		Employee employee=null;
+		Location location=null;
 		
 		// check for errors before adding an Employee to the database
 		
 		//LastName
 		String regex=null;
+		String regex2=null;
 		regex="[a-zA-Z]+";
 		errorStrLastName=null;
 		if(lastName==null || !lastName.matches(regex)){
@@ -71,6 +76,23 @@ public class DoEditEmployeeServlet extends HttpServlet{
 			hasError=true;
 			errorStrAddress="Address invalid!";
 		}
+		
+		//City
+				regex = "[[A-Z][a-zA-z]][\\s[A-Z][a-zA-Z]]*";
+				errorStrCity=null;
+				if(city==null|| !city.matches(regex)){
+					hasError=true;
+					errorStrCity = "Error: Invalid City!";
+				}
+				
+				//State
+				errorStrState=null;
+				if(state==null|| !state.matches(regex)){
+					hasError=true;
+					errorStrState = "Error: Invalid State!";
+				}
+		
+		
 		//Zip Code
 		try{
 			errorStrZipCode=null;
@@ -85,10 +107,11 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		}
 		
 		// Telephone
-		regex="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]";
+		regex="[0-9]{10}";
+		regex2="[0-9]{3}\\x2D[0-9]{3}\\x2D[0-9]{4}";
 		errorStrTelephone=null;
 			telephone = request.getParameter("telephone");
-		if(telephone==null||!telephone.matches(regex)){
+		if(telephone==null||(!telephone.matches(regex)&&!telephone.matches(regex2))){
 			hasError=true;
 			errorStrTelephone="Invalid Telephone Number!";
 		}
@@ -121,6 +144,7 @@ public class DoEditEmployeeServlet extends HttpServlet{
 			errorStrHourlyRate=null;
 			hourlyRate = Integer.parseInt(hourlyRateStr);
 			if(hourlyRate<0){
+				hasError=true;
 				errorStrHourlyRate="Invalid Hourly Rate";
 			}
 		}
@@ -153,9 +177,9 @@ public class DoEditEmployeeServlet extends HttpServlet{
 		
 		if(!hasError){
 			employee = new Employee(Integer.parseInt(SSN), firstName, lastName, address, zipCode, telephone, Integer.parseInt(id), Date.valueOf(startDate), hourlyRate );
-			
+			location = new Location(zipCode, city, state);
 			try{
-				ManagerUtils.updateEmployee(conn, employee);
+				ManagerUtils.updateEmployee(conn, employee, location);
 			}
 			catch(SQLException e){
 				e.printStackTrace();
@@ -168,29 +192,34 @@ public class DoEditEmployeeServlet extends HttpServlet{
 			request.setAttribute("errorStrFirstName", errorStrFirstName);
 			request.setAttribute("errorStrLastName", errorStrLastName);
 			request.setAttribute("errorStrAddress", errorStrAddress);
+			request.setAttribute("errorStrCity", errorStrCity);
+			request.setAttribute("errorStrState", errorStrState);
 			request.setAttribute("errorStrZipCode", errorStrZipCode);
+			request.setAttribute("errorStrTelephone", errorStrTelephone);
 			request.setAttribute("errorStrHourlyRate", errorStrHourlyRate);
+			
 			request.setAttribute("SSN", SSN);
 			request.setAttribute("lastName", lastName);
 			request.setAttribute("firstName", firstName);
 			request.setAttribute("address", address);
+			request.setAttribute("city", city);
+			request.setAttribute("state", state);
 			request.setAttribute("zipCode", zipCode);
 			request.setAttribute("telephone", telephone);
 			request.setAttribute("id", id);
 			request.setAttribute("startDate", startDate);
 			request.setAttribute("hourlyRate", hourlyRate);
 			request.setAttribute("employee", employee);
-		}
+		
 
 		// If there's an error, forward the information back to the edit page
-		if(hasError){
-			System.out.println("Not valid");
+		
 			RequestDispatcher dispatcher = request.getServletContext()
-					.getRequestDispatcher("/WEB-INF/views/editEmployeeView.jsp");
+					.getRequestDispatcher("/WEB-INF/views/managers/editEmployeeView.jsp");
 			dispatcher.forward(request, response);
 		}
 		else{
-			response.sendRedirect(request.getContextPath() +"/employeeList");
+			response.sendRedirect(request.getContextPath() +"/managers/employeeList");
 		}
 	}
 	@Override

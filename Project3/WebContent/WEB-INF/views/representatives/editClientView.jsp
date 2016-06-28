@@ -6,9 +6,13 @@
   <head>
   <meta charset="UTF-8">
 <title>Edit Client</title>
-<h3>Edit Client</h3>
+
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+<h3>Edit Client</h3>
+
 <c:if test="${not empty client}">
 	<form method="POST" action="doEditClient">
 	  
@@ -70,6 +74,6 @@
 	</form>
 	</c:if>
 
-
+    <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

@@ -27,7 +27,6 @@ public class StockListServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		
 		String errorString=null;
 		List<Stock> list=null;
 		try{
@@ -39,7 +38,10 @@ public class StockListServlet extends HttpServlet{
 		
 		//Store the information before forwarding
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("stockList", list);
+		if(!list.isEmpty())
+			request.setAttribute("stockList", list);
+		
+		
 		//Forward to stockListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/managers/stockListView.jsp");
 		dispatcher.forward(request, response);

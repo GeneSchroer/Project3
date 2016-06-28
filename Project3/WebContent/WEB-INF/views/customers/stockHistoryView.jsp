@@ -9,6 +9,10 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	
+
 	<c:choose>
 		<c:when test="${not empty haveStocks}">
 			<form method="POST" action="doStockHistory">

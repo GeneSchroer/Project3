@@ -9,6 +9,9 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	
 	<c:choose>
 	<c:when test=${not empty mostActivelyTradedStocksList }>
 		<table border="2">
@@ -35,6 +38,6 @@
 	</c:otherwise>
 	</c:choose>
 	<a href="${pageContext.request.contextPath}/managers">Return to Manager page</a>
-
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

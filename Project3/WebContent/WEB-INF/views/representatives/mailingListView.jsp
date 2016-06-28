@@ -8,6 +8,9 @@
 <title>Client List</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+
 	<table border="2" cellpadding="5" cellspacing="1">
 	<tr>
 		<th>Name</th>
@@ -19,7 +22,7 @@
 	</tr>
 	<c:forEach items="${mailingListList}" var="mailingList">
 		<tr>
-			<td>${mailingList.name}</td>
+			<td>${mailingList.firstName} ${mailingList.lastName}</td>
 			<td>${mailingList.email}</td>
 			<td>${mailingList.address}</td>
 			<td>${mailingList.city}</td>
@@ -31,5 +34,6 @@
 	</c:forEach>
 	</table>
 <a href="${pageContext.request.contextPath}/representatives">Return to representative view</a>
+    <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

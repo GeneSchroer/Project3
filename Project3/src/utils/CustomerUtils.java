@@ -12,6 +12,7 @@ import java.util.List;
 
 import beans.Account;
 import beans.FullOrder;
+import beans.HasStock;
 import beans.History;
 import beans.Orders;
 import beans.Portfolio;
@@ -23,27 +24,27 @@ public class CustomerUtils {
 	
 	
 	
-	public static List<Portfolio> getStockPortfolio(Connection conn, int customerId) throws SQLException{
-		String sql="select A.Id, S.stocksymbol, (Sum(O1.numshares) - Sum(O2.numshares)) As TotalShares"
-			+ " from Account A, Orders O1, Orders O2, Trade Trd, Transaction trns, Stock S"
-			+ " where trd.accountId= a.id"
-			+ " and trd.transactionid = trns.id"
-			+ " and trd.stockid = s.stocksymbol"
-			+ " and trd.orderid = O2.id"
-			+ " and O1.orderType = 'Buy'"
-			+ " and O2.orderType= 'Sell'"
-			+ " Group by S.stocksymbol;";
+	public static List<HasStock> getStockPortfolio(Connection conn, int customerId) throws SQLException{
+		conn.setAutoCommit(false);
+		
+		String sql="SELECT H.*, S.PricePerShare"
+				+ " FROM Account A, HasStock H, Stock S"
+				+ " WHERE A.Client = ?"
+				+ " AND A.Id = H.AccountId"
+				+ " AND H.StockSymbol = S.StockSymbol"
+				+ " ORDER BY AccountId ASC";
 	
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, customerId);
 		ResultSet rs = pstm.executeQuery();
-		List<Portfolio> list = new ArrayList<Portfolio>();
+		List<HasStock> list = new ArrayList<HasStock>();
 		while(rs.next()){
-			String id = rs.getString("id");
-			String stockSymbol = rs.getString("stockSymbol");
-			int totalShares = rs.getInt("totalShares");
-			Portfolio portfolio = new Portfolio(id, stockSymbol, totalShares);
-			list.add(portfolio);
+			HasStock hasStock = new HasStock(
+									rs.getInt("AccountId"), 
+									rs.getString("StockSymbol"), 
+									rs.getInt("NumShares"),
+									rs.getFloat("PricePerShare"));
+			list.add(hasStock);
 		}
 	
 	
@@ -51,10 +52,11 @@ public class CustomerUtils {
 	}
 
 	public static List<Orders> getOrderList(Connection conn, int clientId) throws SQLException {
-		String sql = "SELECT O.*"
+		String sql = "START TRANSACTION;"
+				+ " SELECT O.*"
 				+ " FROM Account A, Trade Trd, Orders O"
 				+ " WHERE A.Client = ? AND A.Id = Trd.AccountId AND Trd.OrderId = O.Id"
-				+ " ORDER BY DateTime DESC";
+				+ " ORDER BY DateTime DESC;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
 		ResultSet rs = pstm.executeQuery();
@@ -73,61 +75,76 @@ public class CustomerUtils {
 		return list;
 	}
 
-	public static void placeOrder(Connection conn, String stockSymbol, String orderType, String priceType, Integer numSharesParsed, Float pricePerShareParsed, Integer percentageParsed, Integer accountId,
-			Integer brokerId) throws SQLException {
+	public static void placeOrder(Connection conn, FullOrder fullOrder) throws SQLException {
 		String sql=null;
 		PreparedStatement pstm = null;
-		
+		conn.setAutoCommit(false);
 		float stockPrice=0;
 		//Insert into Order Table
 		
 		//If this is a trailing stop, we need to determine the current Price Per Share of the stock
 		// in order to determine what the stop price and percentage to stop is.
-		if(priceType.equals("Trailing Stop")){
+		if(fullOrder.getPriceType().equals("Trailing Stop")){
 			sql="SELECT PricePerShare FROM STOCK WHERE StockSymbol=?";
+		
 			pstm=conn.prepareStatement(sql);
-			pstm.setString(1, stockSymbol);
+			pstm.setString(1, fullOrder.getStockId());
 			ResultSet rs = pstm.executeQuery();
 			rs.next();
 			stockPrice = rs.getFloat("PricePerShare");
 		}
-		
-		sql= "INSERT INTO Orders (NumShares, PricePerShare, Id, DateTime, Percentage, PriceType, OrderType)"
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
+		float finalPricePerShare=0;
+		if(fullOrder.getPriceType().equals("Market")||fullOrder.getPriceType().equals("Market On Close")){
+			sql = "SELECT PricePerShare	FROM Stock"
+					+ "	WHERE StockSymbol = ?";
+			pstm = conn.prepareStatement(sql);
+			pstm.setString(1, fullOrder.getStockId());
+			ResultSet rs = pstm.executeQuery();
+			rs.next();
+			finalPricePerShare = rs.getFloat("PricePerShare");
+		}
+		sql= "START TRANSACTION;"
+				+ " INSERT INTO Orders (NumShares, PricePerShare, Id, DateTime, Percentage, PriceType, OrderType)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?);"
+				+ " INSERT INTO Transaction(Id, Fee, DateTime, PricePerShare)"
+				+ " VALUES(?, ?, ?, ?);"
+				+ " INSERT INTO Trade(AccountId, BrokerId, OrderId, TransactionId, StockId)"
+				+ " VALUES(?, ?, ?, ?, ?);"
+				+ "	COMMIT;";
 		
 		pstm = conn.prepareStatement(sql);
 		
-		pstm.setInt(1, numSharesParsed);
+		//Set Order(NumShares)
+		pstm.setInt(1, fullOrder.getNumShares());
 		
 		//if the Price Type is a Trailing Stop, we need to determine the Stop Price and the Percentage.
-		if(priceType.equals("Trailing Stop")){
+		if(fullOrder.getPriceType().equals("Trailing Stop")){
 			
-			double x=calculateStopPriceOrPercentage(stockPrice, pricePerShareParsed, percentageParsed);
+			double x = calculateStopPriceOrPercentage(stockPrice, fullOrder.getPricePerShare(), fullOrder.getPercentage());
 
-			if(pricePerShareParsed==0){
+			if(fullOrder.getPricePerShare()==null){
 				// calculate the Price Per Share to stop at
 				pstm.setFloat(2, (float)x);
-				pstm.setDouble(5, percentageParsed);
+				pstm.setDouble(5, fullOrder.getPercentage());
 			}
-			else if(percentageParsed==0){
+			else if(fullOrder.getPercentage()==null){
 				// calculate the Percentage to stop at
-				pstm.setFloat(2, pricePerShareParsed);
+				pstm.setFloat(2, fullOrder.getPricePerShare());
 				pstm.setDouble(5, x);
 			}
 			else{
-				pstm.setNull(2, Types.FLOAT);
-				pstm.setNull(5, Types.DOUBLE);
+				throw new SQLException();
 			}
 		}
 		//if the Price Type is a Hidden Stop, we only need to worry about the Price Per Share
-		else if(priceType.equals("Hidden Stop")){
-			pstm.setFloat(2, pricePerShareParsed);
+		else if(fullOrder.getPriceType().equals("Hidden Stop")){
+			pstm.setFloat(2, fullOrder.getPricePerShare());
 			pstm.setNull(5, Types.DOUBLE);
 		}
 		//if the Price Type is Market or Market On Close, both Price Per Share and Percentage are Null
 		else{
-			pstm.setFloat(2, Types.FLOAT);
-			pstm.setDouble(5, Types.DOUBLE);
+			pstm.setNull(2, Types.FLOAT);
+			pstm.setNull(5, Types.DOUBLE);
 		}
 			
 		
@@ -138,78 +155,65 @@ public class CustomerUtils {
 		
 		//Assume the order is initially placed right now
 		//(not accounting for however trailing/hidden stops track time)
-		Timestamp dt= new Timestamp(System.currentTimeMillis()); // current datetime
-		pstm.setTimestamp(4, dt);
+		Timestamp dateTimeNow= new Timestamp(System.currentTimeMillis()); // current datetime
+		pstm.setTimestamp(4, dateTimeNow);
 	
 		
-		pstm.setString(6, priceType);
-		pstm.setString(7, orderType);
+		pstm.setString(6, fullOrder.getPriceType());
+		pstm.setString(7, fullOrder.getOrderType());
 		
-		pstm.executeUpdate();
+	//	pstm.executeUpdate();
 		
 		//If the order is Market or Market On Close, it is executed "immediately"
 		//Thus, we need the current share price of the stock
-		float finalPricePerShare=0;
-		if(priceType.equals("Market")||priceType.equals("Market On Close")){
-			sql = "SELECT PricePerShare	FROM Stock"
-					+ "	WHERE StockSymbol = ?";
-			pstm = conn.prepareCall(sql);
-			pstm.setString(1, stockSymbol);
-			ResultSet rs = pstm.executeQuery();
-			rs.next();
-			finalPricePerShare = rs.getFloat("PricePerShare");
-		}
 		
-		sql = "INSERT INTO Transaction(Id, Fee, DateTime, PricePerShare)"
-				+ " VALUES(?, ?, ?, ?)";
-		pstm = conn.prepareCall(sql);
+		
+//		pstm = conn.prepareStatement(sql);
 		int transactionId = getMostRecentTransactionId(conn)+1;
-		pstm.setInt(1, transactionId);
-		if(priceType.equals("Market")||priceType.equals("Market On Close")){
-			pstm.setFloat(2, (float)(finalPricePerShare * 0.05));
-			pstm.setTimestamp(3, dt);
-			pstm.setFloat(4, finalPricePerShare);
+		pstm.setInt(8, transactionId);
+		if(fullOrder.getPriceType().equals("Market")||fullOrder.getPriceType().equals("Market On Close")){
+			pstm.setFloat(9, (float)(finalPricePerShare * 0.05 * fullOrder.getNumShares()));
+			pstm.setTimestamp(10, dateTimeNow);
+			pstm.setFloat(11, finalPricePerShare);
 		}
 		else{
-			pstm.setNull(2, Types.FLOAT);
-			pstm.setNull(3, Types.TIMESTAMP);
-			pstm.setNull(4, Types.FLOAT);
+			pstm.setNull(9, Types.FLOAT);
+			pstm.setNull(10, Types.TIMESTAMP);
+			pstm.setNull(11, Types.FLOAT);
 		}
+	//	pstm.executeUpdate();
+		
+		
+		
+		//pstm = conn.prepareStatement(sql);
+		pstm.setInt(12, fullOrder.getAccountId());
+		pstm.setInt(13, fullOrder.getBrokerId());
+		pstm.setInt(14, orderId);
+		pstm.setInt(15, transactionId);
+		pstm.setString(16, fullOrder.getStockId());
 		pstm.executeUpdate();
-		
-		
-		
-		sql = "INSERT INTO Trade(AccountId, BrokerId, OrderId, TransactionId, StockId)"
-				+ "VALUES(?, ?, ?, ?, ?)";
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, accountId);
-		pstm.setInt(2, brokerId);
-		pstm.setInt(3, orderId);
-		pstm.setInt(4, transactionId);
-		pstm.setString(5, stockSymbol);
-		pstm.executeUpdate();
+
+		conn.commit();
 		
 	}
 	
 private static Integer getMostRecentOrderId(Connection conn) throws SQLException{
 		
-		String sql = "SELECT Id FROM Orders ORDER BY Id DESC";
+		String sql = "SELECT Id FROM Orders ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		ResultSet rs = pstm.executeQuery();
 		if(rs.next())
-			return rs.getInt("id");
+			return rs.getInt("Id");
 		else 
 			return 0;
 	}
 private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
 		
-		String sql = "SELECT Id FROM Transaction ORDER BY Id DESC";
+		String sql = "SELECT Id FROM Transaction ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		ResultSet rs = pstm.executeQuery();
 		if(rs.next())
-			return rs.getInt("id");
-			
-		
+			return rs.getInt("Id");
 		else 
 			return 0;
 	}
@@ -224,7 +228,8 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								rs.getString("StockSymbol"),
 								rs.getString("CompanyName"),
 								rs.getString("Type"),
-								rs.getFloat("PricePerShare"));
+								rs.getFloat("PricePerShare"),
+								rs.getInt("NumShares"));
 			list.add(stock);
 		}
 		return list;
@@ -277,7 +282,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 
 	public static List<Stock> getStockSuggestionList(Connection conn, int clientId) throws SQLException {
 		String sql = "SELECT * FROM Stock"
-				+ " WHERE Type = "
+				+ " WHERE Type IN"
 				+ " (SELECT S.Type FROM Account A, Client C, Orders O, Stock S, Trade Trd"
 				+ " WHERE C.Id = ?"
 				+ " AND A.Client = C.Id"
@@ -303,10 +308,12 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		
 	}
 	
-	private static double calculateStopPriceOrPercentage(float pricePerShare, float stopPrice, double percentage) {
-		if(stopPrice==0)
+	private static double calculateStopPriceOrPercentage(Float pricePerShare, Float stopPrice, Double percentage) {
+		//return Stop Price
+		if(stopPrice == null || stopPrice==0)
 			return pricePerShare * (percentage/100);
-		else if(percentage==0)
+		//return Percentage
+		else if(percentage == null || percentage==0)
 			return stopPrice/pricePerShare*100;
 		else 
 			return 0;
@@ -345,32 +352,39 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			return null;
 	}
 
-	public static List<History> getHiddenStopHistory(Connection conn, String stockId, int orderId) throws SQLException {
-		String sql = "SELECT DateTime FROM Orders WHERE Id = ?";
+	public static List<History> getHiddenStopHistory(Connection conn, String stockId, Timestamp fromDate, Timestamp toDate) throws SQLException {
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, orderId);
-		ResultSet rs = pstm.executeQuery();
-		if(!rs.next())
-			return null;
-		else{
-			Timestamp dateTime = rs.getTimestamp("DateTime");
-			sql = "SELECT * FROM History WHERE StockSymbol = ? AND DateTime > ? ORDER BY DateTime DESC";
-			pstm = conn.prepareStatement(sql);
-			pstm.setString(1, stockId);
-			pstm.setTimestamp(2, dateTime);
-			rs= pstm.executeQuery();
-			List<History> list = new ArrayList<History>();
-			while(rs.next()){
-				History history = new History(
-										rs.getString("StockSymbol"),
-										rs.getTimestamp("DateTime"),
-										rs.getFloat("PricePerShare"));
-				list.add(history);
-			}
-			return list;
+		pstm.execute();
+		sql =  " SELECT * FROM History "
+				+ " WHERE StockSymbol = ?"
+				+ " AND DateTime >= ?"
+				+ " AND DateTime <= ?"
+				+ " ORDER BY DateTime ASC;";
+		pstm = conn.prepareStatement(sql);
+		pstm.setString(1, stockId);
+		pstm.setTimestamp(2, fromDate);
+		if(toDate!=null)
+			pstm.setTimestamp(3, toDate);
+		else
+			pstm.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+		ResultSet rs= pstm.executeQuery();
+		List<History> list = new ArrayList<History>();
+		while(rs.next()){
+			History history = new History(
+								rs.getString("StockSymbol"),
+								rs.getTimestamp("DateTime"),
+								rs.getFloat("PricePerShare"));
+			list.add(history);
 		}
-		
+		pstm = conn.prepareStatement("COMMIT");
+		pstm.execute();
+		conn.commit();
+		return list;
 	}
+		
+	
 
 	public static List<History> getStockHistoryList(Connection conn, String stockSymbol, Date fromDateParsed, Date toDateParsed) throws SQLException {
 		String sql = "SELECT * FROM History WHERE StockSymbol = ? AND DateTime > TIMESTAMP(?) AND DateTime < TIMESTAMP(?) ORDER BY DATETIME ASC";
@@ -389,6 +403,163 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			list.add(history);
 		}
 		return list;
+	}
+
+	public static void changePassword(Connection conn, String userName, String password1) throws SQLException {
+		String sql = "UPDATE UserAccount SET Password = ? WHERE UserName = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setString(1, password1);
+		pstm.setString(2, userName);
+		pstm.executeUpdate();
+	}
+
+	public static Orders findOrder(Connection conn, int orderId) throws SQLException {
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		
+		sql = "SELECT * FROM Orders WHERE Id = ?";
+		pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, orderId);
+		ResultSet rs = pstm.executeQuery();
+		sql = "COMMIT";
+		pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		conn.commit();
+		if(rs.next()){
+			Orders order = new Orders(
+								rs.getInt("NumShares"),
+								rs.getFloat("PricePerShare"),
+								rs.getInt("Id"),
+								rs.getTimestamp("DateTime"),
+								rs.getDouble("Percentage"),
+								rs.getString("PriceType"),
+								rs.getString("OrderType"));
+			return order;
+		}
+		return null;
+	}
+
+	public static List<Stock> searchStocks(Connection conn, List<String> searchList) throws SQLException {
+		String sql = "START TRANSACTION";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		sql = "SELECT S.* FROM Stock S WHERE CompanyName LIKE ?";
+		
+		for(int i=1; i<searchList.size();++i){
+			sql += " OR CompanyName LIKE ?";
+		}
+		pstm = conn.prepareStatement(sql);
+		for(int i=1; i<searchList.size()+1;++i){
+			pstm.setString(i, "%" + searchList.get(i-1) + "%");
+		}
+		ResultSet rs =pstm.executeQuery();
+		
+		List<Stock> stockList = new ArrayList<Stock>();
+		while(rs.next()){
+			Stock stock = new Stock(
+							rs.getString("StockSymbol"),
+							rs.getString("CompanyName"),
+							rs.getString("Type"),
+							rs.getFloat("PricePerShare"),
+							rs.getInt("NumShares"));
+			stockList.add(stock);
+		}
+		sql = "COMMIT";
+		pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		return stockList;
+	}
+
+	public static List<FullOrder> getRecentOrders(Connection conn, int clientId, String stockSymbol) throws SQLException {
+		String sql = "START TRANSACTION";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		sql = "SELECT F.*"
+				+ " FROM Account A, FullOrder F"
+				+ " WHERE A.Client = ? AND F.AccountId = A.Id AND F.StockId = ?";
+		pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, clientId);
+		pstm.setString(2, stockSymbol);
+		ResultSet rs = pstm.executeQuery();
+		List<FullOrder> list = new ArrayList<FullOrder>();
+		while(rs.next()){
+			FullOrder fullOrder = new FullOrder(
+								rs.getInt("NumShares"), 
+								rs.getFloat("PricePerShare"),
+								rs.getInt("Id"),
+								rs.getTimestamp("DateTime"),
+								rs.getDouble("Percentage"),
+								rs.getString("PriceType"),
+								rs.getString("OrderType"),
+								rs.getInt("TransactionId"),
+								rs.getFloat("Fee"),
+								rs.getTimestamp("FinalDateTime"),
+								rs.getFloat("FinalPricePerShare"),
+								rs.getInt("AccountId"),
+								rs.getInt("BrokerId"),
+								rs.getString("StockId"));
+			list.add(fullOrder);
+		}
+		sql = "COMMIT";
+		pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		return list;
+	}
+
+	public static Stock findStock(Connection conn, String stockSymbol) throws SQLException {
+		String sql = "START TRANSACTION";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		sql = "SELECT * FROM Stock WHERE StockSymbol = ?";
+		pstm = conn.prepareStatement(sql);
+		pstm.setString(1, stockSymbol);
+		ResultSet rs = pstm.executeQuery();
+		pstm = conn.prepareStatement("COMMIT");
+		pstm.execute();
+		if(rs.next()){
+			Stock stock = new Stock(
+							rs.getString("StockSymbol"),
+							rs.getString("CompanyName"),
+							rs.getString("Type"),
+							rs.getFloat("PricePerShare"),
+							rs.getInt("NumShares"));
+			return stock;					
+		}
+		else
+			return null;
+	}
+
+	public static Integer getBrokerId(Connection conn, Integer clientId) throws SQLException {
+		String sql = "START TRANSACTION";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		sql = "SELECT BrokerId FROM Client WHERE Id = ?";
+		pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, clientId);
+		ResultSet rs = pstm.executeQuery();
+		pstm = conn.prepareStatement("COMMIT");
+		if(rs.next()){
+			return rs.getInt("BrokerId");
+		}
+		return null;
+	}
+
+	public static int getSharesInAccount(Connection conn, Integer accountId, String stockSymbol) throws SQLException{
+		conn.setAutoCommit(false);
+		String sql="SELECT *"
+				+ " FROM HasStock"
+				+ " WHERE AccountId = ? AND StockSymbol = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, accountId);
+		pstm.setString(2, stockSymbol);
+		ResultSet rs = pstm.executeQuery();
+		conn.commit();
+		if(rs.next())
+			return rs.getInt("NumShares");
+		else
+			return 0;
 	}
 }
 	

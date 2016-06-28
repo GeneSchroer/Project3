@@ -9,50 +9,47 @@
 <title>Hidden Stop History</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+
 <h3>Hidden Stop History</h3>
 	<c:choose>
 		<c:when test="${not empty hiddenHistoryList }">
-			<table border="2">
-			<tr>
-				<th>Date Time:</th>
-				<th>Price Per Share</th>
-			</tr>
-			<c:forEach items="${hiddenHistoryList}" var="hiddenHistory">
-			<tr>
-				<td>	
-				<c:choose>
-				
-				<c:when test="${not empty transaction.dateTime and hiddenHistory.dateTime eq transaction.dateTime}">
-					<p style="color: red;">${hiddenHistory.dateTime}</p>
-				</c:when>
-				
-				<c:otherwise>		
-					${hiddenHistory.dateTime}
-				</c:otherwise>
-				
-				</c:choose>
-				</td>
-				
-				<td align="center">
-				<c:choose>
-				
-				<c:when test="${not empty transaction.dateTime and hiddenHistory.dateTime eq transaction.dateTime}">
-					<p style="color: red;">${hiddenHistory.pricePerShare}</p>
-				</c:when>
-				
-				<c:otherwise>
-					${hiddenHistory.pricePerShare}
-				</c:otherwise>
-				
-				</c:choose>
-				</td>
-			</tr>
-			</c:forEach>
+				<table border="2">
+				<tr>
+					<th>Date Time:</th>
+					<th>Price Per Share</th>
+				</tr>
+				<c:forEach items="${hiddenHistoryList}" var="hiddenHistory">
+				<tr>
+					<td>	
+					<c:choose>
+						<c:when test="${not empty transaction.dateTime and hiddenHistory.dateTime eq transaction.dateTime}">
+							<p style="color: red;">${hiddenHistory.dateTime}</p>
+						</c:when>
+						<c:otherwise>		
+							${hiddenHistory.dateTime}
+						</c:otherwise>
+					</c:choose>
+					</td>
+					<td align="center">
+					<c:choose>
+						<c:when test="${not empty transaction.dateTime and hiddenHistory.dateTime eq transaction.dateTime}">
+							<p style="color: red;">${hiddenHistory.pricePerShare}</p>
+						</c:when>
+						<c:otherwise>
+							${hiddenHistory.pricePerShare}
+						</c:otherwise>
+					</c:choose>
+					</td>
+				</tr>
+				</c:forEach>
 			</table>
-		</c:when>
+			</c:when>
 	</c:choose>
 	<a href="${pageContext.request.contextPath}/customers/orderList">Return to Order List</a><br>
 	
-
+    <jsp:include page="_footer.jsp"></jsp:include>
+	
 </body>
 </html>

@@ -18,7 +18,7 @@ import beans.UserAccount;
 public class LoginUtils {
 	  public static UserAccount findUser(Connection conn, String userName, String password) throws SQLException {
 		  
-	      String sql = "SELECT UserName, Password, UserType FROM UserAccount"
+	      String sql = "SELECT * FROM UserAccount"
 	              + " WHERE UserName = ? AND Password= ?";
 	 
 	      PreparedStatement pstm = conn.prepareStatement(sql);
@@ -30,7 +30,8 @@ public class LoginUtils {
 	          UserAccount user = new UserAccount(
 	        		  rs.getString("UserName"),
 	        		  rs.getString("Password"),
-	        		  rs.getString("UserType"));
+	        		  rs.getString("UserType"),
+	          		  rs.getInt("Id"));
 	          return user;
 	      }
 	      return null;
@@ -101,5 +102,10 @@ public class LoginUtils {
 	       cookieUserName.setMaxAge(0);
 	       response.addCookie(cookieUserName);
 	   }
+
+	public static int getId(HttpSession session) {
+		
+		return ((UserAccount)session.getAttribute("loginedUser")).getId();
+	}
 	 
 	}

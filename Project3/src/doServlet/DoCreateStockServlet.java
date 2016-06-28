@@ -29,8 +29,10 @@ public class DoCreateStockServlet extends HttpServlet{
 		String companyName 		= request.getParameter("companyName");
 		String type 			= request.getParameter("type");
 		String pricePerShare 	= request.getParameter("pricePerShare");
+		String numShares		= request.getParameter("numShares");
 		float pricePerShareParsed=0;
-		String errorStrStockSymbol, errorStrCompanyName, errorStrType, errorStrPricePerShare;
+		int numSharesParsed=0;
+		String errorStrStockSymbol, errorStrCompanyName, errorStrType, errorStrPricePerShare, errorStrNumShares;
 		String regex=null;
 		Stock stock = null;
 		boolean hasError=false;
@@ -45,6 +47,21 @@ public class DoCreateStockServlet extends HttpServlet{
 			errorStrStockSymbol = "Error: Invalid Stock Symbol!";
 		}
 		
+		
+		//check if the stock symbol was taken
+		Stock hasStock=null;
+		try {
+			 hasStock = ManagerUtils.findStock(conn, stockSymbol);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if (hasStock != null){
+			hasError=true;
+			errorStrStockSymbol="Error: Stock already exists!";
+		}
+			
+		
 		//Company Name
 		errorStrCompanyName=null;
 		if(companyName==null){
@@ -54,9 +71,14 @@ public class DoCreateStockServlet extends HttpServlet{
 		
 		//Stock Type
 		errorStrType=null;
+		regex="[A-Z][a-z]+";
 		if(type==null){
 			hasError=true;
 			errorStrType = "Error: Stock Type cannot be null!";
+		}
+		if(!type.matches(regex)){
+			hasError=true;
+			errorStrType = "Error: Invalid Stock Type!";
 		}
 		
 		//Price Per Share
@@ -72,9 +94,21 @@ public class DoCreateStockServlet extends HttpServlet{
 			errorStrPricePerShare="Error: Not a valid price!";
 		}
 		
+		//Price Per Share
+		errorStrNumShares=null;
+		try{
+			numSharesParsed=Integer.parseInt(numShares);
+			if(pricePerShareParsed < 0){
+				hasError=true;
+				errorStrNumShares="Error: Shares available cannot be negative!";
+			}
+		}catch(Exception e){
+			hasError=true;
+			errorStrNumShares="Error: Not a valid amount!";
+		}
 		
 		if(!hasError){
-			stock = new Stock(stockSymbol, companyName, type, pricePerShareParsed);
+			stock = new Stock(stockSymbol, companyName, type, pricePerShareParsed, numSharesParsed);
 			try{
 				ManagerUtils.addStock(conn, stock);
 			}catch(SQLException e){
@@ -87,14 +121,14 @@ public class DoCreateStockServlet extends HttpServlet{
 			request.setAttribute("errorStrCompanyName", errorStrCompanyName);
 			request.setAttribute("errorStrType", errorStrType);
 			request.setAttribute("errorStrPricePerShare", errorStrPricePerShare);
-			
+			request.setAttribute("errorStrNumShares", errorStrNumShares);
 			request.setAttribute("stockSymbol", stockSymbol);
 			request.setAttribute("companyName", companyName);
 			request.setAttribute("type", type);
 			request.setAttribute("pricePerShare", pricePerShare);
-			
+			request.setAttribute("numShares", numShares);
 			RequestDispatcher dispatcher = request.getServletContext()
-				.getRequestDispatcher("/WEB-INF/views/managers/stockList/createStockView.jsp");
+				.getRequestDispatcher("/WEB-INF/views/managers/createStockView.jsp");
 			dispatcher.forward(request, response);
 		}			
 		//If everything worked, redirect to the employeeList

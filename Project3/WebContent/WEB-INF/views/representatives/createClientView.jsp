@@ -6,22 +6,44 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
-<h1>Create Client View</h1>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	<h1>Create Client View</h1>
+	
+
 <p style="color: red;">${errorString}</p>
 <form method="POST" action="doCreateClient">
-  <p style="color: red;">${errorStrId}</p>
-  ClientId:<br>
-  <input type="number" name="id" min="1" max="999999999" value="${id}">
+  
+  <%-- First Name --%>
   <p style="color: red;">${errorStrFirstName}</p><br>
   First name:<br>
   <input type="text" name="firstName" value="${firstName}">
   <br>
+  
+  <%-- Last Name --%>
   <p style="color: red;">${errorStrLastName}</p>
   Last name:<br>
   <input type="text" name="lastName" value="${lastName}">
   <br>
+
+  <%-- User Name --%>
+  <p style="color: red;">${errorStrUserName}</p>
+  User Name:<br>
+  <input type="text" name="userName" value="${userName}">
+  <br>
+  
+  <%-- Password --%>
+  <p style="color: red;">${errorStrPassword}</p>
+  Temporary Password:<br>
+  <input type="text" name="password" value="${password}">
+  <br>
+
+  <%-- ClientId/SSN --%>  
+  <p style="color: red;">${errorStrId}</p>
+  ClientId/SSN:<br>
+  <input type="number" name="id" min="1" max="999999999" value="${id}">
   
   <!-- Address -->
   <p style="color: red;">${errorStrAddress}</p>
@@ -59,6 +81,6 @@
   <input type="submit" value="Submit"/>
   <a href = "${pageContext.request.contextPath}/representatives/clientList">Return to Client page</a>
 </form>
-
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

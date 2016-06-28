@@ -11,9 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Client;
 import beans.Location;
+import beans.UserAccount;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
@@ -44,7 +46,7 @@ public class DoEditClientServlet extends HttpServlet{
 		Integer zipCode = null;
 		Integer rating = null;
 		Integer id = null;
-		
+		Integer brokerId = null;
 		
 		boolean hasError=false;
 		String errorStrLastName, errorStrFirstName, errorStrAddress, 
@@ -162,7 +164,9 @@ public class DoEditClientServlet extends HttpServlet{
 		String errorString = null;
 		
 		if(!hasError){
-			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber);
+			HttpSession session = request.getSession();
+			brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
+			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber, brokerId);
 			Location location = new Location(zipCode, city, state);
 			try{
 				RepresentativeUtils.updateClient(conn, client, location);

@@ -19,15 +19,11 @@
        <table border="0">
           <tr>
              <td>User Name</td>
-             <td><input type="text" name="userName" value= "${user.userName}" /> </td>
+             <td><input type="text" name="userName" value= "${userName}" /> </td>
           </tr>
           <tr>
              <td>Password</td>
-             <td><input type="text" name="password" value= "${user.password}" /> </td>
-          </tr>
-          <tr>
-             <td>Remember me</td>
-             <td><input type="checkbox" name="rememberMe" value= "Y" /> </td>
+             <td><input type="password" name="password" value= "${password}" /> </td>
           </tr>
           <tr>
              <td colspan ="2">
@@ -38,7 +34,7 @@
        </table>
     </form>
  
-    <p style="color:blue;">User Name: tom, password: tom001 or jerry/jerry001</p>
+    <p style="color:blue;">User Name/password: WSmith/password(manager), DSmith/password (representative), VDu/password(customer) </p>
  
     <jsp:include page="_footer.jsp"></jsp:include>
  

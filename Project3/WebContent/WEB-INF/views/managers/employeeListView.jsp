@@ -8,35 +8,57 @@
 <title>Employee List</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
 
-<table border="2" cellpadding="5" cellspacing="1">
-	<tr>
-		<th>Id</th>
-		<th>Last Name</th>
-		<th>First Name</th>
-		<th>SSN</th>
-		<th>Start Date</th>
-		<th>Hourly Rate</th>
-		<th>Edit</th>
-		<th>Delete</th>
-	</tr>
-	<c:forEach items="${employeeList}" var="employee">
+<c:choose>
+	<c:when test="${not empty employeeList}">
+	<table border="2" cellpadding="5" cellspacing="1">
 		<tr>
-			<td>${employee.id}</td>
-			<td>${employee.lastName}</td>
-			<td>${employee.firstName}</td>
-			<td>${employee.SSN}</td>
-			<td>${employee.startDate}</td>
-			<td>${employee.hourlyRate }</td>
-			<td><a href="editEmployee?id=${employee.id}">Edit</a></td>
-			<td><a href="deleteEmployee?id=${employee.id}">Delete</a></td>
+			<th>Id</th>
+			<th>Last Name</th>
+			<th>First Name</th>
+			<th>Address</th>
+			<th>Start Date</th>
+			<th>Telephone</th>
+			<th>Details</th>
+			<th>Edit</th>
+			<th>Delete</th>
 		</tr>
+		<c:forEach items="${employeeList}" var="employee">
+			<tr>
+				<td>${employee.id}</td>
+				<td>${employee.lastName}</td>
+				<td>${employee.firstName}</td>
+				<td>${employee.address}</td>
+				<td>${employee.startDate}</td>
+				<td>${employee.telephone }</td>
+				<td><a href="employeeDetails?id=${employee.id}">Details</a></td>
+				<c:choose>
+				<c:when test="${employee.id!=loginedUser.id }">
+					<td><a href="editEmployee?id=${employee.id}">Edit</a></td>
+					<td><a href="deleteEmployee?id=${employee.id}">Delete</a></td>
+				</c:when>
+				<c:otherwise>
+					<td>Edit</td>
+					<td>Delete</td>
+				</c:otherwise>
+				
+				</c:choose>
+			
+			</tr>
+		
+		</c:forEach>
 	
-	</c:forEach>
+	</table>
+	</c:when>
+	<c:otherwise>No Employees available</c:otherwise>
+		
 
-</table>
-<a href="${pageContext.request.contextPath}/managers/employeeList/createEmployee">Add Employee</a>
-<a href="${pageContext.request.contextPath}/managers">Return to manager view</a>
-
+	</c:choose>
+	
+	<a href="${pageContext.request.contextPath}/managers/employeeList/createEmployee">Add Employee</a>
+	<a href="${pageContext.request.contextPath}/managers">Return to manager view</a>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

@@ -8,6 +8,9 @@
   	<title>Edit Employee</title>
  </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	
 	<h3>Edit Employee</h3>
 
 	<c:if test="${not empty employee}">
@@ -64,5 +67,6 @@
   	  <a href="${pageContext.request.contextPath}/managers/employeeList">Return to employee list</a>
 	</form>
 	</c:if>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

@@ -11,11 +11,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Client;
+import beans.UserAccount;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
-@WebServlet(urlPatterns = {"/representatives/repStockSuggestionList"})
+@WebServlet(urlPatterns = {"/representatives/stockSuggestionList"})
 public class RepStockSuggestionServlet extends HttpServlet{
 	/**
 	 * 
@@ -25,15 +27,17 @@ public class RepStockSuggestionServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
+		HttpSession session = request.getSession();
+		int brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
 		List<Client> clientList = null;
 		try {
-			clientList = RepresentativeUtils.getClientList(conn);
+			clientList = RepresentativeUtils.getClientList(conn, brokerId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		
-		request.setAttribute("clientList", clientList);
+		if(clientList!=null && !clientList.isEmpty())
+			request.setAttribute("clientList", clientList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/stockSuggestionListView.jsp");
 		dispatcher.forward(request, response);
 		

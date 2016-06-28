@@ -8,15 +8,18 @@
 <title>Sales Report</title>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	
 	<form method="Post" action="doSalesReport">
 	Select Date:<br>
 	<p style="color: red;">${errorStrYear}</p> 
-	Year: <input type="text" name="year" value="${year}"/><br>
+	Year: <input type="number" name="year" value="${year}"/><br>
 	<p style="color: red;">${errorStrMonth}</p> 
-	Month: <input type="text" name="month" value="${month}"/><br>
+	Month: <input type="number" name="month" value="${month}"/><br>
 		
-	
-	<c:if test="${not empty salesReportList}">
+	<c:choose>
+	<c:when test="${not empty salesReportList and not empty doSales}">
 	<table border="2" cellpadding = "5" cellspacing="1">
 		<tr>
 			<th>Date</th>
@@ -46,12 +49,17 @@
 	</table>
 	
 	
-	</c:if>
-	
-	
+	</c:when>
+	<c:when test="${empty salesReportList and not empty doSales }">
+		No Sales Reports found<br>
+	</c:when>
+	<c:otherwise>
+	</c:otherwise>
+	</c:choose>
 	<input type="submit" value="Submit"/>
 	
 	</form>
 	<a href="${pageContext.request.contextPath}/managers">Return to manager page</a>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

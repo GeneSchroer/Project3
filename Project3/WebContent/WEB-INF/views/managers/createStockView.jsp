@@ -8,7 +8,9 @@
 <title>Add Stock</title>
 </head>
 <body>
-<h3>Create New Stock</h3>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	<h3>Create New Stock</h3>
 
 	<form method="POST" action="doCreateStock">
 
@@ -32,9 +34,15 @@
   	Price Per Share:<br>
   	<input type="text" name="pricePerShare" value="${pricePerShare}"><br>
 	
+	<!-- Price Per Share -->
+	<p style="color: red;">${errorStrNumShares}</p>
+  	Shares Available:<br>
+  	<input type="text" name="numShares" value="${numShares}"><br>
+	
+	
 	<input type="submit" value="Submit"/>
-	<a href = "${pageContext.request.contextPath}/managers/stockList">Return to employee list</a>
+	<a href = "${pageContext.request.contextPath}/managers/stockList">Return to Stock List</a>
 	</form>
-
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

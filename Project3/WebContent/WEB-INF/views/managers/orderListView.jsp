@@ -8,12 +8,15 @@
 <title>View List of Orders</title>
 </head>
 <body>
-<p style="color: red;">${errorString}</p>
-By Stock:
-<form method="POST" action="doOrderList">
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
 	
-	<select name="stockSymbol">
-		<option value = "null">None</option>
+	<p style="color: red;">${errorString}</p>
+	By Stock:
+	<form method="POST" action="doOrderList">
+	
+		<select name="stockSymbol">
+			<option value = "null">None</option>
 		<c:forEach items="${stockList}" var="stock">
 			<option value = "${stock.stockSymbol }">${stock.companyName } ${stock.stockSymbol }</option> 
 		</c:forEach>	
@@ -68,6 +71,7 @@ Last Name:
 	</table>
 </c:if>
 <br>
-<a href="${pageContext.request.contextPath}/managers">Return to manager page</a>
+	<a href="${pageContext.request.contextPath}/managers">Return to manager page</a>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

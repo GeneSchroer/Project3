@@ -17,10 +17,9 @@ import utils.LoginUtils;
 import utils.MyUtils;
 
 
-//@WebServlet(urlPatterns = {"/doLoginPage "})
+@WebServlet(urlPatterns = {"/doLogin"})
 public class DoLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
 	
 	public DoLoginServlet(){
 		super();
@@ -58,21 +57,22 @@ public class DoLoginServlet extends HttpServlet {
 					errorString = e.getMessage();
 				}
 		}
+		
+		//If User Name and Password are not valid,
+		//Go back to login page with an error message
 			if (hasError){
-				user = new UserAccount();
-					user.setUserName(userName);
-					user.setPassword(password);
-						
-						
 						request.setAttribute("errorString", errorString);
-						request.setAttribute("user", user);
+						request.setAttribute("userName", userName);
 						
 						RequestDispatcher dispatcher 
 						= this.getServletContext().getRequestDispatcher("/WEB-INF/views/login/loginView.jsp");
 						dispatcher.forward(request, response);
 			}
+			
+			//otherwise, store user information in a session.
 			else{
 				HttpSession session = request.getSession();
+				session.removeAttribute("loginedUser");
 				MyUtils.storeLoginedUser(session, user);
 				if(remember){
 					MyUtils.storeUserCookie(response, user);
@@ -80,7 +80,12 @@ public class DoLoginServlet extends HttpServlet {
 				else{
 				MyUtils.deleteUserCookie(response);
 				}
-				response.sendRedirect(request.getContextPath()+ "/userInfo");
+				if(user.getUserType().equals("Manager"))
+					response.sendRedirect(request.getContextPath() + "/managers");
+				else if(user.getUserType().equals("Representative"))
+					response.sendRedirect(request.getContextPath() + "/representatives");
+				else if(user.getUserType().equals("Customer"))
+					response.sendRedirect(request.getContextPath() + "/customers");
 			}
 	}
 	@Override

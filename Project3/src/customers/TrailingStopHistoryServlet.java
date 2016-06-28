@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import beans.Orders;
 import beans.TrailingHistory;
 import beans.Transaction;
 import utils.CustomerUtils;
@@ -29,16 +30,20 @@ public class TrailingStopHistoryServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		int orderId = Integer.parseInt(request.getParameter("id")); 
 		int transactionId=Integer.parseInt(request.getParameter("tId"));
+
 		List<TrailingHistory> list = null;
 		Transaction transaction = null;
+		Orders order = null;
 		try{
 			list = CustomerUtils.getTrailingHistory(conn, orderId);
 			transaction=CustomerUtils.findTransaction(conn, transactionId);
+			 order = CustomerUtils.findOrder(conn, orderId); 
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 		request.setAttribute("trailingHistoryList", list);
 		request.setAttribute("transaction", transaction);
+		request.setAttribute("order", order);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/trailingStopHistoryView.jsp");
 		dispatcher.forward(request, response);
 	}

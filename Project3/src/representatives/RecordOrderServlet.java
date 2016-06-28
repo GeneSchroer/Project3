@@ -11,12 +11,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import beans.Account;
+import beans.AccountDetails;
+import beans.Client;
+import beans.HasStock;
 import beans.Stock;
+import utils.CustomerUtils;
+import utils.LoginUtils;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
-@WebServlet(urlPatterns = {"/recordOrder"})
+@WebServlet(urlPatterns = {"/representatives/recordOrder"})
 public class RecordOrderServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	public RecordOrderServlet(){
@@ -26,18 +33,36 @@ public class RecordOrderServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		String errorString = null;
-		List<Stock> list = null;
+		HttpSession session = request.getSession();
+		int clientId = Integer.parseInt(request.getParameter("clientId"));
+		boolean haveAccount=false;
+		int brokerId = LoginUtils.getId(session);
+		List<Stock> stockList = null;
+		List<HasStock> hasStockList= null;
+		List<Client> clientList = null;
+		List<Account> accountList=null;
 		try{
-			list=RepresentativeUtils.getStockList(conn);
+			stockList=RepresentativeUtils.getStockList(conn);
+			hasStockList = CustomerUtils.getStockPortfolio(conn, clientId);
+			clientList = RepresentativeUtils.getClientList(conn, brokerId);
+			accountList = CustomerUtils.getAccountList(conn, clientId);
 		}catch(SQLException e){
 			e.printStackTrace();
-			errorString = e.getMessage();
 		}
 		
-		request.setAttribute("errorSting", errorString);
-		request.setAttribute("stockList", list);
-		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/recordOrder.jsp");
+		if(accountList!=null && !accountList.isEmpty()){
+			haveAccount=true;
+			request.setAttribute("accountList", accountList);	}
+		
+		if(hasStockList!=null && !hasStockList.isEmpty()){
+			request.setAttribute("hasStockList", hasStockList);	}
+	
+		
+		request.setAttribute("stockList", stockList);
+		request.setAttribute("clientList", clientList);
+		request.setAttribute("haveAccount", haveAccount);
+		request.setAttribute("clientId", clientId);
+		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/recordOrder.jsp");
 		dispatcher.forward(request, response);
 		
 		

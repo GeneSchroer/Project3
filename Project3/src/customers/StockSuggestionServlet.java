@@ -11,8 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Stock;
+import beans.UserAccount;
 import utils.CustomerUtils;
 import utils.MyUtils;
 
@@ -23,7 +25,9 @@ public class StockSuggestionServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		int clientId=222222222;//HARDCODED
+		HttpSession session = request.getSession();
+		UserAccount user = (UserAccount)session.getAttribute("loginedUser");
+		int clientId= user.getId();
 		List<Stock> list = null;
 		try{
 			list=CustomerUtils.getStockSuggestionList(conn, clientId);

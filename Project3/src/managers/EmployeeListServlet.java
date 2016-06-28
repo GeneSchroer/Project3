@@ -41,7 +41,8 @@ public class EmployeeListServlet extends HttpServlet{
 		// store the information before forwarding
 		
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("employeeList", list);
+		if(list!=null&&!list.isEmpty())
+			request.setAttribute("employeeList", list);
 		
 		//Forward to employeeListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/managers/employeeListView.jsp");

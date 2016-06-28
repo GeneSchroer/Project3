@@ -5,16 +5,19 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Representative Transactions</title>
-<h1>Representative Transactions</h1>
+
 </head>
 <body>
 	
-	<br>
-	
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+    <h1>Representative Transactions</h1>
+	<a href="${pageContext.request.contextPath}/representatives/recordOrderB">Record an order for a Client</a><br>
 	<a href="${pageContext.request.contextPath}/representatives/clientList">View List of Clients</a><br>
-	<a href="${pageContext.request.contextPath}/representatives/accountList">Create account for a client</a><br>
+	<a href="${pageContext.request.contextPath}/representatives/employeeList">View List of Employees</a><br>
 	<a href="${pageContext.request.contextPath}/representatives/mailingList">Produce customer mailing list</a><br>	
 	<a href="${pageContext.request.contextPath}/representatives/stockSuggestionList">Generate Stock Suggestion List</a><br>	
 	<a href="${pageContext.request.contextPath}">Return to main page</a>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

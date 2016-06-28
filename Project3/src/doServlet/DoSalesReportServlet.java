@@ -19,9 +19,6 @@ import utils.MyUtils;
 @WebServlet(urlPatterns = {"/managers/doSalesReport"})
 public class DoSalesReportServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public DoSalesReportServlet(){
 		super();
@@ -34,6 +31,8 @@ public class DoSalesReportServlet extends HttpServlet {
 		String errorStrMonth=null;
 		String errorStrYear=null;
 		boolean hasError=false;
+		boolean doSales=true;
+		String regex=null;
 		List<SalesReport> list = null;
 		String year = request.getParameter("year");
 		String month = request.getParameter("month");
@@ -44,10 +43,14 @@ public class DoSalesReportServlet extends HttpServlet {
 			errorStrYear="Error: Invalid year";
 		}
 		try{
-			Integer.parseInt(month);
+			int monthParsed= Integer.parseInt(month);
+			if(monthParsed<0 || monthParsed>12){
+				hasError=true;
+				errorStrMonth="Error: Invalid month!";
+			}
 		}catch(Exception e){
 			hasError=true;
-			errorStrMonth="Error: Invalid month";
+			errorStrMonth="Error: Invalid month!";
 		}
 		
 		
@@ -65,10 +68,12 @@ public class DoSalesReportServlet extends HttpServlet {
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("errorStrMonth", errorStrMonth);
 		request.setAttribute("errorStrYear", errorStrYear);
-		request.setAttribute("salesReportList", list);
+		if(list != null && !list.isEmpty())
+			request.setAttribute("salesReportList", list);
 		//Forward to customerOrderListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext()
 				.getRequestDispatcher("/WEB-INF/views/managers/salesReportView.jsp");
+		request.setAttribute("doSales", doSales);
 		dispatcher.forward(request, response);
 	}
 	

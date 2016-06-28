@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import beans.History;
+import beans.Orders;
 import beans.Transaction;
 import utils.CustomerUtils;
 import utils.MyUtils;
@@ -33,22 +34,23 @@ public class HiddenStopHistoryServlet extends HttpServlet{
 		int transactionId=Integer.parseInt(request.getParameter("tId"));
 		String stockId=request.getParameter("sId");
 		Transaction transaction = null;
+		Orders order = null;
 		List<History> list = null;
 		try{
-			list = CustomerUtils.getHiddenStopHistory(conn, stockId, orderId);
+			order = CustomerUtils.findOrder(conn, orderId);
+			System.out.println(order.getDateTime());
 			transaction=CustomerUtils.findTransaction(conn, transactionId);
+			System.out.println(transaction.getDateTime());
+			list = CustomerUtils.getHiddenStopHistory(conn, stockId, order.getDateTime(), transaction.getDateTime());
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 		
 		request.setAttribute("transaction", transaction);
+		System.out.println(list.size());
 		request.setAttribute("hiddenHistoryList", list);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/hiddenStopHistoryView.jsp");
 		dispatcher.forward(request, response);
-	}
-	private List<History> getHiddenStopHistory(Connection conn, String stockId, int orderId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

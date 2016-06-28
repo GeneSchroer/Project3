@@ -29,7 +29,7 @@ public static Connection getMySQLConnection(String hostName, String dbName,
  
     // URL Connection for MySQL
     // Example: jdbc:mysql://localhost:3306/simplehr
-    String connectionURL = "jdbc:mysql://" + hostName + ":3306/" + dbName;
+    String connectionURL = "jdbc:mysql://" + hostName + ":3306/" + dbName + "?allowMultiQueries=true";
  
     Connection conn = DriverManager.getConnection(connectionURL, userName,
             password);

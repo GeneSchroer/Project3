@@ -11,8 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.FullOrder;
+import beans.UserAccount;
 import utils.CustomerUtils;
 import utils.MyUtils;
 
@@ -28,7 +30,10 @@ public class OrderListServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String errorString=null;
-		int clientId=222222222;
+		HttpSession session = request.getSession();
+		UserAccount user = (UserAccount)session.getAttribute("loginedUser");
+		
+		int clientId=user.getId();
 		List<FullOrder> fullList=null;
 		try{
 			fullList  = CustomerUtils.getFullOrderList2(conn, clientId);

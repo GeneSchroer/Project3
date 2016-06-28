@@ -5,22 +5,37 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Create Account</title>
+<script type="text/javascript">
+	function chooseDate(){
+		if(document.getElementById("now").checked==true)
+			document.getElementById("dateOpened").disabled=true;
+		else
+			document.getElementById("dateOpened").disabled=false;
+	}
+</script>
 </head>
 <body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
+	<form method="POST" action="doCreateAccount">
+		<input type="hidden" name="clientId" value="${clientId}">
 
-<form method="POST" action="doCreateAccount">
-<input type="hidden" name="clientId" value="${clientId}">
+	<%--
+	<p style="color: red;">${errorStrId}</p>
+	Account number:
+	<input type="text" name="id" value="${id}"/><br>
+	--%>
+	
+	<p style="color: red;">${errorStrDateOpened}</p>
+	Date Opened(yyyy-mm-dd)
+	<input type="text" id = "dateOpened" name="dateOpened" value="${dateOpened}"/> 
+	
+	Or Now:
+	<input type="checkbox" id="now" name="now" value="now" onchange="chooseDate()"/><br>
+	<input type="submit" value="Submit"/>
 
-Account number:
-<input type="text" name="id" value="${id}"/><br>
-
-Date Opened(yyyy:mm:dd)
-<input type="text" name="dateOpened" value="${dateOpened}"/> 
-
-Or Now:
-<input type="checkbox" name="now" value="now"/><br>
-<input type="submit" value="Submit"/>
-<a href="${pageContext.request.contextPath}/representatives/accountList?id=${clientId}">Return to representative view</a>
-</form>
+	</form>
+		<a href="${pageContext.request.contextPath}/representatives/accountList?id=${clientId}">Return to representative view</a>
+    <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

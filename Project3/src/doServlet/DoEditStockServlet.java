@@ -15,7 +15,7 @@ import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/managers/stockList/doEditStock"})
+@WebServlet(urlPatterns = {"/managers/doEditStock"})
 public class DoEditStockServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,21 +31,21 @@ public class DoEditStockServlet extends HttpServlet{
 		
 		//Company Name
 		errorStrCompanyName=null;
-		if(companyName==null){
+		if(companyName==null||companyName.isEmpty()){
 			hasError=true;
 			errorStrCompanyName="Error: Company Name cannot be null!";
 		}
 		
 		//Stock Type
 		errorStrType=null;
-		if(type==null){
+		if(type==null||type.isEmpty()){
 			hasError=true;
 			errorStrType="Error: Stock Type cannot be null!";
 		}
 		if(!hasError){
 			stock=new Stock(stockSymbol, companyName, type, pricePerShare);
 			try{
-				ManagerUtils.updateStock(conn, stock);
+				ManagerUtils.editStockName(conn, stock);
 			}catch(SQLException e){
 				e.printStackTrace();
 				String errorString = e.getMessage();
@@ -57,7 +57,7 @@ public class DoEditStockServlet extends HttpServlet{
 			request.setAttribute("type", type);
 			request.setAttribute("pricePerShare", pricePerShare);
 			
-			request.setAttribute("errorStrCompanyName", companyName);
+			request.setAttribute("errorStrCompanyName", errorStrCompanyName);
 			request.setAttribute("errorStrType", errorStrType);
 			RequestDispatcher dispatcher = request.getServletContext()
 					.getRequestDispatcher("/WEB-INF/views/managers/editStockView.jsp");

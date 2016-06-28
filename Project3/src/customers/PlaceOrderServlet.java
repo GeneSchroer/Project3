@@ -11,13 +11,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Account;
+import beans.HasStock;
 import beans.Stock;
 import utils.CustomerUtils;
+import utils.LoginUtils;
 import utils.MyUtils;
 
-@WebServlet(urlPatterns = {"/customers/orderList/placeOrder"})
+@WebServlet(urlPatterns = {"/customers/placeOrder"})
 public class PlaceOrderServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	public PlaceOrderServlet(){
@@ -30,12 +33,13 @@ public class PlaceOrderServlet extends HttpServlet{
 		String errorString=null;
 		List<Stock> stockList=null;
 		List<Account> accountList=null;
+		List<HasStock> hasStockList=null;
 		try {
 			stockList=CustomerUtils.getStockList(conn);
-			
-			//HARD-CODED!
-			accountList=CustomerUtils.getAccountList(conn, 222222222);
-			
+			HttpSession session = request.getSession();
+			int clientId =  LoginUtils.getId(session);
+			accountList=CustomerUtils.getAccountList(conn, clientId);
+			hasStockList=CustomerUtils.getStockPortfolio(conn, clientId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +47,10 @@ public class PlaceOrderServlet extends HttpServlet{
 		}
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("stockList", stockList);
-		request.setAttribute("accountList", accountList);
+		if(accountList!=null && !accountList.isEmpty())
+			request.setAttribute("accountList", accountList);
+		if(hasStockList!=null && !hasStockList.isEmpty())
+			request.setAttribute("hasStockList", hasStockList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/placeOrderView.jsp");
 		dispatcher.forward(request, response);
 	}

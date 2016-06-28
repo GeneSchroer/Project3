@@ -3,6 +3,7 @@ package doServlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.StringTokenizer;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,9 +11,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Client;
 import beans.Location;
+import beans.UserAccount;
+import utils.LoginUtils;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
@@ -31,8 +35,10 @@ public class DoCreateClientServlet extends HttpServlet{
 		
 		
 		//declare and define variables
-		String firstName		= request.getParameter("lastName");
-		String lastName 		= request.getParameter("firstName"); 
+		String firstName		= request.getParameter("firstName");
+		String lastName 		= request.getParameter("lastName"); 
+		String userName			= request.getParameter("userName");
+		String password			= request.getParameter("password");
 		String address 			= request.getParameter("address");
 		String city				= request.getParameter("city");
 		String state			= request.getParameter("state");
@@ -44,10 +50,10 @@ public class DoCreateClientServlet extends HttpServlet{
 		String idStr			= request.getParameter("id");
 		Integer zipCode = null;
 		Integer rating = null;
-		Integer id = null;
+		Integer idParsed = null;
 		
 		boolean hasError=false;
-		String errorStrLastName, errorStrFirstName, errorStrAddress, 
+		String errorStrLastName, errorStrFirstName, errorStrUserName, errorStrPassword, errorStrAddress, 
 		errorStrCity, errorStrState, errorStrZipCode, errorStrTelephone,
 			errorStrEmail, errorStrRating, errorStrCreditCardNumber, errorStrId;
 		String regex=null;	//these hold regular expressions
@@ -60,17 +66,38 @@ public class DoCreateClientServlet extends HttpServlet{
 		
 		//LastName
 		
-		regex="[a-zA-Z]+";
+		regex = "[a-zA-Z]+[\\s[a-zA-z]]*";
 		errorStrLastName=null;
 		if(lastName==null || !lastName.matches(regex)){
 			hasError=true;
 			errorStrLastName="Last Name invalid!";
 		}
 		//FirstName
+		regex = "[a-zA-z]+";
 		errorStrFirstName=null;
 		if(firstName==null || !firstName.matches(regex)){
 			hasError=true;
 			errorStrFirstName="First Name invalid!";
+		}
+		
+		//User Name
+		regex = "[a-zA-Z]+";
+		errorStrUserName=null;
+		if(userName == null || !userName.matches(regex)){
+			hasError=true;
+			errorStrUserName="Error: User Name Invalid!";
+		}
+		
+		//password
+		regex="[^\\s]+";
+		errorStrPassword=null;
+		if(password==null){
+			hasError=true;
+			errorStrPassword="Error: Password cannot be empty!";
+		}
+		else if( !password.matches(regex)){
+			hasError=true;
+			errorStrPassword="Error: Invalid password!";
 		}
 		
 		//Address
@@ -81,6 +108,7 @@ public class DoCreateClientServlet extends HttpServlet{
 			hasError=true;
 			errorStrAddress="Address invalid!";
 		}
+		
 		
 		//Zip Code
 		try{
@@ -146,6 +174,7 @@ public class DoCreateClientServlet extends HttpServlet{
 		//Credit Card Number
 
 		regex="[0-9]{16}";
+		regex2="[0-9]{4}[\\2D[0-9]{4}]{3}";
 		errorStrCreditCardNumber=null;
 		if(creditCardNumber == null || !creditCardNumber.matches(regex)){
 			hasError=true;
@@ -154,13 +183,18 @@ public class DoCreateClientServlet extends HttpServlet{
 		
 
 		//Id
+		regex2="[0-9]{3}\\2D[0-9]{2}\\2D[0-9]{4}";
+		if(idStr.matches(regex2)){
+			StringTokenizer token = new StringTokenizer(idStr,"-");
+			idStr=token.nextToken() + token.nextToken() + token.nextToken();
+		}
 		try{
 			errorStrId=null;
-			id = Integer.parseInt(request.getParameter("id"));
-			if(id<0 || id>999999999){
+			idParsed = Integer.parseInt(idStr);
+			if(idParsed<0 || idParsed>999999999){
 				errorStrId="Error: Invalid Id";
 			}
-			if(RepresentativeUtils.findPerson(conn, id)!=null){
+			if(RepresentativeUtils.findPerson(conn, idParsed)!=null){
 				hasError=true;
 				errorStrId="Error: Id already exists";
 			}
@@ -171,10 +205,15 @@ public class DoCreateClientServlet extends HttpServlet{
 		}
 
 		if(!hasError){
-			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber);
+			HttpSession session = request.getSession();
+			Integer brokerId = LoginUtils.getId(session);
+			client = new Client(idParsed, lastName, firstName, address, zipCode, telephone, email, rating, creditCardNumber, brokerId);
 			Location location = new Location(zipCode, city, state);
+			UserAccount user = new UserAccount(userName, password, "Customer", idParsed);
 			try{
-				RepresentativeUtils.addClient(conn, client, location);
+				RepresentativeUtils.addClient(conn, client, location, user);
+				
+				
 			}
 			catch(SQLException e){
 				e.printStackTrace();
@@ -185,33 +224,37 @@ public class DoCreateClientServlet extends HttpServlet{
 		//If there's an error, stay on createClientView
 		if(hasError){
 		//set errorString and employee then forward to views
-		request.setAttribute("errorStrLastName", errorStrLastName);
-		request.setAttribute("errorStrFirstName", errorStrFirstName);
-		request.setAttribute("errorStrAddress", errorStrAddress);
-		request.setAttribute("errorStrCity", errorStrCity);
-		request.setAttribute("errorStrState", errorStrState);
-		request.setAttribute("errorStrZipCode", errorStrZipCode);
-		request.setAttribute("errorStrTelephone", errorStrTelephone);
-		request.setAttribute("errorStrEmail", errorStrEmail);
-		request.setAttribute("errorStrRating", errorStrRating);	request.setAttribute("errorStrId", errorStrId);
-		request.setAttribute("errorStrCreditCardNumber", errorStrCreditCardNumber);
-		request.setAttribute("errorStrId", errorStrId);
-			
-		request.setAttribute("lastName", lastName);
-		request.setAttribute("firstName", firstName);
-		request.setAttribute("address", address);
-		request.setAttribute("city", city);
-		request.setAttribute("state", state);
-		request.setAttribute("zipCode", zipCodeStr);
-		request.setAttribute("telephone", telephone);
-		request.setAttribute("email", email);
-		request.setAttribute("rating", ratingStr);
-		request.setAttribute("creditCardNumber", creditCardNumber);
-		request.setAttribute("id", idStr);
-		RequestDispatcher dispatcher = request.getServletContext()
-				.getRequestDispatcher("/WEB-INF/views/representatives/createClientView.jsp");
-		dispatcher.forward(request, response);
-		}
+			request.setAttribute("errorStrLastName", errorStrLastName);
+			request.setAttribute("errorStrFirstName", errorStrFirstName);
+			request.setAttribute("errorStrUserName", errorStrUserName);
+			request.setAttribute("errorStrPassword", errorStrPassword);
+			request.setAttribute("errorStrAddress", errorStrAddress);
+			request.setAttribute("errorStrCity", errorStrCity);
+			request.setAttribute("errorStrState", errorStrState);
+			request.setAttribute("errorStrZipCode", errorStrZipCode);
+			request.setAttribute("errorStrTelephone", errorStrTelephone);
+			request.setAttribute("errorStrEmail", errorStrEmail);
+			request.setAttribute("errorStrRating", errorStrRating);	request.setAttribute("errorStrId", errorStrId);
+			request.setAttribute("errorStrCreditCardNumber", errorStrCreditCardNumber);
+			request.setAttribute("errorStrId", errorStrId);
+				
+			request.setAttribute("lastName", lastName);
+			request.setAttribute("firstName", firstName);
+			request.setAttribute("userName", userName);
+			request.setAttribute("password", password);
+			request.setAttribute("address", address);
+			request.setAttribute("city", city);
+			request.setAttribute("state", state);
+			request.setAttribute("zipCode", zipCodeStr);
+			request.setAttribute("telephone", telephone);
+			request.setAttribute("email", email);
+			request.setAttribute("rating", ratingStr);
+			request.setAttribute("creditCardNumber", creditCardNumber);
+			request.setAttribute("id", idStr);
+			RequestDispatcher dispatcher = request.getServletContext()
+					.getRequestDispatcher("/WEB-INF/views/representatives/createClientView.jsp");
+			dispatcher.forward(request, response);
+			}
 		
 		//If everything worked, redirect to the clientList
 		else{

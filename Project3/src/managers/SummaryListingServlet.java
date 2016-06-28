@@ -37,7 +37,7 @@ public class SummaryListingServlet extends HttpServlet{
 			errorString = e.getMessage();
 		}
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("stockList", stockList);
+		request.setAttribute("stockSymbolList", stockList);
 		request.setAttribute("stockTypeList", stockTypeList);
 		RequestDispatcher dispatcher = request.getServletContext()
 				.getRequestDispatcher("/WEB-INF/views/managers/summaryListingView.jsp");

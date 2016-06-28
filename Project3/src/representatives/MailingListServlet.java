@@ -11,8 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import beans.ClientInfo;
 import beans.MailingList;
+import beans.UserAccount;
 import utils.RepresentativeUtils;
 import utils.MyUtils;
 
@@ -26,11 +29,12 @@ public class MailingListServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		
+		HttpSession session = request.getSession();
+		int brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
 		String errorString = null;
-		List<MailingList> list = null;
+		List<ClientInfo> list = null;
 		try{
-			list = RepresentativeUtils.getMailingList(conn);
+			list = RepresentativeUtils.getMailingList(conn, brokerId);
 		}catch(SQLException e){
 		e.printStackTrace();
 			errorString = e.getMessage();

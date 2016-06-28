@@ -11,9 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import beans.Client;
 import utils.RepresentativeUtils;
+import utils.LoginUtils;
 import utils.MyUtils;
 
 @WebServlet(urlPatterns = { "/representatives/clientList"})
@@ -27,11 +29,12 @@ public class ClientListServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		
+		HttpSession session = request.getSession();
+		int brokerId = LoginUtils.getId(session); 
 		String errorString = null;
 		List<Client> list = null;
 		try{
-			list = RepresentativeUtils.getClientList(conn);
+			list = RepresentativeUtils.getClientList(conn, brokerId);
 		}catch(SQLException e){
 		e.printStackTrace();
 			errorString = e.getMessage();

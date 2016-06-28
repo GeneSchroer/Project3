@@ -28,27 +28,46 @@ public class DoUpdateStockServlet extends HttpServlet{
 		String stockSymbol = request.getParameter("stockSymbol");
 		String companyName = request.getParameter("companyName");
 		String type = request.getParameter("type");
-		Float pricePerShare=null;
+		float pricePerShare=0;
+		int numShares=0;
 		boolean hasError=false;
 		String errorStrPricePerShare=null;
+		String errorStrNumShares=null;
 		
 		Stock stock=null;
 		String errorString=null;
+		
+		//Error Checking
+		//Price Per Share
 		try{
 			pricePerShare = Float.parseFloat(request.getParameter("pricePerShare"));
-			if(pricePerShare<0){
+			if(pricePerShare<=0){
 				hasError=true;
-				errorStrPricePerShare="Invalid Share Price!";
+				errorStrPricePerShare="Error: Price must be positive!";
 			}
 		}catch(Exception  e){
 			hasError = true;
-			errorStrPricePerShare="Invalid Share Price!";
+			errorStrPricePerShare="Error: Invalid Share Price!";
 		}
+		//NumShares
+		try{
+			numShares= Integer.parseInt(request.getParameter("numShares"));
+			if(numShares<0){
+				hasError=true;
+				errorStrNumShares="Error: Available shares cannot be negative!";
+			}
+		}catch(Exception  e){
+			hasError = true;
+			errorStrNumShares="Error: Invalid number!";
+		}
+		
+		
+		
 		if(!hasError){
-			stock = new Stock(stockSymbol, companyName, type, pricePerShare);
-			
+			stock = new Stock(stockSymbol, companyName, type, pricePerShare, numShares);
+			System.out.println(stock.getPricePerShare());
 			try{
-				ManagerUtils.updateSharePrice(conn, stock);
+				ManagerUtils.updateStock(conn, stock);
 			}
 			catch(SQLException e){
 				e.printStackTrace();
@@ -56,8 +75,15 @@ public class DoUpdateStockServlet extends HttpServlet{
 			}
 		}
 		
-		request.setAttribute("errorStrPricePerShare", errorStrPricePerShare);
 		if(hasError){
+			request.setAttribute("errorStrPricePerShare", errorStrPricePerShare);
+			request.setAttribute("errorStrNumShares", errorStrNumShares);
+			request.setAttribute("pricePerShare", pricePerShare);
+			request.setAttribute("numShares", numShares);
+			request.setAttribute("stockSymbol", stockSymbol);
+			request.setAttribute("companyName", companyName);
+			request.setAttribute("type", type);
+			request.setAttribute("stock", stock);
 			RequestDispatcher dispatcher = request.getServletContext()
 					.getRequestDispatcher("/WEB-INF/views/managers/updateStockPriceView.jsp");
 			dispatcher.forward(request, response);

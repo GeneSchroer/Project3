@@ -16,7 +16,7 @@ public class Orders implements Serializable {
 	private String priceType;
 	protected String orderType;
 	
-	public Orders(int numShares, float pricePerShare, int id, Timestamp dateTime, double percentage, String price, String order){
+	public Orders(int numShares, Float pricePerShare, int id, Timestamp dateTime, Double percentage, String price, String order){
 		this.numShares = numShares;
 		this.pricePerShare = pricePerShare;
 		this.id = id;
@@ -26,20 +26,20 @@ public class Orders implements Serializable {
 		this.orderType = order;
 	}
 	
-	public int getNumShares(){ return numShares; }
-	public void setNumShares(int numShares){ this.numShares = numShares; }
+	public Integer getNumShares(){ return numShares; }
+	public void setNumShares(Integer numShares){ this.numShares = numShares; }
 	
-	public float getPricePerShare(){ return pricePerShare; }
-	public void setPricePerShare(float pricePerShare){ this.pricePerShare = pricePerShare; }
+	public Float getPricePerShare(){ return pricePerShare; }
+	public void setPricePerShare(Float pricePerShare){ this.pricePerShare = pricePerShare; }
 	
-	public int getId(){ return id; }
-	public void setId(int id){ this.id = id; }
+	public Integer getId(){ return id; }
+	public void setId(Integer id){ this.id = id; }
 	
 	public Timestamp getDateTime(){ return dateTime; }
 	public void setDateTime(Timestamp dateTime){ this.dateTime = dateTime; }
 	
-	public double getPercentage(){ return percentage; }
-	public void setPercentage(double percentage){ this.percentage = percentage; }
+	public Double getPercentage(){ return percentage; }
+	public void setPercentage(Double percentage){ this.percentage = percentage; }
 	
 	public String getPriceType(){ return priceType; }
 	public void setPriceType(String price){ this.priceType = price; }

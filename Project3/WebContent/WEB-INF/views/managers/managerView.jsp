@@ -5,10 +5,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Manager Transactions</title>
-<h1>Manager Transactions</h1>
 </head>
 <body>
-	
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>	
 	<br>
 	<a href="${pageContext.request.contextPath}/managers/employeeList">View List of Employees</a><br>
 	<a href="${pageContext.request.contextPath}/managers/salesReport">Obtain sales report for a particular month</a><br>
@@ -18,5 +18,6 @@
 	<a href="${pageContext.request.contextPath}/managers/mostGeneratedRevenue">View customer and representative that generated most revenue</a><br>
 		
 	<a href="${pageContext.request.contextPath}">Return to main page</a>
+	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

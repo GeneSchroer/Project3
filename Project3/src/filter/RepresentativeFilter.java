@@ -9,11 +9,15 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-//@WebFilter(filterName="representativeFilter", urlPatterns={"/representatives/*"})
-public class RepresentativeFilter /*implements Filter */{
+import beans.UserAccount;
+
+@WebFilter(filterName="representativeFilter", urlPatterns={"/representatives", "/representatives/*"})
+public class RepresentativeFilter implements Filter {
 	
-	/*
 	@Override
 	public void init(FilterConfig fConfig) throws ServletException{
 	}
@@ -22,10 +26,17 @@ public class RepresentativeFilter /*implements Filter */{
 		
 	}
 	@Override
-	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		HttpSession session = httpRequest.getSession();
+		UserAccount user = (UserAccount) session.getAttribute("loginedUser");
+		if(user == null || !user.getUserType().equals("Representative")){
+			httpResponse.sendRedirect(httpRequest.getContextPath() + "/invalidAccess");
+		}
+		else 
+			chain.doFilter(request, response);
 	}
-	*/
 	
 }

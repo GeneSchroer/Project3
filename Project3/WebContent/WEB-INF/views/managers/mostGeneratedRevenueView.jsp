@@ -7,7 +7,8 @@
 <title>Persons with most generated revenue</title>
 </head>
 <body>
-
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>
 	Customer Representative with most generated revenue:
 	<table border="2" cellpadding="5">
 	<tr>
@@ -40,6 +41,6 @@ Customer with most generated revenue:
 		<td>$${bestCustomer.revenue}</td>
 	</tr>
 	</table>
-
+    <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

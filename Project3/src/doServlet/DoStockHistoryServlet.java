@@ -39,29 +39,25 @@ public class DoStockHistoryServlet extends HttpServlet{
 		boolean hasStocks=false;
 		//Check for errors
 		
-		
 		//fromDate
 		try{
 			fromDateParsed = Date.valueOf(fromDate);
 		}catch(Exception e){
 			hasError=true;
-			errorStrFromDate="Error: Invalid Date format!";
-		}
+			errorStrFromDate="Error: Invalid Date format!"; }
 		
 		//toDate
 		try{
 			toDateParsed = Date.valueOf(toDate);
 		}catch(Exception e){
 			hasError=true;
-			errorStrToDate="Error: Invalid Date format!";
-		}
+			errorStrToDate="Error: Invalid Date format!";	}
 		
-		
-		if (toDateParsed.after( new Date(System.currentTimeMillis() ) )){
+		if (toDateParsed != null && toDateParsed.after( new Date(System.currentTimeMillis() ) )){
 			hasError=true;
 			errorStrToDate="Error: Cannot be after the current time!";
 		}
-		if(fromDateParsed.after(toDateParsed)){
+		if(fromDateParsed != null && toDateParsed != null && fromDateParsed.after(toDateParsed)){
 			hasError=true;
 			errorStrFromDate="Error: From Date cannot be after To Date![";
 		}

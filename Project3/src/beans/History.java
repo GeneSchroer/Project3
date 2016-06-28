@@ -9,7 +9,7 @@ public class History implements Serializable {
 	private String stockSymbol;
 	private Timestamp dateTime;
 	private Float pricePerShare;
-	public History(String stockSymbol, Timestamp dateTime, float pricePerShare){
+	public History(String stockSymbol, Timestamp dateTime, Float pricePerShare){
 		this.stockSymbol = stockSymbol;
 		this.dateTime = dateTime;
 		this.pricePerShare = pricePerShare;
@@ -21,6 +21,6 @@ public class History implements Serializable {
 	public void setDateTime(Timestamp dateTime){ this.dateTime = dateTime; }
 	
 	public Float getPricePerShare(){ return pricePerShare; }
-	public void setPricePerShare(float pricePerShare){ this.pricePerShare = pricePerShare; }
+	public void setPricePerShare(Float pricePerShare){ this.pricePerShare = pricePerShare; }
 	
 }

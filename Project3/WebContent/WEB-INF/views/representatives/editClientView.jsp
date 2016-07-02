@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeForms.css">
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
   <meta charset="UTF-8">
 <title>Edit Client</title>
 
@@ -14,65 +16,125 @@
 <h3>Edit Client</h3>
 
 <c:if test="${not empty client}">
+	
+	  	  <input type="hidden" name="SSN" value="${SSN}">
+	  	  <input type="hidden" name="SSN" value="${SSN}">
+	
 	<form method="POST" action="doEditClient">
-	  
-	  <p style="color:red;">Client Id: ${id}</p>
-	  
-	  <p style="color: red;">${errorStrFirstName}</p> 
-	  First name:<br>
-	  <input type="text" name="firstName" value="${firstName}"><br>
-	  
-	  <p style="color: red;">${errorStrLastName}</p>
-	  Last name:<br>
-	  <input type="text" name="lastName" value="${lastName}"><br>
-  	  
+		<div class="managerform">
+		<ul>
+		<li>
+			<span style="width: 200px;">
+				Client Id: ${id}
+			</span>
+		</li>
+		<li> 
+			<span class="errordetails">
+				${errorStrFirstName}
+			</span> 
+		  	<span>
+			  	First name
+		  	</span>
+		  	<input type="text" name="firstName" value="${firstName}"><br>
+		</li>
+		
+		<li>
+			<span class="errordetails">
+				${errorStrLastName}
+			</span>
+			<span>
+	  			Last name
+	  		</span>
+	  		<input type="text" name="lastName" value="${lastName}"><br>
+  	  	</li>
   	 
-  	  <input type="hidden" name="SSN" value="${SSN}">
-  	 
-  	 
-  	  <p style="color: red;">${errorStrAddress}</p>
-  	  Address:<br>
-  	  <input type="text" name="address" value="${address}"><br>
-  
-  	  <!-- City -->
-  	  <p style="color: red;">${errorStrCity}</p>
-  	  City:<br>
-  	  <input type="text" name="city" value="${city}"><br>
-  	  
-  	  <!-- State -->
-  	  <p style="color: red;">${errorStrState}</p>
-  	  State:<br>
-  	  <input type="text" name="state" value="${state}"><br>
-  	  
-  	  <p style="color: red;">${errorStrZipCode}</p>
-  	  Zip Code:<br>
-  	  <input type="number" name="zipCode" min="1" max="99999"value="${zipCode}"><br>
-  
-  	  <p style="color: red;">${errorStrTelephone}</p>
-  	  Telephone:<br>
-  	  <input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}"><br>
-  
-  
-  
-  	  <input type="hidden" name="id" value="${id}">
- 
-  	  <p style="color: red;">${errorStrEmail}</p>
-  	  Email:<br>  
-	  <input type="text" name="email" value="${email}"><br>
+  	 	<li>
+	  	 	<span class="errordetails">
+	  	 		${errorStrAddress}
+	  	 	</span>
+	  	  	
+	  	  	<span>
+	  	  		Address
+	  	  	</span>
+			<input type="text" name="address" value="${address}"><br>
+  		</li>
+  	  	<!-- City -->
+  	  	<li>
+	  	  	<span class="errordetails">
+	  	  		${errorStrCity}
+	  	  	</span>
+	  	  	<span>
+	  	  		City
+	  	  	</span>
+	  	  	<input type="text" name="city" value="${city}"><br>
+  	  	</li>
 
-	  <p style="color: red;">${errorStrRating}</p>
-  	  Rating:<br>  
-	  <input type="number" name="rating" value="${rating}"><br>
-	  
-	  <p style="color: red;">${errorStrCreditCardNumber}</p>
-  	  Credit Card Number:<br>  
-	  <input type="text" name="creditCardNumber" value="${creditCardNumber}"><br>
-	  
-
+  	 <!-- State -->
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrState}
+	  	</span>
+	  	<span>
+	  		State
+	  	</span>
+		<input type="text" name="state"value="${state}" required>
+  	</li>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrZipCode}
+  		</span>
+  		<span>
+  			Zip Code
+  		</span>
+  		<input type="number" name="zipCode" min="1" max="99999"value="${zipCode}" required>
+  	</li>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrTelephone}
+  		</span>
+ 	 	<span>
+ 		 	Telephone
+ 	 	</span>
+		<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required><br>
+  	</li>
+  	
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrEmail}
+	  	</span>
+	  	<span>  	
+	  		Email
+	  	</span>
+	  	<input type="text" name="email" value="${email}" required>
+  	</li>
+  	
+  	<li>
+		<span class="errordetails">
+	  		${errorStrRating}
+		</span>
+	  	<span>
+	 		Rating
+	 	</span>
+		<input type="number" name="rating" min="1" value="${rating}" required>
+	</li>
+	<li>
+		<span class="errordetails">
+			${errorStrCreditCardNumber}
+		</span>
+	  	<span style="width:120px; ">
+	  	Credit Card # 
+	  	</span>
+	  	<input type="text" name="creditCardNumber" value="${creditCardNumber}" required>
+	</li>
+	<li>
   	  <input type="submit" value="Submit"/>
-  	  <a href="${pageContext.request.contextPath}/representatives/clientList">Return to Client List</a>
+	</li>
+	</ul>
+	</div>
 	</form>
 	</c:if>
+	
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/clientList">Return to Client List</a>
 
     <jsp:include page="_footer.jsp"></jsp:include>
 </body>

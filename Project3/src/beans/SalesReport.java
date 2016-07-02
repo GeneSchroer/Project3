@@ -1,5 +1,6 @@
 package beans;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -12,7 +13,7 @@ public class SalesReport extends Transaction{
 	private String orderType;
 	private String priceType;
 	
-	public SalesReport(int id, float fee, Date DateTime, float pricePerShare, 
+	public SalesReport(Integer id, Float fee, Timestamp DateTime, Float pricePerShare, 
 			String stockSymbol, String companyName, String type, int numShares, String orderType, String priceType) {
 		super(id, fee, DateTime, pricePerShare);
 		this.stockSymbol = stockSymbol;

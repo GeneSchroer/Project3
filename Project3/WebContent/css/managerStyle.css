@@ -57,7 +57,12 @@ h3{
 	display:inline-block;
 	padding:10px;
 }
-
+h2{
+	border-radius: 4px;
+	background-color:#f9f9a9;
+	display:inline-block;
+	padding:10px;
+}
 
 ul.employeedetails{
 	list-style-type:none;

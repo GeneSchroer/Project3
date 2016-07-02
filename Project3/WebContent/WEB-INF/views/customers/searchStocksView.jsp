@@ -4,6 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/customerStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Stock Search</title>
 </head>
@@ -41,7 +42,7 @@
 		</c:otherwise>
 		  
 	</c:choose>
-	<a href = "${pageContext.request.contextPath}/customers">Return to main page</a>
+	<a class="returnbtn" href = "${pageContext.request.contextPath}/customers">Return to main page</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

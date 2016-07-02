@@ -4,8 +4,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Employee List</title>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Employee List</title>
 </head>
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
@@ -57,8 +58,8 @@
 
 	</c:choose>
 	
-	<a href="${pageContext.request.contextPath}/managers/employeeList/createEmployee">Add Employee</a>
-	<a href="${pageContext.request.contextPath}/managers">Return to manager view</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/managers/employeeList/createEmployee">Add Employee</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/managers">Return to manager view</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

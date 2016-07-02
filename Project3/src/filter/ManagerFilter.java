@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import beans.UserAccount;
 
-@WebFilter(filterName="managerFilter", urlPatterns={"/managers","/manangers/*"})
+@WebFilter(filterName="managerFilter", urlPatterns={"/managers","/managers/*"})
 public class ManagerFilter implements Filter {
 	
 	 public ManagerFilter(){

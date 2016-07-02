@@ -12,7 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import beans.History;
 import beans.Stock;
 import utils.CustomerUtils;
@@ -39,19 +38,20 @@ public class DoStockHistoryServlet extends HttpServlet{
 		boolean hasStocks=false;
 		//Check for errors
 		
+		
 		//fromDate
 		try{
 			fromDateParsed = Date.valueOf(fromDate);
 		}catch(Exception e){
 			hasError=true;
-			errorStrFromDate="Error: Invalid Date format!"; }
+			errorStrFromDate="Error: Format must be in YYYY-MM-DD!"; }
 		
 		//toDate
 		try{
 			toDateParsed = Date.valueOf(toDate);
 		}catch(Exception e){
 			hasError=true;
-			errorStrToDate="Error: Invalid Date format!";	}
+			errorStrToDate="Error: Format must be in YYYY-MM-DD!";	}
 		
 		if (toDateParsed != null && toDateParsed.after( new Date(System.currentTimeMillis() ) )){
 			hasError=true;
@@ -75,28 +75,31 @@ public class DoStockHistoryServlet extends HttpServlet{
 		}
 		//if there was an error, forward error messages
 		if(hasError){
+	
 			request.setAttribute("errorStrFromDate", errorStrFromDate);
 			request.setAttribute("errorStrToDate", errorStrToDate);
 		}
 		//otherwise, forward the stock history
 		else{
 			request.setAttribute("stockHistoryList", stockHistoryList);
+			
 		}
-		try{
+		
+		
+		
+		// Forward the list of stocks regardless of outcome
+		try {
 			stockList=CustomerUtils.getStockList(conn);
-		}catch(SQLException e){
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();	}
 		
-		if(stockHistoryList.isEmpty()){
-			errorStrToDate="List is empty";
-			request.setAttribute("errorStrToDate", errorStrToDate);
-		}
-		
-		if(!stockList.isEmpty()){
+		if(stockList!=null && !stockList.isEmpty()){
 			hasStocks=true;
 			request.setAttribute("haveStocks", hasStocks);
 		}
+		request.setAttribute("fromDate", fromDate);
+		request.setAttribute("toDate", toDate);
 		request.setAttribute("stockList", stockList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/stockHistoryView.jsp");
 		dispatcher.forward(request, response);

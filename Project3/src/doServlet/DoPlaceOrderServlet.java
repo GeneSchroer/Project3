@@ -73,34 +73,37 @@ public class DoPlaceOrderServlet extends HttpServlet{
 				hasError = true;
 				errorStrNumShares="Error: Number of Shares must be positive!";
 			}
+			
+			//Throw an error if user attempts to buy more shares than are available
+			try{
+				Stock stock = CustomerUtils.findStock(conn, stockSymbol);
+				if(orderType.equals("Buy") && numSharesParsed > stock.getNumShares()){
+					hasError=true;
+					errorStrNumShares="Error: There are not enough shares available to buy!";
+					}
+			}catch(SQLException e){
+				hasError=true;
+				e.printStackTrace();	}	
+			//Throw an error if user attempts to sell more shares than he has in that account
+			
+			try{
+				int userStocks = CustomerUtils.getSharesInAccount(conn, accountId, stockSymbol);
+				if(orderType.equals("Sell") && numSharesParsed>userStocks){
+					hasError=true;
+					errorStrNumShares = "Error: Cannot sell more shares than you have!";
+				}
+			}catch(SQLException e){
+				hasError=true;
+				e.printStackTrace();
+			}
 		}catch(Exception e){
 				hasError=true;
 				errorStrNumShares="Error: Invalid # of shares!";
 		}
 		
-		//Throw an error if user attempts to buy more shares than are available
-		try{
-			Stock stock = CustomerUtils.findStock(conn, stockSymbol);
-			if(orderType.equals("Buy") && numSharesParsed > stock.getNumShares()){
-				hasError=true;
-				errorStrNumShares="Error: There are not enough shares available to buy!";
-				}
-		}catch(SQLException e){
-			hasError=true;
-			e.printStackTrace();	}
 		
-		//Throw an error if user attempts to sell more shares than he has in that account
 		
-		try{
-			int userStocks = CustomerUtils.getSharesInAccount(conn, accountId, stockSymbol);
-			if(orderType.equals("Sell") && numSharesParsed>userStocks){
-				hasError=true;
-				errorStrNumShares = "Error: Cannot sell more shares than you have!";
-			}
-		}catch(SQLException e){
-			hasError=true;
-			e.printStackTrace();
-		}
+		
 		
 		
 		//Hidden Stop

@@ -4,15 +4,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Stock List</title>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Stock List</title>
 </head>
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
 	<c:choose>
 	<c:when test="${not empty stockList}">
-		<h3>List of all stocks:</h3>
+		<p style="background-color:silver; font-size:2em;display:inline-block; padding: 5px; margin-bottom:10px; border-radius:2px;">Stock List</p>
 		<table border="2" cellpadding="5" cellspacing="1">
 			<tr>
 				<th>Stock Symbol</th>
@@ -49,8 +50,8 @@
 		No stocks are available.
 	</c:otherwise>
 	</c:choose>
-	<a href="${pageContext.request.contextPath}/managers/stockList/createStock">Create new stock</a>
-	<a href="${pageContext.request.contextPath}/managers">Return to manager view</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/managers/stockList/createStock">Create new stock</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/managers">Return to manager view</a>
     <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

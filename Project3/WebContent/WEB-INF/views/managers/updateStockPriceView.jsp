@@ -4,8 +4,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerForms.css">
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Insert title here</title>
 </head>
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
@@ -15,35 +17,54 @@
 	
 	<c:when test="${not empty stock}">
 		<form method="POST" action="${pageContext.request.contextPath}/managers/doUpdateStock">
+			<div class="managerform">
+			
 			<p style="color: red;">${errorStrPPS}</p><br>
 			<input type="hidden" name="stockSymbol" value="${stock.stockSymbol}"/>
 			<input type="hidden" name="companyName" value="${stock.companyName}"/>
 			<input type="hidden" name="type" value="${stock.type}"/>
-			
-			<p>${stock.stockSymbol}</p>
-			<p>${stock.companyName }</p>
+			<ul>
+			<li>
+				<span style="background-color:silver; width: 300px;">
+					${stock.stockSymbol } ${stock.companyName}
+				</span>
+			</li>
 			
 			<%--Price Per Share --%>
-			<p style="color: red;">${errorStrPricePerShare}</p>
-			<p>Price Per Share:</p>
-			<input type="text" name="pricePerShare"  value="${stock.pricePerShare}"><br>
+			<li>
+				<span class="errordetails">
+					${errorStrPricePerShare}
+				</span>
+				<span>
+					Share Price
+				</span>
+				<input type="text" name="pricePerShare"  value="${stock.pricePerShare}" required/>
+			</li>	
 			
 			<%--Num Shares --%>
-			<p style="color: red;">${errorStrNumShares}</p>
-			<p>Shares Available:</p>
-			<input type="text" name="numShares"  value="${stock.numShares}"><br>
-			
-			<input type="submit" value="Submit"/>
-			<a href="${pageContext.request.contextPath}/managers/stockList">Return to Stock List</a>
-			
+			<li>
+				<span class="errordetails">
+					${errorStrNumShares}
+				</span>
+				<span style="width:125px;">
+					Shares Available
+				</span>
+				<input type="text" name="numShares"  value="${stock.numShares}" required/>
+			</li>
+			<li>
+				<input type="submit" value="Submit"/>
+			</li>
+			</ul>
+			</div>
 		</form>
 	</c:when>
 	<c:otherwise>
-		No Stock Selected. 
-		<a href = "${pageContext.request.contextPath}/managers/stockList">Return to Stock List?</a><br>
+		<div class="returnbtn"><span>No Stock Selected.</span> </div>
 	</c:otherwise>
 	</c:choose>
-	<a href = "${pageContext.request.contextPath}/managers">Return to Manager page</a>
+	<a class="returnbtn" href = "${pageContext.request.contextPath}/managers">Return to Manager page</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/managers/stockList">Return to Stock List</a>
+	
 	<jsp:include page="_footer.jsp"></jsp:include>
 	
 </body>

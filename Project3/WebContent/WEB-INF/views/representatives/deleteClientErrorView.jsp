@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
  <head>
+ 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
     <meta charset="UTF-8">
     <title>Delete Client</title>
  </head>

@@ -4,6 +4,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeForms.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
 </head>
@@ -15,72 +17,149 @@
 
 <p style="color: red;">${errorString}</p>
 <form method="POST" action="doCreateClient">
+  <div class="managerform">
+  	<ul>
   
-  <%-- First Name --%>
-  <p style="color: red;">${errorStrFirstName}</p><br>
-  First name:<br>
-  <input type="text" name="firstName" value="${firstName}">
-  <br>
+  	<%-- First Name --%>
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrFirstName}
+	  	</span>
+	  	<span>
+	  		First name
+	  	</span>
+	  	<input type="text" name="firstName" value="${firstName}" required>
+  	</li>
   
-  <%-- Last Name --%>
-  <p style="color: red;">${errorStrLastName}</p>
-  Last name:<br>
-  <input type="text" name="lastName" value="${lastName}">
-  <br>
+  	<%-- Last Name --%>
+  	<li>
+  	
+	  	<span class="errordetails">
+	  		${errorStrLastName}
+	  	</span>
+	  	<span>
+	  		Last name
+	  	</span>
+  		<input type="text" name="lastName" value="${lastName}" required>
+  	</li>
+  	
+  	<%-- User Name --%>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrUserName}
+  		</span>
+  		<span>
+	 		User Name
+		</span>
+  		<input type="text" name="userName" value="${userName}" required>
+	</li>  
+  
+  	<%-- Password --%>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrPassword}
+  		</span>
+  		<span>
+  			Password
+  		</span>
+	  	<input type="text" name="password" value="${password}" required>
+	</li>
 
-  <%-- User Name --%>
-  <p style="color: red;">${errorStrUserName}</p>
-  User Name:<br>
-  <input type="text" name="userName" value="${userName}">
-  <br>
-  
-  <%-- Password --%>
-  <p style="color: red;">${errorStrPassword}</p>
-  Temporary Password:<br>
-  <input type="text" name="password" value="${password}">
-  <br>
-
-  <%-- ClientId/SSN --%>  
-  <p style="color: red;">${errorStrId}</p>
-  ClientId/SSN:<br>
-  <input type="number" name="id" min="1" max="999999999" value="${id}">
-  
-  <!-- Address -->
-  <p style="color: red;">${errorStrAddress}</p>
-  Address:<br>
-  <input type="text" name="address"value="${address}"><br>
-  
-  <!-- City -->
-  <p style="color: red;">${errorStrCity}</p>
-  City:<br>
-  <input type="text" name="city"value="${city}"><br>
-  
-  <!-- State -->
-  <p style="color: red;">${errorStrState}</p>
-  State:<br>
-  <input type="text" name="state"value="${state}"><br>
-  
-  
-  <p style="color: red;">${errorStrZipCode}</p>
-  Zip Code:<br>
-  <input type="number" name="zipCode" min="1" max="99999"value="${zipCode}"><br>
-  <p style="color: red;">${errorStrTelephone}</p>
-  Telephone:<br>
-  <input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}"><br>
-  <p style="color: red;">${errorStrEmail}</p>
-  Email:<br>
-  <input type="text" name="email" value="${email}"><br>
-  <p style="color: red;">${errorStrRating}</p>
-  Rating:<br>  
-  <input type="number" name="rating" min="1" value="${rating}"><br>
-  <p style="color: red;">${errorStrCreditCardNumber}</p>
-  Credit Card Number:<br>  
-  <input type="text" name="creditCardNumber" value="${creditCardNumber}"><br>
-  
-
-  <input type="submit" value="Submit"/>
-  <a href = "${pageContext.request.contextPath}/representatives/clientList">Return to Client page</a>
-</form>
+  	<%-- ClientId/SSN --%>  
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrId}
+	  	</span>
+	  	<span>
+	  		Client SSN
+	  	</span>
+	  	<input type="number" name="id" min="1" max="999999999" value="${id}" required>
+  	</li>
+  	
+  	<%-- Address --%>
+	<li>
+		<span class="errordetails">
+	  		${errorStrAddress}
+	  	</span>
+	  	<span>
+	  		Address
+	  </span>
+	  <input type="text" name="address"value="${address}" required>
+	</li>
+  	<!-- City -->
+  	<li>
+  		<span class="errordetails">
+  			${errorStrCity}
+  		</span>
+  		<span>
+  			City
+  		</span>
+  		<input type="text" name="city"value="${city}" required>
+  	</li>
+  	<!-- State -->
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrState}
+	  	</span>
+	  	<span>
+	  		State
+	  	</span>
+		<input type="text" name="state"value="${state}" required>
+  	</li>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrZipCode}
+  		</span>
+  		<span>
+  			Zip Code
+  		</span>
+  		<input type="number" name="zipCode" min="1" max="99999"value="${zipCode}" required>
+  	</li>
+  	<li>
+  		<span class="errordetails">
+  			${errorStrTelephone}
+  		</span>
+ 	 	<span>
+ 		 	Telephone
+ 	 	</span>
+		<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required><br>
+  	</li>
+  	
+  	<li>
+	  	<span class="errordetails">
+	  		${errorStrEmail}
+	  	</span>
+	  	<span>  	
+	  		Email
+	  	</span>
+	  	<input type="text" name="email" value="${email}" required>
+  	</li>
+  	
+  	<li>
+		<span class="errordetails">
+	  		${errorStrRating}
+		</span>
+	  	<span>
+	 		Rating
+	 	</span>
+		<input type="number" name="rating" min="1" value="${rating}" required>
+	</li>
+	<li>
+		<span class="errordetails">
+			${errorStrCreditCardNumber}
+		</span>
+	  	<span style="width:120px; ">
+	  	Credit Card # 
+	  	</span>
+	  	<input type="text" name="creditCardNumber" value="${creditCardNumber}" required>
+	</li>
+  	<li>
+  		<input type="submit" value="Submit"/>
+  	</li>
+  </ul>
+  </div>
+</form> 
+ 	<a class="returnbtn" href = "${pageContext.request.contextPath}/representatives/clientList">Return to Client page</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

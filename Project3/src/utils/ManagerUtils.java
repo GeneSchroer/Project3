@@ -25,17 +25,17 @@ public class ManagerUtils {
 
 	
 	public static List<Employee> getEmployeeList(Connection conn) throws SQLException{
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ "	SELECT E.*,P.*"
+				+ " FROM Employee E, Person P "
+				+ "	WHERE P.SSN=E.SSN"
+				+ " ORDER BY P.LastName ASC;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
-		
-		
-		sql = "SELECT E.*,P.* "
-			+ " FROM Employee E, Person P "
-			+ "	WHERE P.SSN=E.SSN"
-			+ " ORDER BY P.LastName ASC";
-		pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<Employee> list = new ArrayList<Employee>();
 		while(rs.next()){
 			Employee employee = new Employee(
@@ -50,8 +50,7 @@ public class ManagerUtils {
 					rs.getInt("HourlyRate"));
 			list.add(employee);
 		}
-		pstm = conn.prepareStatement("COMMIT");
-		pstm.execute();
+		conn.commit();
 		return list;
 	}
 	
@@ -323,22 +322,27 @@ public class ManagerUtils {
 	}
 	
 	public static List<SalesReport> getSalesReport(Connection conn, String year, String month) throws SQLException{
-		String sql = "SELECT Trns.*,	S.StockSymbol, S.CompanyName, S.Type, O.NumShares, O.OrderType, O.PriceType"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT Trns.*,	S.StockSymbol, S.CompanyName, S.Type, O.NumShares, O.OrderType, O.PriceType"
 				+ " FROM Orders O, Stock S, Trade Trd, Transaction Trns"
 				+ " WHERE YEAR(Trns.DateTime)=? AND MONTH(Trns.DateTime)=?"
 				+ " AND	Trd.TransactionId = Trns.Id	AND	Trd.OrderId = O.Id"
 				+ " AND	Trd.StockId = S.StockSymbol"
-				+ " ORDER BY Trns.DateTime DESC";
+				+ " ORDER BY Trns.DateTime DESC;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, year);
 		pstm.setString(2, month);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<SalesReport> list = new ArrayList<SalesReport>();
 		while(rs.next()){
-			int id = rs.getInt("Id");
-			int fee =rs.getInt("Fee");
+			Integer id = rs.getInt("Id");
+			Float fee = rs.getFloat("Fee");
 			Timestamp dateTime = rs.getTimestamp("DateTime");
-			float pricePerShare =rs.getFloat("PricePerShare");
+			Float pricePerShare =rs.getFloat("PricePerShare");
 			String stockSymbol =rs.getString("StockSymbol");
 			String companyName = rs.getString("CompanyName");
 			String type = rs.getString("Type");
@@ -349,6 +353,7 @@ public class ManagerUtils {
 					stockSymbol, companyName, type, numShares, orderType, priceType);
 			list.add(sr);
 		}
+		conn.commit();
 		return list;
 	}
 	
@@ -412,7 +417,7 @@ public class ManagerUtils {
 					rs.getString("PriceType"), 
 					rs.getString("OrderType"), 
 					rs.getInt("TransactionId"),
-					rs.getInt("Fee"), 
+					rs.getFloat("Fee"), 
 					rs.getTimestamp("FinalDateTime"), 
 					rs.getFloat("FinalPricePerShare"),
 					rs.getInt("AccountId"),

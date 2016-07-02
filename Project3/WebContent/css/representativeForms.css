@@ -1,0 +1,100 @@
+@CHARSET "ISO-8859-1";
+
+
+.managerform input[type=hidden]{
+	display:none;
+}
+.managerform input{
+	position:absolute;
+	height: 25px;
+	}
+.managerform input{
+	background-color:#000055;
+	color:gold;
+	
+	
+	position:absolute;
+	transition:0.5s;
+}
+.managerform input:focus{
+	
+	background-color: lightblue;
+	color:#323232;
+	transition:0.5s;
+}
+
+.managerform input[type=checkbox]{
+	background:none;
+	display:inline;
+	position:relative;
+}
+
+.managerform input[type=submit]{
+	border:none;
+	border-radius:5px;
+	background-color:#555555;
+	color:white;
+	padding: 10px;
+	position: relative;
+	transition:0.5s;
+	margin: 5px 0px;
+	height: 35px;
+}
+.managerform input[type=submit]:hover{
+	display:inline-block;
+	background-color: #bbbbbb;
+	color:black;
+	transition:0.5s;
+}
+
+
+.managerform ul{
+	list-style-type:none;
+}
+
+.managerform li{
+}
+
+.managerform select{
+	background-color:#000055;
+	border:none;
+	color:gold;
+	
+	height:30px;
+	width: 150px;
+	position:absolute;
+}
+.managerform select:hover{
+	background-color: lightblue;
+	color:#323232;
+}
+.managerform span{
+	background-color:#80df80;
+	color:navy;
+	
+	
+	
+	
+	display: inline-block;
+	width: 80px;
+	height: 20px;
+	padding: 5px 0px;
+	
+	margin: 0px 0px;
+	text-align:center;
+}
+
+.managerform span.errordetails{
+	background:none;
+	background-color:none;
+	
+	color:#fc0107;
+	text-align:left;
+	display:block;
+	height: auto;
+	width: auto;
+	margin:auto;
+	padding:auto;
+	position:relative;
+}
+

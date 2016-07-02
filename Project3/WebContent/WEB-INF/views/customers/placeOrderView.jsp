@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   	<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
 <html>
 <head>
 <script language="javascript" type="text/javascript">
@@ -71,84 +73,139 @@
     <h3>Place an order</h3>
     
     
-		<p>Stocks in portfolio:</p>
+		
 	<c:choose>
 	<c:when test="${not empty hasStockList}">
-		<select name="stockToSell">
-			<c:forEach items="${hasStockList}" var="hasStock">
-				<option value="${hasStock.stockSymbol}">Account: ${hasStock.accountId} 
-														Stock: ${hasStock.stockSymbol}
-														Shares Available: ${hasStock.totalShares}
-														Current Price: $ ${hasStock.pricePerShare }</option>
-			</c:forEach>
-		</select><br>
+		<%--Stock portfolio button should be to the right of the screen --%>
+		<div style="float:right">
+			<div class="portfoliolist">
+				<button class="hasStock">Touch here for Stock Portfolio</button>
+				<div class="portfoliolist-content">
+				<table>
+					<tr>
+						<th>Account</th>
+						<th>Stock</th>
+						<th>Shares</th>
+					</tr>
+					<c:forEach items="${hasStockList}" var="hasStock">
+					<tr>
+						<td>${hasStock.accountId} </td>
+						<td>${hasStock.stockSymbol}</td>
+						<td>${hasStock.totalShares}</td>
+					</tr>
+					</c:forEach>
+				</table>
+				</div>
+			</div>
+		</div>
 	</c:when>
 	<c:otherwise>
-		<p>No stocks in your portfolio</p>
+		<div style="float:right">You currently have no stocks in your portfolio</div>
 	</c:otherwise>
 	</c:choose>
 	
 	<c:choose>	
 		<c:when test="${not empty accountList}">
 			<form method="POST" action="doPlaceOrder">
-			Select an account to use
-			<select name="accountId">
-				<c:forEach items="${accountList}" var="account">
-					<option value="${account.id}">${account.id}</option>
-				</c:forEach>
-			</select><br>
+			
+			<ul class="placeorder">
+			
+			<%--AccountId --%>
+			<li class="placeorder">
+				<span class="placeorder">Account</span>
+				<select class="placeorder" name="accountId">
+					<c:forEach items="${accountList}" var="account">
+						<option value="${account.id}">${account.id}</option>
+					</c:forEach>
+				</select>
+			</li>
 			
 			<%--Stock Symbol --%>
-			Select a Stock:
-			<select name="stockSymbol">
-				<c:forEach items="${stockList}" var="stock">
-					<option value="${stock.stockSymbol }">${stock.companyName } ${stock.stockSymbol} (${stock.numShares} in Market), $ ${stock.pricePerShare} per share</option> 
-					
-				</c:forEach>
-			</select><br>
+			<li class="placeorder">
+	
+				<span class="placeorder">Stock:</span>
+	
+				<select class="placeorder" name="stockSymbol">
+					<c:forEach items="${stockList}" var="stock">
+						<option value="${stock.stockSymbol }">
+							${stock.companyName} ${stock.stockSymbol}
+							 (${stock.numShares} in Market), 
+					 		<fmt:formatNumber type="currency" value="${stock.pricePerShare}"/> 
+					 		per share
+						</option> 
+					</c:forEach>
+				</select>
+			</li>
 			
-		
+			
 			<%--Order Type --%>
-			Order Type:
-			<select id="orderType" name="orderType" onChange="enablePriceTypes()">
-				<option id="buy" value="Buy">Buy</option>
-				<option id="sell" value="Sell">Sell</option>
-			</select><br>
-			
+			<li class="placeorder">
+	
+				<span class="placeorder">Order Type:</span>
+	
+				<select class="placeorder" id="orderType" name="orderType" onChange="enablePriceTypes()">
+					<option id="buy" value="Buy">Buy</option>
+					<option id="sell" value="Sell">Sell</option>
+				</select>
+			</li>
+
 			<%--Price Type --%>
-			Price Type:
-			<select id="priceType" name="priceType" onChange="enableStops()">
-				<option id="market" value="Market">Market</option>
-				<option id="marketOnClose" value="Market On Close">Market On Close</option>
-				<option id="trailingStop" value="Trailing Stop" disabled>Trailing Stop</option>
-				<option id="hiddenStop" value="Hidden Stop" disabled>Hidden Stop</option>
-			</select><br>
+			<li class="placeorder">
+	
+				<span class="placeorder">Price Type:</span>
+
+				<select class="placeorder" id="priceType" name="priceType" onChange="enableStops()">
+					<option id="market" value="Market">Market</option>
+					<option id="marketOnClose" value="Market On Close">Market On Close</option>
+					<option id="trailingStop" value="Trailing Stop" disabled>Trailing Stop</option>
+					<option id="hiddenStop" value="Hidden Stop" disabled>Hidden Stop</option>
+				</select>
+			</li>	
 			
 			<%-- NumShares --%>	
-			<p style="color: red;">${errorStrNumShares}</p>
-			Number of Shares:
-			<input type ="text" name="numShares" value="${numShares}"/><br>
+			<li class="placeorder">
+			
+				<span class="placeorder">Shares:</span>
+			
+				<input class="placeorder" type ="text" name="numShares" value="${numShares}" required/><br>
+				<span style="color: red;">${errorStrNumShares}</span>
+			</li>
 			
 			<%-- Price Per Share --%>
-			<p style="color: red;">${errorStrPricePerShare}</p>
-			Price Per Share:
-			<input type="checkbox" id="pricePerShareCheckbox" name="pricePerShareCheckbox" value="checked" onChange="enablePricePerShare()" disabled/>
-			<input type="text" id="pricePerShare" name="pricePerShare" value="${pricePerShare}" disabled/><br>
+			<li class="placeorder">
+			
+				<span class="placeorder">
+					Stop Price:
+					<input type="checkbox" class="placeorder" id="pricePerShareCheckbox" name="pricePerShareCheckbox" value="checked" onChange="enablePricePerShare()" disabled/>
+				</span>
+				
+				<input class="placeorder" type="text" id="pricePerShare" name="pricePerShare" value="${pricePerShare}" disabled/><br>
+				
+				<span style="color: red;">${errorStrPricePerShare}</span>
+			</li>
 			
 			<%-- Percentage --%>
-			<p style="color: red;">${errorStrPercentage}</p>
-			Percentage:
-			<input type="checkbox" id="percentageCheckbox" name="percentageCheckbox" value="checked" onChange="enablePercentage()" disabled/>
-			<input type="text" id="percentage" name="percentage" value="${percentage}" disabled/><br>
+			<li class="placeorder">
+				<span class="placeorder">
+					Percentage:
+					<input type="checkbox" id="percentageCheckbox" name="percentageCheckbox" value="checked" onChange="enablePercentage()" disabled/>
+				</span>
+				<input class="placeorder" type="text" id="percentage" name="percentage" value="${percentage}" disabled/><br>
+				<span style="color: red;">${errorStrPercentage}</span>
 			
-			<input type=submit value="Submit"/>
+			</li>
+			<li class="placeorder">
+				<input type=submit value="Submit"/>
+			</li>
+			</ul>
+			
 			</form>
 		</c:when>
 		<c:otherwise>
 			<p>Cannot place an order without an account. Please talk to your broker to open one.</p>
 		</c:otherwise>
 	</c:choose>
-	<a href="${pageContext.request.contextPath}/customers/orderList">Return to Order List</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/customers/orderList">Return to Order List</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

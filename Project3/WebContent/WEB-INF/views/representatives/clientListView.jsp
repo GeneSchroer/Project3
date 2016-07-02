@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Client List</title>
 </head>
@@ -39,8 +40,8 @@
 		<p>No clients available.</p>
 	</c:otherwise>
 	</c:choose>
-	<a href="${pageContext.request.contextPath}/representatives/createClient">Add Client</a>
-	<a href="${pageContext.request.contextPath}/representatives">Return to representative view</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/createClient">Add Client</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives">Return to representative view</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

@@ -281,7 +281,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 	}
 
 	public static List<Stock> getStockSuggestionList(Connection conn, int clientId) throws SQLException {
-		String sql = "SELECT * FROM Stock"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM Stock"
 				+ " WHERE Type IN"
 				+ " (SELECT S.Type FROM Account A, Client C, Orders O, Stock S, Trade Trd"
 				+ " WHERE C.Id = ?"
@@ -290,11 +292,14 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 				+ " AND Trd.OrderId = O.Id"
 				+ " AND S.StockSymbol = Trd.StockId"
 				+ " GROUP BY S.Type)"
-				+ " LIMIT 20";
+				+ " LIMIT 20;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
-		ResultSet rs = pstm.executeQuery();
-		
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
 			Stock stock = new Stock(
@@ -320,10 +325,18 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 	}
 
 	public static List<TrailingHistory> getTrailingHistory(Connection conn, int orderId) throws SQLException {
-		String sql = "SELECT * FROM TrailHistory WHERE OrderId = ? ORDER BY DateTime ASC";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM TrailHistory"
+				+ " WHERE OrderId = ?"
+				+ " ORDER BY DateTime ASC;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, orderId);
-		ResultSet rs= pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs= pstm.getResultSet();
 		List<TrailingHistory> list = new ArrayList<TrailingHistory>();
 		while(rs.next()){
 			TrailingHistory trailingHistory = new TrailingHistory(
@@ -332,14 +345,19 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 											rs.getFloat("PricePerShare"));
 			list.add(trailingHistory);
 		}
+		conn.commit();
 		return list;
 	}
 
 	public static Transaction findTransaction(Connection conn, int transactionId) throws SQLException {
-		String sql = "SELECT * FROM Transaction WHERE Id = ?";
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM Transaction WHERE Id = ?;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, transactionId);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		if(rs.next()){
 			Transaction transaction = new Transaction(
 											rs.getInt("Id"),
@@ -354,22 +372,23 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 
 	public static List<History> getHiddenStopHistory(Connection conn, String stockId, Timestamp fromDate, Timestamp toDate) throws SQLException {
 		conn.setAutoCommit(false);
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		sql =  " SELECT * FROM History "
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM History "
 				+ " WHERE StockSymbol = ?"
 				+ " AND DateTime >= ?"
 				+ " AND DateTime <= ?"
-				+ " ORDER BY DateTime ASC;";
-		pstm = conn.prepareStatement(sql);
+				+ " ORDER BY DateTime ASC;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stockId);
 		pstm.setTimestamp(2, fromDate);
 		if(toDate!=null)
 			pstm.setTimestamp(3, toDate);
 		else
 			pstm.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
-		ResultSet rs= pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs= pstm.getResultSet();
 		List<History> list = new ArrayList<History>();
 		while(rs.next()){
 			History history = new History(
@@ -378,8 +397,6 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								rs.getFloat("PricePerShare"));
 			list.add(history);
 		}
-		pstm = conn.prepareStatement("COMMIT");
-		pstm.execute();
 		conn.commit();
 		return list;
 	}
@@ -387,12 +404,22 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 	
 
 	public static List<History> getStockHistoryList(Connection conn, String stockSymbol, Date fromDateParsed, Date toDateParsed) throws SQLException {
-		String sql = "SELECT * FROM History WHERE StockSymbol = ? AND DateTime > TIMESTAMP(?) AND DateTime < TIMESTAMP(?) ORDER BY DATETIME ASC";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM History"
+				+ " WHERE StockSymbol = ?"
+				+ " AND DateTime > TIMESTAMP(?)"
+				+ " AND DateTime < TIMESTAMP(?)"
+				+ " ORDER BY DATETIME ASC;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stockSymbol);
 		pstm.setDate(2, fromDateParsed);
 		pstm.setDate(3, toDateParsed);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<History> list = new ArrayList<History>();
 		while(rs.next()){
 			History history = new History(
@@ -402,6 +429,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								);
 			list.add(history);
 		}
+		conn.commit();
 		return list;
 	}
 
@@ -415,17 +443,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 
 	public static Orders findOrder(Connection conn, int orderId) throws SQLException {
 		conn.setAutoCommit(false);
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM Orders WHERE Id = ?;"
+				+ " COMMIT;";
 		
-		sql = "SELECT * FROM Orders WHERE Id = ?";
-		pstm = conn.prepareStatement(sql);
+		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, orderId);
-		ResultSet rs = pstm.executeQuery();
-		sql = "COMMIT";
-		pstm = conn.prepareStatement(sql);
 		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		conn.commit();
 		if(rs.next()){
 			Orders order = new Orders(

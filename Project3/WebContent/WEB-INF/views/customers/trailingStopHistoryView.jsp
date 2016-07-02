@@ -6,19 +6,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/customerStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Trailing Stop History</title>
 </head>
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
-	<h3>Trailing Stop History</h3>
+	<h2>Trailing Stop History</h2>
 	<c:choose>
 		
 		<c:when test="${not empty trailingHistoryList }">
-			<p>Percentage: 
+			
+			<div style="margin: 10px; padding: 3px; display:inline-block; background-color: lightblue;font-size:1.05em;">Percentage: 
 			<fmt:formatNumber value="${order.percentage/100}" type="PERCENT"/> 
-			trailing stop</p>
+			trailing stop</div>
+			
 			<table border="2">
 			<tr>
 				<th>Date Time:</th>
@@ -45,11 +48,13 @@
 				<c:choose>
 				
 				<c:when test="${not empty transaction.dateTime and trailingHistory.dateTime eq transaction.dateTime}">
-					<p style="color: red;">${trailingHistory.pricePerShare}</p>
+					<p style="color: red; text-decoration:underline; font-size:1.2em;">
+					<fmt:formatNumber type="currency" value="${trailingHistory.pricePerShare}"/>
+					</p>
 				</c:when>
 				
 				<c:otherwise>
-					${trailingHistory.pricePerShare}
+					<fmt:formatNumber type="currency" value="${trailingHistory.pricePerShare}"/>
 				</c:otherwise>
 				
 				</c:choose>
@@ -59,7 +64,7 @@
 			</table>
 		</c:when>
 	</c:choose>
-	<a href="${pageContext.request.contextPath}/customers/orderList">Return to Order List</a><br>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/customers/orderList">Return to Order List</a><br>
 	<jsp:include page="_footer.jsp"></jsp:include>
 	
 </body>

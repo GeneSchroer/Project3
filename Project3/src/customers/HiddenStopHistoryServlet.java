@@ -47,7 +47,7 @@ public class HiddenStopHistoryServlet extends HttpServlet{
 		}
 		
 		request.setAttribute("transaction", transaction);
-		System.out.println(list.size());
+		request.setAttribute("order", order);
 		request.setAttribute("hiddenHistoryList", list);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/hiddenStopHistoryView.jsp");
 		dispatcher.forward(request, response);

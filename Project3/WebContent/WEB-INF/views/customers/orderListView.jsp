@@ -21,17 +21,17 @@
 		<table border="1">
 			<tr>
 				<th>Id</th>
-				<th>Stock Symbol</th>
-				<th>NumShares</th>
+				<th>Stock<br/> Symbol</th>
+				<th>Shares</th>
 				<th>Date Placed</th>
 				<th>Date Executed</th>
-				<th>Final Price Per Share</th>
+				<th>Final Price<br/> (Per Share)</th>
 				<th>PriceType</th>
 				<th>OrderType</th>
 			</tr>
 			<c:forEach items="${fullOrderList}" var="fullOrder">
 			<tr>
-				<td>${fullOrder.id}</td>
+				<td style="text-align:center;">${fullOrder.id}</td>
 				<td>${fullOrder.stockId}</td>
 				<td>${fullOrder.numShares}</td>
 				<%--Date Placed --%>
@@ -57,7 +57,7 @@
 				<c:choose>
 				
 					<c:when test="${fullOrder.finalPricePerShare!=0}">
-						${fullOrder.finalPricePerShare}
+						<fmt:formatNumber type="currency" value="${fullOrder.finalPricePerShare}"/>
 					</c:when>
 					<c:otherwise>
 						N/A
@@ -69,12 +69,12 @@
 				<c:choose>
 					<c:when test="${fullOrder.priceType=='Trailing Stop'}">
 						Trailing Stop<br>
-						<a href="trailingStopHistory?id=${fullOrder.id}&tId=${fullOrder.transactionId}">Details</a>
+						<a class="orderdetails" href="trailingStopHistory?id=${fullOrder.id}&tId=${fullOrder.transactionId}">Details</a>
 						
 					</c:when>
 					<c:when test="${fullOrder.priceType=='Hidden Stop'}">
 						${fullOrder.priceType}<br>
-						<a href="hiddenStopHistory?id=${fullOrder.id}&tId=${fullOrder.transactionId}&sId=${fullOrder.stockId}">Details</a>
+						<a class="orderdetails" href="hiddenStopHistory?id=${fullOrder.id}&tId=${fullOrder.transactionId}&sId=${fullOrder.stockId}">Details</a>
 					</c:when>
 					<c:otherwise>
 						${fullOrder.priceType}
@@ -96,8 +96,8 @@
 		<p>No orders have been placed.</p>
 	</c:otherwise>
 </c:choose>
-	<a href="${pageContext.request.contextPath}/customers/placeOrder">Place an order</a><br>
-	<a href="${pageContext.request.contextPath}/customers">Return to customer menu</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/customers/placeOrder">Place an order</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/customers">Return to customer menu</a>
 
 </body>
 </html>

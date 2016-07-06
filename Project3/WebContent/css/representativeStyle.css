@@ -7,13 +7,13 @@
 	
 	
 	/*Positioning*/
+	margin-bottom:25px;
 	overflow:hidden;
 	width: 600px;
 }
 
 .menubar li{
 	display:block;
-	margin-bottom: 25px;
 	float:left;
 }
 
@@ -38,13 +38,14 @@
 }
 
 .quicklinks-content{
+	position:absolute;
 	background-color:silver;	
 	border:solid crimson 1px;
 
 	text-decoration:none;
+	z-index:1;
 	
-	
-	
+	margin-top:-10px;
 	display:none;
 	position:absolute;
 }
@@ -56,6 +57,7 @@ h3{
 	background-color:#f9f9a9;
 	display:inline-block;
 	padding:10px;
+	margin-left: 30px;
 }
 
 
@@ -199,3 +201,43 @@ span.errordetails{
 	display:block;
 	position: relative;
 }
+
+
+
+
+/* DELETE */
+
+body.deleteclient {
+	background-color: #cc2222;
+	
+}
+
+input[type=submit].deleteclient{
+	border:none;
+	padding: 10px;
+	background-color:white;
+	color:black;
+	transition:0.5s;
+}
+
+input[type=submit].deleteclient:hover{
+	background-color: black;
+	color:white;
+	transition:0.5s;
+}
+
+p.deleteclient{
+	background-color:yellow;
+	color:black;
+}
+
+.notavailable{
+	border-radius:3px;
+	
+	display:inline;
+	
+	background-color: silver;
+	padding: 4px;
+}
+
+/* DELETE*/

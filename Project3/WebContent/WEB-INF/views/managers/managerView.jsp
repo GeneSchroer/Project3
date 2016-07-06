@@ -47,9 +47,13 @@
 	<li>
 		<a href="${pageContext.request.contextPath}/managers/mostGeneratedRevenue">View customer and representative that generated most revenue</a><br>
 	</li>
+	<li>
+				<a href="${pageContext.request.contextPath}/managers/backup">Backup Files</a><br>
+		
+	</li>
 	</ul>
 	</div>	
-	<a href="${pageContext.request.contextPath}">Return to main page</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}">Return to main page</a>
 	<jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

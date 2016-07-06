@@ -15,6 +15,8 @@
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
 	<div class="managerform">
+	<h3>Sales Report: Select a date to view</h3>
+	
 	<form method="Post" action="doSalesReport">
 	<ul>
 	<li>
@@ -24,8 +26,11 @@
 		<span class="errordetails" >
 			${errorStrYear}
 		</span> 
-		<span>
-			Year: 
+		<span style="width:60px;">
+			Year 
+			<span class="managertooltip">
+				Select Year
+			</span>
 		</span>
 		<input type="number" name="year" value="${year}" required placeholder="YYYY"/>
 	</li>
@@ -33,8 +38,11 @@
 		<span class="errordetails" >
 			<b>${errorStrMonth}</b>
 		</span> 
-		<span>
-			Month:
+		<span style="width:60px;">
+			Month
+			<span class="managertooltip">
+				Select Month
+			</span>
 		</span>	
 		<input type="number" name="month" value="${month}" required placeholder="MM"/>
 	</li>
@@ -77,7 +85,7 @@
 	
 	</c:when>
 	<c:when test="${empty salesReportList and not empty doSales }">
-		<div class="notfound">No Sales Reports found</div>
+		<p class="nonform">No Sales Reports found</p> <br/>
 	</c:when>
 	<c:otherwise>
 	</c:otherwise>

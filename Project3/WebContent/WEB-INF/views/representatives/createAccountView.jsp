@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeForms.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Create Account</title>
@@ -26,17 +27,29 @@
 	Account number:
 	<input type="text" name="id" value="${id}"/><br>
 	--%>
-	
-	<p style="color: red;">${errorStrDateOpened}</p>
-	Date Opened(yyyy-mm-dd)
-	<input type="text" id = "dateOpened" name="dateOpened" value="${dateOpened}"/> 
-	
-	Or Now:
-	<input type="checkbox" id="now" name="now" value="now" onchange="chooseDate()"/><br>
-	<input type="submit" value="Submit"/>
-
+	<div class="managerform">
+	<ul>
+		<li>
+			<span class="errordetails">
+				${errorStrDateOpened}
+			</span>
+			<span style="width:130px; margin-bottom: 5px;">
+				Date Opened
+			</span>
+			<input type="text" id = "dateOpened" name="dateOpened" value="${dateOpened}" placeholder="YYYY-MM-DD"/> 
+		</li>
+		<li>
+			<span style=" width:120px;height:30px;">
+				Or Now
+			
+				<input type="checkbox" id="now" name="now" value="now" onchange="chooseDate()"/><br>
+			</span>
+		</li>
+		<li>
+			<input type="submit" value="Submit"/>
+		</li>
 	</form>
-		<a href="${pageContext.request.contextPath}/representatives/accountList?id=${clientId}">Return to representative view</a>
+		<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/accountList?id=${clientId}">Return to representative view</a>
     <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

@@ -7,12 +7,12 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeForms.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Create Client</title>
 </head>
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
-	<h1>Create Client View</h1>
+	<h3>Create Client View</h3>
 	
 
 <p style="color: red;">${errorString}</p>
@@ -26,7 +26,10 @@
 	  		${errorStrFirstName}
 	  	</span>
 	  	<span>
-	  		First name
+	  		First Name
+	  		<span class="managertooltip">
+				First name of client
+			</span>
 	  	</span>
 	  	<input type="text" name="firstName" value="${firstName}" required>
   	</li>
@@ -38,7 +41,10 @@
 	  		${errorStrLastName}
 	  	</span>
 	  	<span>
-	  		Last name
+	  		Last Name
+	  		<span class="managertooltip">
+	  			Last name of client
+	  		</span>
 	  	</span>
   		<input type="text" name="lastName" value="${lastName}" required>
   	</li>
@@ -50,6 +56,9 @@
   		</span>
   		<span>
 	 		User Name
+	 		<span class="managertooltip">
+				User name of client
+			</span>
 		</span>
   		<input type="text" name="userName" value="${userName}" required>
 	</li>  
@@ -61,6 +70,9 @@
   		</span>
   		<span>
   			Password
+  			<span class="managertooltip">
+				A temporary password for a client
+			</span>
   		</span>
 	  	<input type="text" name="password" value="${password}" required>
 	</li>
@@ -72,6 +84,9 @@
 	  	</span>
 	  	<span>
 	  		Client SSN
+	  		<span class="managertooltip">
+				Client's social security number
+			</span>
 	  	</span>
 	  	<input type="number" name="id" min="1" max="999999999" value="${id}" required>
   	</li>
@@ -83,6 +98,9 @@
 	  	</span>
 	  	<span>
 	  		Address
+	  		<span class="managertooltip">
+			Client's address
+		</span>
 	  </span>
 	  <input type="text" name="address"value="${address}" required>
 	</li>
@@ -93,6 +111,9 @@
   		</span>
   		<span>
   			City
+  			<span class="managertooltip">
+			Client's city of residence
+		</span>
   		</span>
   		<input type="text" name="city"value="${city}" required>
   	</li>
@@ -103,8 +124,13 @@
 	  	</span>
 	  	<span>
 	  		State
+	  		<span class="managertooltip">
+			Client's state of residence
+		</span>
 	  	</span>
-		<input type="text" name="state"value="${state}" required>
+	  	<select name="state">
+			<jsp:include page="_state.jsp"></jsp:include>
+	  	</select>
   	</li>
   	<li>
   		<span class="errordetails">
@@ -112,6 +138,9 @@
   		</span>
   		<span>
   			Zip Code
+  			<span class="managertooltip">
+			Client's zip code
+		</span>
   		</span>
   		<input type="number" name="zipCode" min="1" max="99999"value="${zipCode}" required>
   	</li>
@@ -121,6 +150,9 @@
   		</span>
  	 	<span>
  		 	Telephone
+ 		 	<span class="managertooltip">
+			Client's telephone number
+		</span>
  	 	</span>
 		<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required><br>
   	</li>
@@ -131,6 +163,9 @@
 	  	</span>
 	  	<span>  	
 	  		Email
+	  		<span class="managertooltip">
+			Client's email address
+		</span>
 	  	</span>
 	  	<input type="text" name="email" value="${email}" required>
   	</li>
@@ -141,15 +176,22 @@
 		</span>
 	  	<span>
 	 		Rating
+	 		<span class="managertooltip">
+			Initial client rating
+		</span>
 	 	</span>
 		<input type="number" name="rating" min="1" value="${rating}" required>
 	</li>
 	<li>
 		<span class="errordetails">
 			${errorStrCreditCardNumber}
+			
 		</span>
 	  	<span style="width:120px; ">
 	  	Credit Card # 
+	  	<span class="managertooltip">
+				Client's credit card number
+			</span>	
 	  	</span>
 	  	<input type="text" name="creditCardNumber" value="${creditCardNumber}" required>
 	</li>

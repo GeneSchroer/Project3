@@ -103,7 +103,34 @@
 		<div style="float:right">You currently have no stocks in your portfolio</div>
 	</c:otherwise>
 	</c:choose>
-	
+	<c:choose>
+	<c:when test="${not empty bestSellerList }">
+		<div  class="portfoliolist">
+			<button class="hasStock">Hover here for best-selling stocks</button>
+			<div class="portfoliolist-content">
+				<div class="bestseller">
+				<table >
+				<c:forEach items="${bestSellerList }" var="bestSeller">
+				<tr>
+					<th>Symbol</th>
+					<th>Total Sold</th>
+				</tr>
+				<tr>
+					<td>
+						${bestSeller.stockId }
+					</td>
+					<td >
+						${bestSeller.totalShares }
+					</td>
+				</tr>
+				</c:forEach>
+				</table>	
+				</div>
+			</div>
+		
+		</div>
+	</c:when>
+	</c:choose>
 	<c:choose>	
 		<c:when test="${not empty accountList}">
 			<form method="POST" action="doPlaceOrder">
@@ -112,7 +139,12 @@
 			
 			<%--AccountId --%>
 			<li class="placeorder">
-				<span class="placeorder">Account</span>
+				<span class="placeorder">
+					Account
+					<span class="customertooltip">
+						The account you wish to use
+					</span>
+				</span>
 				<select class="placeorder" name="accountId">
 					<c:forEach items="${accountList}" var="account">
 						<option value="${account.id}">${account.id}</option>
@@ -123,7 +155,12 @@
 			<%--Stock Symbol --%>
 			<li class="placeorder">
 	
-				<span class="placeorder">Stock:</span>
+				<span class="placeorder">
+					Stock
+					<span class="customertooltip">
+						Select the stock you want
+					</span>
+				</span>
 	
 				<select class="placeorder" name="stockSymbol">
 					<c:forEach items="${stockList}" var="stock">
@@ -141,7 +178,12 @@
 			<%--Order Type --%>
 			<li class="placeorder">
 	
-				<span class="placeorder">Order Type:</span>
+				<span class="placeorder">
+					Order Type
+					<span class="customertooltip">
+						Buy or sell  stock
+					</span>
+				</span>
 	
 				<select class="placeorder" id="orderType" name="orderType" onChange="enablePriceTypes()">
 					<option id="buy" value="Buy">Buy</option>
@@ -152,7 +194,12 @@
 			<%--Price Type --%>
 			<li class="placeorder">
 	
-				<span class="placeorder">Price Type:</span>
+				<span class="placeorder">
+					Price Type
+					<span class="customertooltip">
+						Choose the type of order you wish to place
+					</span>
+				</span>
 
 				<select class="placeorder" id="priceType" name="priceType" onChange="enableStops()">
 					<option id="market" value="Market">Market</option>
@@ -165,7 +212,12 @@
 			<%-- NumShares --%>	
 			<li class="placeorder">
 			
-				<span class="placeorder">Shares:</span>
+				<span class="placeorder">
+					Shares
+					<span class="customertooltip">
+						Choose how many shares you wish to buy/sell
+					</span>
+				</span>
 			
 				<input class="placeorder" type ="text" name="numShares" value="${numShares}" required/><br>
 				<span style="color: red;">${errorStrNumShares}</span>
@@ -175,8 +227,11 @@
 			<li class="placeorder">
 			
 				<span class="placeorder">
-					Stop Price:
+					Stop Price
 					<input type="checkbox" class="placeorder" id="pricePerShareCheckbox" name="pricePerShareCheckbox" value="checked" onChange="enablePricePerShare()" disabled/>
+					<span class="customertooltip">
+						Select a stopping price for either a hidden or trailing stop.
+					</span>
 				</span>
 				
 				<input class="placeorder" type="text" id="pricePerShare" name="pricePerShare" value="${pricePerShare}" disabled/><br>
@@ -187,8 +242,11 @@
 			<%-- Percentage --%>
 			<li class="placeorder">
 				<span class="placeorder">
-					Percentage:
+					Percentage
 					<input type="checkbox" id="percentageCheckbox" name="percentageCheckbox" value="checked" onChange="enablePercentage()" disabled/>
+					<span class="customertooltip">
+						Select a trailing percentage for a trailing stop
+					</span>
 				</span>
 				<input class="placeorder" type="text" id="percentage" name="percentage" value="${percentage}" disabled/><br>
 				<span style="color: red;">${errorStrPercentage}</span>

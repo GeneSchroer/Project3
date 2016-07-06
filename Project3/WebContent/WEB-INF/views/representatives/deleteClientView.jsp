@@ -5,10 +5,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/representativeStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Delete Client</title>
 </head>
-<body>
+<body class="deleteclient">
  
     <jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
@@ -17,11 +18,11 @@
     <form method="POST" action="doDeleteClient">
     <input type="hidden" name="clientId" value="${clientId}">
     
-    <p>Warning: Deleting this client will delete all information associated with him/her, 
+    <p class="deleteclient">Warning: Deleting this client will delete all information associated with him/her, 
     including orders and stock portfolios. Are you sure you wish to proceed?</p>
     
     
-    <input type="submit" value="Delete Client"/>
+    <input class="deleteclient" type="submit" value="Delete Client"/>
     </form>
     </c:when>
     <c:otherwise>

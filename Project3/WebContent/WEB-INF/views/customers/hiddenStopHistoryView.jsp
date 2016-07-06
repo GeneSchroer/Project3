@@ -45,7 +45,7 @@
 					<c:choose>
 						<c:when test="${not empty transaction.dateTime and hiddenHistory.dateTime eq transaction.dateTime}">
 							<span style="color: red;">
-								<fmt:formatNumber type="currency" value="${hiddenHistory.pricePerShare}"/>
+								<fmt:formatNumber type="currency" value="${order.pricePerShare}"/>
 							</span>
 						</c:when>
 						<c:otherwise>

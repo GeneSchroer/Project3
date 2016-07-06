@@ -71,12 +71,13 @@ public class DoCreateStockServlet extends HttpServlet{
 		
 		//Stock Type
 		errorStrType=null;
-		regex="[A-Z][a-z]+";
+		regex="[A-Z][a-z]+[\\s[A-Z][a-z]+]*";
 		if(type==null){
 			hasError=true;
 			errorStrType = "Error: Stock Type cannot be null!";
 		}
 		if(!type.matches(regex)){
+			
 			hasError=true;
 			errorStrType = "Error: Invalid Stock Type!";
 		}

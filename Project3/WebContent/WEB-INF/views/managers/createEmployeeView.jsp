@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerForms.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
 <meta charset="UTF-8">
 <title>Add Employee</title>
@@ -29,177 +30,217 @@
 	<form method="POST" action="doCreateEmployee">
   
   	<!-- Employee Type -->
-	<ul class="employeedetails">
+	<div class="managerform">
+	<ul>
 	
-	<li class="employeedetals">
-		<span class="employeedetails">Type
-		
-		<span class="employeetooltip">Create either another manager or customer representative</span>
-		
-		</span>  
-		
-		
-		<select class="employeedetails" name="userType" >
+	<li>
+	
+		<span class="errordetails" style="color: red;">
+	  		${errorStrEmployeeType}
+	  	</span>
+		<span>
+			Type
+			<span class="managertooltip">
+				Create either a manager or customer representative
+			</span> 
+		</span>
+		<select name="userType" >
 			<option value="Representative">Representative</option>
 		  	<option value="Manager">Manager</option>
 		</select>
 	  
-	  	<span class="errordetails" style="color: red;">
-	  		${errorStrEmployeeType}
-	  	</span>
+	  	
 	 </li> 
 	 
 	 <%-- First Name --%>
-	<li class="employeedetails">
-	<span class="errordetails" style="color: red;">
+	<li>
+	<span class="errordetails" >
 	 	${errorStrFirstName}
 	</span>
-	<span class="employeedetails">
+	<span>
 		First Name
+		<span class="managertooltip">
+			First name of employee
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="firstName" value="${firstName}" required>	
+	<input type="text" name="firstName" value="${firstName}" required>	
 	</li> 
 	  
   
 	<%-- Last Name --%>
-	<li class="employeedetails">
+	<li >
 		<span class="errordetails" style="color: red;">
 	 		${errorStrLastName}
 		</span>
-		<span class="employeedetails">
+		<span >
 	  		Last Name
+	  		<span class="managertooltip">
+	  			Last name of employee
+	  		</span>
 	  	</span>
-	  	<input class="employeedetails" type="text" name="lastName" value="${lastName}" required>	
+	  	<input type="text" name="lastName" value="${lastName}" required>	
 	</li>
 	  
 	
 	<%-- User Name --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrUserName}
 	</span>
-	<span class="employeedetails">
+	<span>
 		User Name
+		<span class="managertooltip">
+			User name of employee
+		</span>
 	</span>
-	  <input class="employeedetails" type="text" name="userName" value="${userName}" required>
+	  <input type="text" name="userName" value="${userName}" required>
 	  
 	</li>
 	
 	<%-- Password --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrPassword}
 	</span>
-	<span class="employeedetails">
+	<span>
 		Password
+		<span class="managertooltip">
+			A temporary password for an employee
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="password" value="${password}" required>
+	<input type="text" name="password" value="${password}" required>
 	</li>
 	  
 	<%-- SSN --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrSSN}
 	</span>
-	<span class="employeedetails">
+	<span>
 		SSN
+		<span class="managertooltip">
+			Employee's social security number
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="SSN" min="1" max="999999999" value="${SSN}" required>
+	<input type="text" name="SSN" min="1" max="999999999" value="${SSN}" required>
 	</li>
 	
 	<%-- Address --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrAddress}
 	</span>
-	<span class="employeedetails">
+	<span >
 		Address
+		<span class="managertooltip">
+			Employee address
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="address"value="${address}" required>
-	
-
+	<input type="text" name="address"value="${address}" required>
 	</li>
 	  
 	<%-- City --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrCity}
 	</span>
-	<span class="employeedetails">
+	<span >
 		City
+		<span class="managertooltip">
+			Employee's city of residence
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="city"value="${city}" required>
+	<input type="text" name="city"value="${city}" required>
 	
 	</li>  
 	  
 	<%-- State --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrState}
 	</span>
-	<span class="employeedetails">
+	<span>
 		State
+		<span class="managertooltip">
+			Employee's state of residence
+		</span>
 	</span>
-	<select class="employeedetails" name="state">
+	<select name="state">
 		<jsp:include page="_state.jsp"></jsp:include>
 	</select>
 	</li>
 	
 	<%-- Zip Code --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrZipCode}
 	</span>
-	<span class="employeedetails">
+	<span >
 		Zip Code
+		<span class="managertooltip">
+			Employee's zip code
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name="zipCode" min="1" max="99999"value="${zipCode}" required placeholder="(#####)">
+	<input type="text" name="zipCode" min="1" max="99999"value="${zipCode}" required placeholder="(#####)">
 	
 	</li>
 	 
 	<%-- Telephone --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrTelephone}
 	</span>
-	<span class="employeedetails">
+	<span >
 		Telephone
+		<span class="managertooltip">
+			Employee's telephone number
+		</span>
 	</span>
-	<input class="employeedetails" type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required placeholder="(###-###-####)">
+	<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required placeholder="(###-###-####)">
 	 
 	
 	</li>  
     
     <%-- Start Date --%>
     <li>
-    <span class="errordetails" style="color: red;">
+    <span class="errordetails">
 		${errorStrStartDate}
 	</span>
-    <span class="employeedetails">
+    <span >
     	Start Date
+    	<span class="managertooltip">
+    		Starting date for employee
+    	</span>
     </span>	
-	<input class="employeedetails" type="text" id="startDate" name="startDate" value="${startDate}" placeholder="(YYYY-MM-DD)" required/>
-	
-	<input type="checkbox" id="now" name="now" onchange="chooseDate()" value="date is now"/>
-	<label for="now">(now)</label>
-    
+	<input type="text" id="startDate" name="startDate" value="${startDate}" placeholder="(YYYY-MM-DD)" required/>
+	<input style="margin-left:175px;" type="checkbox" id="now" name="now" onchange="chooseDate()" value="date is now"/>
+	<span style="margin-left: 200px; width: 80px;">
+		Or Now
+		<span class="managertooltip">
+			Set the start date to today
+		</span>
+    </span>
 	</li>
 	  
 	<%-- Hourly Rate --%>
-	<li class="employeedetails">
+	<li >
 	<span class="errordetails" style="color: red;">
 		${errorStrHourlyRate}
 	</span>
-	<span class="employeedetails">
+	<span>
 		Hourly Rate
+		<span class="managertooltip">
+			Hourly rate of employee
+		</span>
 	</span>
-	<input class="employeedetails" type="number" name="hourlyRate" min="1" value="${hourlyRate}" required>  
+	<input type="number" name="hourlyRate" min="1" value="${hourlyRate}" required>  
 	
   </li>
-  <li class="employeedetails">
-  	<input class="employeedetails" type="submit" value="Submit"/>
+  <li >
+  	<input type="submit" value="Submit"/>
   </li>
   </ul>
+  </div>
   <a class="returnbtn" href = "${pageContext.request.contextPath}/managers/employeeList">Return to employee list</a>
 </form>
 	<jsp:include page="_footer.jsp"></jsp:include>

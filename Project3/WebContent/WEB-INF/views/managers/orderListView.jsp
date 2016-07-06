@@ -14,6 +14,7 @@
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
+	<h3>Search for past orders</h3>
 	
 	<p style="color: red;">${errorString}</p>
 	
@@ -21,7 +22,13 @@
 	<div class="managerform">
 	<ul>
 	<li>
-		<span style="color:crimson;">By Stock</span>
+		<span style="color:crimson;">
+			By Stock
+			<span class="managertooltip">
+				Choose a list of orders by stock
+			</span>
+			
+		</span>
 		<select name="stockSymbol">
 			<option value="null">None</option>
 			<c:forEach items="${stockList}" var="stock">
@@ -32,6 +39,9 @@
 	<li>
 		<span style="color: crimson;width:100px; margin-top:5px;">
 			By Customer
+			<span class="managertooltip">
+				Choose a list of orders by customer
+			</span>
 		</span>
 	</li>
 	

@@ -12,25 +12,31 @@
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
-
-<h3>Stock Suggestions:</h3>
-	<table border="1" cellpadding="1" cellspacing="1">
-	<tr>
-		<th>Symbol:</th>
-		<th>Name:</th>
-		<th>Type:</th>
-		<th>Price Per Share:</th>
-	</tr>
-	<c:forEach items="${stockList}" var="stock">
-		<tr>
-			<td>${stock.stockSymbol}</td>
-			<td>${stock.companyName}</td>
-			<td>${stock.type}</td>
-			<td>${stock.pricePerShare}</td>
-		</tr>
-	</c:forEach>
-	</table>
-
+	<h3>Stock Suggestions:</h3>
+	
+	<c:choose>
+		<c:when test="${not empty stockList }">
+			<table border="1" cellpadding="1" cellspacing="1">
+			<tr>
+				<th>Symbol:</th>
+				<th>Name:</th>
+				<th>Type:</th>
+				<th>Price Per Share:</th>
+			</tr>
+			<c:forEach items="${stockList}" var="stock">
+				<tr>
+					<td>${stock.stockSymbol}</td>
+					<td>${stock.companyName}</td>
+					<td>${stock.type}</td>
+					<td>${stock.pricePerShare}</td>
+				</tr>
+			</c:forEach>
+			</table>
+		</c:when>
+		<c:otherwise>
+			<p>You have no recommendations at this time.</p>
+		</c:otherwise>
+	</c:choose>	
 	<a class="returnbtn" href="${pageContext.request.contextPath}/customers">Return to customers page</a>
 
 

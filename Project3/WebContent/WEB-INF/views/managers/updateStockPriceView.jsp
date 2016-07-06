@@ -37,6 +37,9 @@
 				</span>
 				<span>
 					Share Price
+					<span class="managertooltip">
+						Price per each share of stock
+					</span>
 				</span>
 				<input type="text" name="pricePerShare"  value="${stock.pricePerShare}" required/>
 			</li>	
@@ -48,6 +51,9 @@
 				</span>
 				<span style="width:125px;">
 					Shares Available
+					<span class="managertooltip">
+						Shares that are available in the market
+					</span>
 				</span>
 				<input type="text" name="numShares"  value="${stock.numShares}" required/>
 			</li>

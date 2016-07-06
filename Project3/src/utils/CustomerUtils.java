@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beans.Account;
+import beans.BestSeller;
 import beans.FullOrder;
 import beans.HasStock;
 import beans.History;
@@ -587,6 +588,39 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else
 			return 0;
 	}
+	public static List<BestSeller> getBestSellerList(Connection conn) throws SQLException{
+		conn.setAutoCommit(false);
+		String sql="START TRANSACTION;"
+				+ " SELECT 	Trd1.StockId,"
+				+ " SUM(Trd2.TotalNumShares) AS TotalShares"
+				+ " FROM Trade Trd1" 
+				+ "	INNER JOIN" 	
+				+ "		(SELECT O.Id," 
+				+ " 			SUM(O.Numshares) AS TotalNumShares"
+				+ " 	FROM Orders O"
+				+ " 	WHERE O.OrderType = 'Sell'"
+				+ " 	GROUP BY O.Id"
+				+ "		ORDER BY NumShares DESC"
+				+ " 	LIMIT 5)" 
+				+ " AS Trd2"
+				+ " ON Trd1.OrderId = Trd2.Id;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs =pstm.getResultSet();
+		List<BestSeller> list = new ArrayList<BestSeller>();
+		while(rs.next()){
+			BestSeller bs = new BestSeller(
+								rs.getString("StockId"),
+								rs.getInt("TotalShares")
+								);
+			list.add(bs);
+		}
+		conn.commit();
+		return list;
+	}
+	
 }
 	
 

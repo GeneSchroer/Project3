@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import beans.Employee;
 import utils.ManagerUtils;
 import utils.MyUtils;
 
@@ -27,37 +28,25 @@ public class DeleteEmployeeServlet extends HttpServlet {
             throws ServletException, IOException {
         Connection conn = MyUtils.getStoredConnection(request);
  
-        int id = Integer.parseInt(request.getParameter("id"));
- 
-        String errorString = null;
- 
+        int employeeId = Integer.parseInt(request.getParameter("id"));
+        Employee employee = null;
+        boolean hasClients = false;
         try {
-            ManagerUtils.deleteEmployee(conn, id);
+        	employee = ManagerUtils.findEmployee(conn, employeeId);
+        	hasClients = ManagerUtils.hasClients(conn, employeeId);
+
         } catch (SQLException e) {
             e.printStackTrace();
-            errorString = e.getMessage();
         }
-         
- 
-        // If an error redirected to an error page.
-        if (errorString != null) {
- 
-            // Store the information in the request attribute, before forward to views.
-            request.setAttribute("errorString", errorString);
-            //
-            RequestDispatcher dispatcher = request.getServletContext()
-                    .getRequestDispatcher("/WEB-INF/views/managers/deleteEmployeeErrorView.jsp");
-            dispatcher.forward(request, response);
+         	
+        if(employee!=null){
+        	request.setAttribute("employee", employee);
+        	request.setAttribute("hasClients", hasClients);
         }
- 
-        // If everything nice.
-        // Redirect to the product listing page.        
-        else {
-            response.sendRedirect(request.getContextPath() + "/managers/employeeList");
-        }
- 
+        RequestDispatcher dispatcher = request.getServletContext()
+           	.getRequestDispatcher("/WEB-INF/views/managers/deleteEmployeeView.jsp");
+        dispatcher.forward(request, response);
     }
- 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

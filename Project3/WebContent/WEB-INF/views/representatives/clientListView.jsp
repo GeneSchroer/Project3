@@ -11,7 +11,7 @@
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
-	<h1>Client List</h1>
+	<h3>Client List</h3>
 	<c:choose>
 	<c:when test="${not empty clientList}">
 		<table border="2" cellpadding="5" cellspacing="1">
@@ -37,7 +37,10 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-		<p>No clients available.</p>
+		<br/>
+		<div class="notavailable"><span>You do not have any clients</span></div>
+		<br/>
+		<br/>
 	</c:otherwise>
 	</c:choose>
 	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/createClient">Add Client</a>

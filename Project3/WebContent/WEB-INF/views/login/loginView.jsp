@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
  <head>
+ 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/loginStyle.css">
     <meta charset="UTF-8">
     <title>Login</title>
  </head>
@@ -14,24 +15,34 @@
     <h3>Login Page</h3>
  
     <p style="color: red;">${errorString}</p>
- 
     <form method="POST" action="doLogin">
-       <table border="0">
+    <div class="loginpage">
+       <table>
           <tr>
-             <td>User Name</td>
-             <td><input type="text" name="userName" value= "${userName}" /> </td>
+             <td>
+             	<span>
+             		User Name
+             	</span>
+             </td>
+             <td><input type="text" name="userName" value= "${userName}" required/> </td>
           </tr>
           <tr>
-             <td>Password</td>
-             <td><input type="password" name="password" value= "${password}" /> </td>
+             <td>
+             	<span>
+             		Password
+             	</span>
+             </td>
+             <td><input type="password" name="password" value= "${password}" required/> </td>
           </tr>
           <tr>
              <td colspan ="2">
                 <input type="submit" value= "Submit" />
-                <a href="${pageContext.request.contextPath}/">Cancel</a>
-             </td>
+               
+              	<a href="${pageContext.request.contextPath}/">Cancel</a>
+              </td>
           </tr>
        </table>
+       </div>
     </form>
  
     <p style="color:blue;">User Name/password: WSmith/password(manager), DSmith/password (representative), VDu/password(customer) </p>

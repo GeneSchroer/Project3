@@ -1,0 +1,117 @@
+@CHARSET "ISO-8859-1";
+
+body{
+	background-color: #dddda0;
+	
+}
+.loginpage td{
+	width: 100px;
+}
+.loginpage span{
+	display:inline-block;
+	border-radius:3px;
+	background-color:#bbbbbb;
+	padding: 5px;
+	width: 100px;
+	text-align:center;
+	transition:0.5s;
+}
+.loginpage span:hover{
+	background-color: #555555;
+	color:white;
+	transition:0.5s
+}
+.loginpage input[type=text]{
+	background-color:#cccccc;
+	transition:0.5s;	
+	
+	
+	height: 20px;
+	width: 150px;
+}
+.loginpage input[type=text]:focus{
+	background-color:#ffffff;
+	transition:0.5s;
+}
+.loginpage input[type=password]{
+	background-color:#cccccc;
+	transition:0.5s;	
+	
+	height:20px;
+	width: 150px;
+}
+.loginpage input[type=password]:focus{
+	background-color:#ffffff;
+	transition:0.5s;
+}
+
+.loginpage input[type=submit]{
+	border:none;
+	border-radius: 4px;
+	background-color: #7777dd;
+	color: #eeeeee;
+	display:inline-block;
+	padding: 7px;
+	transition:0.5s;
+}
+.loginpage input[type=submit]:hover{
+	background-color:#444444;
+	color:#dddda0;
+}
+.loginpage a{
+	
+	background-color: #3333aa;
+	border-radius: 4px;
+	color: #eeeeee;
+	display:inline-block;
+	text-decoration:none;
+	padding:4.5px;
+	transition:0.5s;
+}
+.loginpage a:hover{
+	background-color:#444444;
+	color:#dddda0;
+	transition:0.5s;
+}
+
+a.returnbtn{
+	border:solid purple 1px;
+	border-radius:5px;
+	background-color: #e6f420;
+	color:black;
+	display:inline-block;
+	text-decoration:none;
+	padding:10px;
+	transition:0.5s;
+}
+a.returnbtn:hover{
+	background-color: #a69420;
+	color:#dddddd;
+	transition:0.5s;
+}
+
+ul{
+	list-style-type:none;
+	margin-bottom:10px;
+	width:600px;
+	overflow:hidden;
+}
+li{
+	display:block;
+	float:left;
+}
+li a{
+	background-color: #999999;
+	border-radius: 2px;
+	color:black;
+	text-decoration:none;
+	display: block;
+	padding:10px;
+	margin: 0px 5px;
+	transition:0.5s;
+}
+li a:hover{
+	background-color: #616161;
+	color:white;
+	transition:0.5s;
+}

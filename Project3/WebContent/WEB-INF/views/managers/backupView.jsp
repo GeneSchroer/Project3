@@ -1,0 +1,31 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Backup Database</title>
+</head>
+<body>
+	<jsp:include page="_header.jsp"></jsp:include>
+    <jsp:include page="_menu.jsp"></jsp:include>	
+	
+	<span style="display:inline-block; background-color: #333333; color:#cccccc; padding:4px;"
+	>
+		Enter an absolute pathname (eg. C:\Users\Work\backup.sql) to create a backup of the database.
+	
+	</span> <br/>
+	
+	<span style="display:inline-block; background-color: #333333; color:#cccccc; padding:4px;"
+	>Note: For security reasons, the file cannot already exist</span><br/>
+	<form action="doBackup" method="POST">
+		<p style=" display:inline-block;background-color:#333333; color:#ec2323;">${errorStrBackup }</p>
+		<input  type="text" name="fileName" value="${fileName}" required/>
+		<input type="submit" value="Submit"/>
+	</form>
+		<a class="returnbtn" href="${pageContext.request.contextPath}">Return to main page</a>
+	
+	<jsp:include page="_footer.jsp"></jsp:include>
+</body>
+</html>

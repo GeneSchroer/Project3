@@ -14,6 +14,7 @@
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
 
+	<h3>Current and Past Orders</h3>
 <c:choose>
 	<c:when test="${not empty fullOrderList}">
 		

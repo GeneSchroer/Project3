@@ -6,6 +6,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/customerForms.css">
+
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/customerStyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
@@ -44,32 +46,63 @@
 <jsp:include page="_header.jsp"></jsp:include>
 </head>
 <body>
-	<nav>
     <jsp:include page="_menu.jsp"></jsp:include>
-	</nav>
 	<%--Form to select a stock and choose which one to use--%>
 	<c:choose>
 		<c:when test="${not empty haveStocks}">
 			<form method="POST" action="doStockHistory" onsubmit="return validate()">
-			<span>Select Stock:</span>			
-			<select name="stockSymbol">
-				<c:forEach items="${stockList}" var="stock">
-					<option value="${stock.stockSymbol}">${stock.stockSymbol} ${stock.companyName}</option>
+			<div class="managerform">
+			<ul>
 			
-				</c:forEach>
-			</select><br>
-			<p>Date (YYYY-MM-DD)</p>
-			
+			<li>
+				<span style="margin-bottom:5px;">
+					Stock
+					<span class="managertooltip">
+						Choose which stock to view
+					</span>
+				</span>			
+				<select name="stockSymbol">
+					<c:forEach items="${stockList}" var="stock">
+						<option value="${stock.stockSymbol}">${stock.stockSymbol} ${stock.companyName}</option>
+				
+					</c:forEach>
+				</select>
+			</li>
+			<li>
+				<span>
+					Date
+					<span class="managertooltip">
+						Choose the range of dates to view
+					</span>
+				</span>
+			</li>			
 			<%--From Date --%>
-			From:<br/>
-			<span id="errorStrFromDate" style="color: red;">${errorStrFromDate}</span><br/>
-			<input id="fromDate" type="text" name="fromDate" value="${fromDate}" required/><br>
-			
+			<li>
+				<span class="errordetails" id="errorStrFromDate" style="color: red;">${errorStrFromDate}</span>
+				<span>
+					From
+					<span class="managertooltip">
+						All dates after this
+					</span>
+				</span>
+				<input id="fromDate" type="text" name="fromDate" value="${fromDate}" required/>
+			</li>
 			<%--To Date --%>
-			To:<br/>			
-			<span id="errorStrToDate" style="color: red;">${errorStrToDate}</span><br/>
-			<input id="toDate" type="text" name="toDate" value="${toDate}" required/>
-			<input type="submit" value="Submit"/>
+			<li>
+				<span class="errordetails" id="errorStrToDate" style="color: red;">${errorStrToDate}</span>
+				<span>
+					To
+					<span class="managertooltip">
+						All dates before this
+					</span>
+				</span>
+				<input id="toDate" type="text" name="toDate" value="${toDate}" required/>
+			</li>
+			<li>
+				<input type="submit" value="Submit"/>
+			</li>
+		</ul>
+		</div>
 			</form>
 			
 			
@@ -93,7 +126,7 @@
 			
 		</c:when>
 		
-		<c:otherwise> There's no stocks available</c:otherwise>
+		<c:otherwise> There are no stocks available<br/></c:otherwise>
 		
 	</c:choose>
 		<a class="returnbtn" href="${pageContext.request.contextPath}/customers">Return to customer menu</a>

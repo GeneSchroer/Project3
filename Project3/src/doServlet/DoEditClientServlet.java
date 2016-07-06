@@ -87,12 +87,6 @@ public class DoEditClientServlet extends HttpServlet{
 			errorStrCity = "Error: Invalid City!";
 		}
 		
-		//State
-		errorStrState=null;
-		if(state==null|| !state.matches(regex)){
-			hasError=true;
-			errorStrState = "Error: Invalid State!";
-		}
 		
 		//Zip Code
 		try{
@@ -158,7 +152,8 @@ public class DoEditClientServlet extends HttpServlet{
 			errorStrId="Invalid Id!";
 		}
 		
-		
+		System.out.println(hasError);
+
 		
 		
 		String errorString = null;
@@ -184,13 +179,13 @@ public class DoEditClientServlet extends HttpServlet{
 			request.setAttribute("errorStrFirstName", errorStrFirstName);
 			request.setAttribute("errorStrAddress", errorStrAddress);
 			request.setAttribute("errorStrCity", errorStrCity);
-			request.setAttribute("errorStrState", errorStrState);
 			request.setAttribute("errorStrZipCode", errorStrZipCode);
 			request.setAttribute("errorStrTelephone", errorStrTelephone);
 			request.setAttribute("errorStrEmail", errorStrEmail);
 			request.setAttribute("errorStrRating", errorStrRating);	request.setAttribute("errorStrId", errorStrId);
 			request.setAttribute("errorStrCreditCardNumber", errorStrCreditCardNumber);
 							
+			request.setAttribute("SSN", id);
 			request.setAttribute("lastName", lastName);
 			request.setAttribute("firstName", firstName);
 			request.setAttribute("address", address);

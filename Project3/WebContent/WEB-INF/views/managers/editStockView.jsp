@@ -39,8 +39,11 @@
 				<span class="errordetails">
 					${errorStrCompanyName}
 				</span> 
-				<span style="width:120px;">
-					Company Name:
+				<span>
+					Name
+					<span class="managertooltip">
+						Company name of the stock
+					</span>
 				</span>
 				<input type="text" name="companyName" value="${companyName}" required>
 			</li>
@@ -51,9 +54,14 @@
 					${errorStrType}
 				</span> 
 				<span>
-					Stock Type:
+					Type
+					<span class="managertooltip">
+						Type of stock (e.g. Automobile, Computer, etc.)<div></div>
+						  Note: First letter must be uppercase
+						
+					</span>
 				</span>
-				<input type="text" name="type" value="${type}" required>
+				<input type="text" name="type" value="${type}" placeholder="First Letter Is Uppercase" required>
 	  		</li>
 	  		<li>
 				<input type="submit" value="Submit"/>

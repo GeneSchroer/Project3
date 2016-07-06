@@ -43,10 +43,11 @@
 
 	text-decoration:none;
 	
-	
+	margin-top:-10px;
 	
 	display:none;
 	position:absolute;
+	z-index:1;
 }
 
 /* End of Menu Bar related sheets*/
@@ -138,7 +139,7 @@ input[type=submit].employeedetails:hover{
 	transition:0.5s;
 }
 body{
-	background-color: #1f03a3;
+	background-color: #1f73c3;
 }
 
 table{
@@ -204,3 +205,40 @@ span.errordetails{
 	display:block;
 	position: relative;
 }
+
+/* DELETE */
+
+body.deleteclient {
+	background-color: #cc2222;
+	
+}
+
+input[type=submit].deleteclient{
+	border:none;
+	padding: 10px;
+	background-color:white;
+	color:black;
+	transition:0.5s;
+}
+
+input[type=submit].deleteclient:hover{
+	background-color: black;
+	color:white;
+	transition:0.5s;
+}
+
+p.deleteclient{
+	background-color:yellow;
+	color:black;
+}
+
+.notavailable{
+	border-radius:3px;
+	
+	display:inline;
+	
+	background-color: silver;
+	padding: 4px;
+}
+
+/* DELETE*/

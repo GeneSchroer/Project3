@@ -1,11 +1,13 @@
 
 package utils;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import beans.SalesReport;
 import beans.Stock;
 import beans.SummaryListing;
 import beans.UserAccount;
+import conn.MySQLConnUtils;
 //Add employee information
 public class ManagerUtils {
 
@@ -55,69 +58,55 @@ public class ManagerUtils {
 	}
 	
 	public static void addEmployee(Connection conn, Employee employee, Location location, UserAccount user) throws SQLException{
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " INSERT IGNORE INTO Location(ZipCode, City, State)"
+				+ " VALUES(?, ?, ?);"
+				+ " INSERT INTO Person(SSN, LastName, FirstName, Address, ZipCode,"
+				+ " Telephone)"
+				+ " VALUES (?, ?, ?, ?, ?, ?);"
+				+ " INSERT INTO Employee(Id, SSN, StartDate, HourlyRate)"
+				+ " VALUES (?, ?, ?, ?);"
+				+ " INSERT INTO UserAccount(UserName, Password, UserType, Id)"
+				+ " VALUES(?, ?, ?, ?);"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		
-		
-		sql = "INSERT IGNORE INTO Location(ZipCode, City, State)"
-				+ " VALUES(?, ?, ?)";
-		pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, location.getZipCode());
 		pstm.setString(2, location.getCity());
 		pstm.setString(3, location.getState());
-		pstm.executeUpdate();
+		pstm.setInt		(4, employee.getSSN());
+		pstm.setString	(5, employee.getLastName());
+		pstm.setString	(6, employee.getFirstName());
+		pstm.setString	(7, employee.getAddress());
+		pstm.setInt		(8, employee.getZipCode());
+		pstm.setString	(9, employee.getTelephone());
+		pstm.setInt		(10, employee.getId());
+		pstm.setInt		(11, employee.getSSN());
+		pstm.setDate	(12, employee.getStartDate());
+		pstm.setFloat	(13, employee.getHourlyRate());
+		pstm.setString(14, user.getUserName());
+		pstm.setString(15, user.getPassword());
+		pstm.setString(16, user.getUserType());
+		pstm.setInt(17, user.getId());
 		
-		sql = "INSERT INTO Person(SSN, LastName, FirstName, Address, ZipCode,"
-				+ " Telephone) "
-				+ "VALUES (?, ?, ?, ?, ?, ?)";
-		pstm = conn.prepareStatement(sql);
-		
-		pstm.setInt		(1, employee.getSSN());
-		pstm.setString	(2, employee.getLastName());
-		pstm.setString	(3, employee.getFirstName());
-		pstm.setString	(4, employee.getAddress());
-		pstm.setInt		(5, employee.getZipCode());
-		pstm.setString	(6, employee.getTelephone());
-		pstm.executeUpdate();
-		
-		sql = "INSERT INTO Employee(Id, SSN, StartDate, HourlyRate)"
-			+ " VALUES (?, ?, ?, ?)";
-		
-		pstm = conn.prepareStatement(sql);
-		
-		pstm.setInt		(1, employee.getId());
-		pstm.setInt		(2, employee.getSSN());
-		pstm.setDate	(3, employee.getStartDate());
-		pstm.setFloat	(4, employee.getHourlyRate());
-		pstm.executeUpdate();
-		
-		sql = "INSERT INTO UserAccount(UserName, Password, UserType, Id)"
-				+ " VALUES(?, ?, ?, ?)";
-		pstm = conn.prepareStatement(sql);
-		pstm.setString(1, user.getUserName());
-		pstm.setString(2, user.getPassword());
-		pstm.setString(3, user.getUserType());
-		pstm.setInt(4, user.getId());
-		pstm.executeUpdate();
-		
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		conn.commit();
 	}
 
 	public static Employee findEmployee(Connection conn, int id) throws SQLException {
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		
-		sql = "SELECT E.* "
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT E.* "
 				+ " FROM Employee E "
-				+ "WHERE E.Id = ?";
-		pstm = conn.prepareStatement(sql);
+				+ " WHERE E.Id = ?;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, id);
-		ResultSet rs = pstm.executeQuery();
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		pstm.getMoreResults();
+		
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			int eId = rs.getInt("id");
 			int SSN = rs.getInt("SSN");
@@ -139,17 +128,20 @@ public class ManagerUtils {
 	}
 
 	public static Person findPerson(Connection conn, int PSSN) throws SQLException {
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT P.*"
+				+ " FROM Person P"
+				+ " WHERE P.SSN = ?;"
+				+ " COMMIT;";
 		
-		sql = "SELECT P.* FROM Person P WHERE P.SSN = ?";
-		pstm = conn.prepareStatement(sql);
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		
 		pstm.setInt(1, PSSN);
-		ResultSet rs = pstm.executeQuery()
-				;
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			int SSN = rs.getInt("SSN");
 			String lastName = rs.getString("LastName");
@@ -166,114 +158,70 @@ public class ManagerUtils {
 	}
 
 	public static void updateEmployee(Connection conn, Employee employee, Location location) throws SQLException{
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " INSERT IGNORE INTO Location(ZipCode, City, State)"
+				+ " VALUES(?, ?, ?);"
+				+ " UPDATE EmployeeInfo "
+				+ " SET LastName=?, FirstName=?, Address=?, ZipCode=?, Telephone=? "
+				+ " WHERE Id=?;"
+				+ " UPDATE EmployeeInfo"
+				+ " SET HourlyRate = ?"
+				+ " WHERE Id = ?;"
+				+ " COMMIT;";
+
 		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt		(1, location.getZipCode());
+		pstm.setString	(2, location.getCity());
+		pstm.setString	(3, location.getState());
+		pstm.setString	(4, employee.getLastName());
+		pstm.setString	(5, employee.getFirstName());
+		pstm.setString	(6, employee.getAddress());
+		pstm.setInt		(7, employee.getZipCode());
+		pstm.setString	(8, employee.getTelephone());
+		pstm.setInt		(9, employee.getId());
+		pstm.setInt		(10, employee.getHourlyRate());
+		pstm.setInt		(11, employee.getId());
 		pstm.execute();
-		sql = "INSERT IGNORE INTO Location(ZipCode, City, State)"
-				+ "VALUES(?, ?, ?)";
-		pstm = conn.prepareCall(sql);
-		pstm.setInt(1, location.getZipCode());
-		pstm.setString(2, location.getCity());
-		pstm.setString(3, location.getState());
-		pstm.executeUpdate();
-		
-		sql = "UPDATE EmployeeInfo "
-				+ "SET LastName=?, FirstName=?, Address=?, ZipCode=?,"
-				+ " Telephone=? "
-				+ " WHERE Id=?";
-		pstm = conn.prepareStatement(sql);
-		
-		pstm.setString	(1, employee.getLastName());
-		pstm.setString	(2, employee.getFirstName());
-		pstm.setString	(3, employee.getAddress());
-		pstm.setInt		(4, employee.getZipCode());
-		pstm.setString	(5, employee.getTelephone());
-		pstm.setInt		(6, employee.getId());
-		pstm.executeUpdate();
-		
-		sql = "UPDATE EmployeeInfo SET HourlyRate = ? WHERE Id = ?";
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, employee.getHourlyRate());
-		pstm.setInt(2, employee.getId());
-		pstm.executeUpdate();
-		pstm = conn.prepareStatement("COMMIT");
-		pstm.execute();
+		conn.commit();
 	}
 	public static List<Stock> getStockList(Connection conn) throws SQLException{
-			String sql = "START TRANSACTION";
-			PreparedStatement pstm = conn.prepareCall(sql);
-			pstm.execute();
-			sql = "SELECT * FROM Stock";
-			pstm = conn.prepareStatement(sql);
-			ResultSet rs = pstm.executeQuery();
-			
-			List<Stock> list = new ArrayList<Stock>();
-			while(rs.next()){
-				Stock stock = new Stock(
-								rs.getString("StockSymbol"),
-								rs.getString("CompanyName"),
-								rs.getString("Type"),
-								rs.getFloat("PricePerShare"),
-								rs.getInt("NumShares"));
-				list.add(stock);
-				
-			}
-			pstm = conn.prepareStatement("COMMIT");
-			pstm.execute();
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+			 	+ " SELECT * FROM Stock;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareCall(sql);
+		sql = "SELECT * FROM Stock";
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		List<Stock> list = new ArrayList<Stock>();
+		while(rs.next()){
+			Stock stock = new Stock(
+							rs.getString("StockSymbol"),
+							rs.getString("CompanyName"),
+							rs.getString("Type"),
+							rs.getFloat("PricePerShare"),
+							rs.getInt("NumShares"));
+			list.add(stock);
+		}
+			conn.commit();
 			return list;
 	}
-	
-	
-	
-	
-	
-	// Produce a summary listing of revenue generated by a particular stock, stock type, or customer
-	// By particular stock
-	// "select S.StockSymbol, S.CompanyName, sum(Trns.Fee) as Revenue"
-	//	+ " from Stock S, Trade Trd, Transaction Trns"
-	//		+ " where S.StockSymbol = ? and Trd.StockId = S.StockSymbol and Trns.Id = Trd.TransactionId"
-	//			+ " and trns.DateTime not null group by S.StockSymbol, S.CompanyName
-	
-	// by stock type
-	// "select S.Type, sum(Trns.Fee) from Stock S, Trade Trd, Transaction Trns"
-	//	+ " where S.Type = ? and Trd.StockId = S.StockSymbol and Trns.Id = Trd.TransactionId"
-	//		+ " and trns.DateTime not null group by S.Type"
-	
-	// by a particular customer
-	// select C.Id, P.LastName, P.FirstName, SUM(Trns.Free) from Trade Trd, Transaction Trns"
-	// + " where C.Id = ? and P.SSN = C.Id and A.Clinet = C.Id and Trd.AccountId = A.Id"
-	//	+ " and Trns.Id = Trd.TransactionId and Trns.DateTime not null"
-	
-	// Determine which customer representative generated most total revenue
-	// "select P.LastName, P.FirstName, E.Id, sum(Trns.Fee) as Revenue" 
-	// + " from Employee E, Person P, Trade Trd, Transaction Trns:
-	//	+ " where E.SSN = P.SSN and Trd.BrokerId = E.Id and Trns.Id = Trd.TransactionId"
-	//		+ " and Trns.DateTime not null group by E.Id order by desc Revenue limit 1"
-	
-	// Determine which customer generated most total revenue
-	// "select P.LastName, P.FirstName, C.Id, sum(Trns.Fee) as Revenue"
-	// + " Account A, Client C, Person P, Trade Trd, Transaction Trns"
-	//	+ " where C.Id = P.SSN and A.Client = C.Id and Trd.AccountId = A.Id"
-	//		+ " and Trns.Id = Trd.TransactionId and Trns.DateTime not null group by C.Id"
-	//			+ " order by desc Revenue limit 1"
-	
-	// Produce a list of most actively traded stocks
-	// "select count(*) as TimesTraded, S.StockSymbol, S.CompanyName"
-	// + " from Stock S, Trade Trd, Transaction Trns"
-	// 	+ " where S.StockSymbol = Trd.StockId and Trns.Id = Trd.TransactionId"
-	// 		+ " and Trns.DateTime not null group by S.StockSymbol order by desc TimesTraded limit 20"
-	
-	
 	public static Stock findStock(Connection conn, String stockSymbol) throws SQLException {
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM Stock"
+				+ " WHERE StockSymbol = ?;"
+				+ " COMMIT";
+
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		sql = "SELECT * FROM Stock WHERE StockSymbol = ?";
-		pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stockSymbol);
-		ResultSet rs = pstm.executeQuery();
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			Stock stock = new Stock(
 						rs.getString("StockSymbol"),
@@ -288,37 +236,69 @@ public class ManagerUtils {
 				return null;
 		}	
 	public static void updateSharePrice(Connection conn, Stock stock) throws SQLException{
-			String sql = "UPDATE Stock"
-					+ " SET pricePerShare = ?"
-					+ " WHERE stockSymbol = ?";
-			PreparedStatement pstm = conn.prepareStatement(sql);
-			
-			pstm.setFloat	(1, stock.getPricePerShare());
-			pstm.setString	(2, stock.getStockSymbol());
-			pstm.executeUpdate();
-		}
-	
-	public static void deleteEmployee(Connection conn, int id) throws SQLException {
-		String sql = "SELECT SSN"
-				+ " FROM Employee"
-				+ " WHERE id = ?";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " UPDATE Stock"
+				+ " SET pricePerShare = ?"
+				+ " WHERE stockSymbol = ?"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, id);
-		ResultSet rs = pstm.executeQuery();
-		rs.next();
-		int SSN = rs.getInt("SSN");
 		
-		sql = "DELETE FROM Employee WHERE id = ?";
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, id);
-		pstm.executeUpdate();
+		pstm.setFloat	(1, stock.getPricePerShare());
+		pstm.setString	(2, stock.getStockSymbol());
+		pstm.execute();
+		conn.commit();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static boolean deleteEmployee(Connection conn, int brokerId, int SSN) throws SQLException {
+		Date dateNow = new Date(System.currentTimeMillis());
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		boolean backedUp = false;
+		try {
+			backedUp = MySQLConnUtils.backupDatabase("C:\\Users\\Work\\Project3Backup" 
+					+ dateNow.toString() + "--" 
+					+ now.getHours() + "-" + now.getMinutes() + "-" + now.getSeconds() +  ".sql");
+		} catch (ClassNotFoundException | IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		if(!backedUp)
+			return false;
 		
+		conn.setAutoCommit(false);
 		
-		sql = "DELETE FROM Person WHERE SSN = ?";
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, SSN);
-		pstm.executeUpdate();
+		String sql="START TRANSACTION;"
+				+ " DELETE FROM Trade"
+				+ " WHERE BrokerId = ?;"
+				+ " DELETE FROM Transaction"
+				+ " WHERE Id NOT IN"
+				+ "				(SELECT DISTINCT TransactionId"
+				+ "				FROM Trade);"
+				+ " DELETE FROM TrailHistory"
+				+ " WHERE OrderId NOT IN"
+				+ "				(SELECT DISTINCT OrderId"
+				+ "				FROM Trade);"
+				+ " DELETE FROM Orders"
+				+ " WHERE Id NOT IN"
+				+ "				(SELECT DISTINCT OrderId"
+				+ "				FROM Trade);"
+				+ " DELETE FROM Employee"
+				+ " WHERE Id=?;"
+				+ " DELETE FROM Person "
+				+ " WHERE SSN=?;"
+				+ " DELETE FROM UserAccount"
+				+ " WHERE Id=?";
+		
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, brokerId); // Delete all trades with brokerId
+		pstm.setInt(2, brokerId); // delete employee
+		pstm.setInt(3, SSN);//	delete person
+		pstm.setInt(4, brokerId);
+		pstm.execute();
+		conn.commit();
+		return true;
 	}
 	
 	public static List<SalesReport> getSalesReport(Connection conn, String year, String month) throws SQLException{
@@ -359,7 +339,8 @@ public class ManagerUtils {
 	
 	//Produce a list of orders by stock symbol or by customer name
 	public static List<FullOrder>getOrderList(Connection conn, String lastName, String firstName, String stockSymbol) throws SQLException{
-		String sql;
+		conn.setAutoCommit(false);
+		String sql="START TRANSACTION;";
 		PreparedStatement pstm;
 		int parameter=1;
 		//if we only select based on stockSymbol, we can use a simpler statement
@@ -426,19 +407,26 @@ public class ManagerUtils {
 					);
 			list.add(order);
 		}
+		conn.commit();
 		return list;
 	}
 	
 	public static List<String> getStockTypes(Connection conn) throws SQLException{
-		String sql = "SELECT DISTINCT Type FROM Stock";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT DISTINCT Type "
+				+ " FROM Stock;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<String> list = new ArrayList<String>();
 		while(rs.next()){
 			list.add(rs.getString("Type"));
 		}
+		conn.commit();
 		return list;
-		
 	}
 	public static void getSummaryListing
 	(Connection conn, String lastName, String firstName, String type, String stockSymbol){
@@ -461,7 +449,9 @@ public class ManagerUtils {
 	}
 	
 	public static HighRoller findCustomerWithMostRevenue(Connection conn) throws SQLException{
-		String sql = "SELECT P.LastName, P.FirstName, C.Id,"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT P.LastName, P.FirstName, C.Id,"
 				+ " (SUM(Trns.PricePerShare)*SUM(O.NumShares)) AS Revenue"
 				+ " FROM Account A, Client C, Orders O, Person P, Trade Trd, Transaction Trns"
 				+ " WHERE C.Id = P.SSN"
@@ -472,11 +462,15 @@ public class ManagerUtils {
 				+ " AND Trns.DateTime IS NOT NULL"
 				+ " GROUP BY C.Id"
 				+ " ORDER BY Revenue DESC"
-				+ " LIMIT 1";
+				+ " LIMIT 1;"
+				+ " COMMIT;";
 		
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		HighRoller hr = null;
+		conn.commit();
 		if(rs.next()){
 			hr = new HighRoller(
 					rs.getString("LastName"),
@@ -488,7 +482,9 @@ public class ManagerUtils {
 		return null;
 	}
 	public static HighRoller findRepresentativeWithMostRevenue(Connection conn) throws SQLException{
-		String sql = "SELECT P.LastName, P.FirstName, E.Id,"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT P.LastName, P.FirstName, E.Id,"
 				+ " (SUM(Trns.PricePerShare)*SUM(O.NumShares)) AS Revenue"
 				+ " FROM Employee E, Orders O, Person P, Trade Trd, Transaction Trns"
 				+ " WHERE E.SSN = P.SSN"
@@ -498,11 +494,15 @@ public class ManagerUtils {
 				+ " AND Trns.DateTime IS NOT NULL"
 				+ " GROUP BY E.Id"
 				+ " ORDER BY Revenue DESC"
-				+ " LIMIT 1";
+				+ " LIMIT 1;"
+				+ " COMMIT;";
 		
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		HighRoller hr = null;
+		conn.commit();
 		if(rs.next()){
 			hr = new HighRoller(
 					rs.getString("LastName"),
@@ -515,10 +515,18 @@ public class ManagerUtils {
 	}
 
 	public static Location findLocation(Connection conn, Integer zipCode) throws SQLException {
-		String sql = "SELECT * FROM Location L WHERE L.ZipCode = ?";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM Location L"
+				+ " WHERE L.ZipCode = ?;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, zipCode);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			Location location = new Location(
 								rs.getInt("ZipCode"),
@@ -530,44 +538,51 @@ public class ManagerUtils {
 	}
 
 	public static void addStock(Connection conn, Stock stock) throws SQLException {
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " INSERT INTO Stock(StockSymbol, CompanyName, Type, PricePerShare, NumShares)"
+				+ " VALUES(?, ?, ?, ?, ?);"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
 		
-		sql = "INSERT INTO Stock(StockSymbol, CompanyName, Type, PricePerShare, NumShares)"
-				+ " VALUES(?, ?, ?, ?, ?)";
 		pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stock.getStockSymbol());
 		pstm.setString(2, stock.getCompanyName());
 		pstm.setString(3, stock.getType());
 		pstm.setFloat(4, stock.getPricePerShare());
 		pstm.setInt(5, stock.getNumShares());
-		pstm.executeUpdate();
-		
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		conn.commit();
 	}
 
 	public static void editStockName(Connection conn, Stock stock) throws SQLException {
-		String sql = "UPDATE Stock"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " UPDATE Stock"
 				+ " SET CompanyName = ?, TYPE = ?"
-				+ " WHERE StockSymbol = ?";
+				+ " WHERE StockSymbol = ?;"
+				+ " COMMIT";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stock.getCompanyName());
 		pstm.setString(2, stock.getType());
 		pstm.setString(3, stock.getStockSymbol());
-		pstm.executeUpdate();
-		
+		pstm.execute();
+		conn.commit();
 	}
 	public static List<Stock> getMostActivelyTradedStock(Connection conn) throws SQLException{
-		String sql = "SELECT COUNT(*) AS TimesTrades, S.*"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ "SELECT COUNT(*) AS TimesTrades, S.*"
 				+ " FROM Stock S, Trade Trd"
 				+ " WHERE S.StockSymbol = Trd.StockId"
 				+ " GROUPS BY S.StockSymbol"
 				+ " ORDER BY TimesTraded DESC"
-				+ " LIMIT BY 20";
+				+ " LIMIT BY 20"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
 			Stock stock = new Stock(
@@ -578,6 +593,7 @@ public class ManagerUtils {
 							);
 			list.add(stock);
 		}
+		conn.commit();
 		return list;
 	}
 	
@@ -592,22 +608,19 @@ public class ManagerUtils {
 	}
 
 	public static void updateStock(Connection conn, Stock stock) throws SQLException {
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		sql = "UPDATE Stock"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " UPDATE Stock"
 				+ " SET PricePerShare = ?, NumShares = ?"
-				+ " WHERE StockSymbol = ?";
-		pstm = conn.prepareStatement(sql);
-		System.out.println(stock.getPricePerShare());
-		System.out.println(stock.getNumShares());
+				+ " WHERE StockSymbol = ?;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		
 		pstm.setFloat	(1, stock.getPricePerShare());
 		pstm.setInt		(2, stock.getNumShares());
 		pstm.setString	(3, stock.getStockSymbol());
-		pstm.executeUpdate();
-		
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		conn.commit();
 	}
 
 	public static SummaryListing getSummaryListingByStockSymbol(Connection conn, String stockSymbol) throws SQLException {
@@ -677,6 +690,7 @@ public class ManagerUtils {
 	}
 
 	public static SummaryListing getSummaryListingByCustomerName(Connection conn, String firstName, String lastName) throws SQLException{
+		conn.setAutoCommit(false);
 		String sql= "START TRANSACTION;"
 					+ "SELECT	C.Id,"
 					+ "			P.LastName,"
@@ -704,6 +718,7 @@ public class ManagerUtils {
 		pstm.execute();
 		pstm.getMoreResults();
 		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			SummaryListing sumList = new SummaryListing(
 										rs.getInt("Id"),
@@ -714,6 +729,25 @@ public class ManagerUtils {
 			return sumList;
 		}
 		return null;
+	}
+
+	public static boolean hasClients(Connection conn, int employeeId) throws SQLException {
+		conn.setAutoCommit(false);
+		String sql= "START TRANSACTION;"
+				+ "	SELECT *"
+				+ "	FROM Client"
+				+ " WHERE BrokerId = ?;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, employeeId);
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
+		if(rs.next())
+			return true;
+		else
+			return false;
 	}
 		
 

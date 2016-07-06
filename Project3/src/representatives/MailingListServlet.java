@@ -44,7 +44,8 @@ public class MailingListServlet extends HttpServlet {
 		// store the information before forwarding
 		
 		request.setAttribute("errorString", errorString);
-		request.setAttribute("mailingListList", list);
+		if(list!=null && !list.isEmpty())
+			request.setAttribute("mailingListList", list);
 		
 		//Forward to employeeListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/mailingListView.jsp");

@@ -27,6 +27,7 @@ public class DoEditStockServlet extends HttpServlet{
 		String errorStrCompanyName, errorStrType;
 		boolean hasError=false;
 		Stock stock=null;
+		String regex;
 		//error check
 		
 		//Company Name
@@ -36,11 +37,16 @@ public class DoEditStockServlet extends HttpServlet{
 			errorStrCompanyName="Error: Company Name cannot be null!";
 		}
 		
-		//Stock Type
 		errorStrType=null;
-		if(type==null||type.isEmpty()){
+		regex="[A-Z][a-z]+[\\s[A-Z][a-z]+]*";
+		if(type==null){
 			hasError=true;
-			errorStrType="Error: Stock Type cannot be null!";
+			errorStrType = "Error: Stock Type cannot be null!";
+		}
+		if(!type.matches(regex)){
+			
+			hasError=true;
+			errorStrType = "Error: Invalid Stock Type!";
 		}
 		if(!hasError){
 			stock=new Stock(stockSymbol, companyName, type, pricePerShare);

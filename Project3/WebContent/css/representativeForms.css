@@ -22,11 +22,20 @@
 	color:#323232;
 	transition:0.5s;
 }
+.managerform span:hover{
+	background-color: #00dd00;
+	transition:0.5s;
+}
+.managerform input[type=text]:disabled{
+	background-color: #333333;
+	color:white;
+}
 
 .managerform input[type=checkbox]{
 	background:none;
 	display:inline;
-	position:relative;
+	position:absolute;
+	z-index:1;
 }
 
 .managerform input[type=submit]{
@@ -64,7 +73,7 @@
 	width: 150px;
 	position:absolute;
 }
-.managerform select:hover{
+.managerform select:focus{
 	background-color: lightblue;
 	color:#323232;
 }
@@ -82,6 +91,7 @@
 	
 	margin: 0px 0px;
 	text-align:center;
+	transition:0.5s;
 }
 
 .managerform span.errordetails{
@@ -98,3 +108,46 @@
 	position:relative;
 }
 
+.managerform option:disabled{
+	background-color: gray;
+}
+
+span.nonform{
+	border-radius: 2px;
+	display:inline-block;
+	background-color:silver;
+	padding:5px;
+	width: 200px;
+	margin-bottom: 10px;
+	
+}
+
+.managerform span.managertooltip{
+	width: auto;
+	height: auto;
+	background-color: #444444;
+	border-radius: 3px;
+	color: white;
+	display:inline-block;
+	margin-left: -40px;
+	margin-top: -50px;
+	position: absolute;
+	visibility:hidden;
+	z-index:1;
+	transition:0.0s;
+	padding:10px 5px;
+}
+.managerform span:hover span.managertooltip{
+	visibility:visible;
+	
+}
+
+p.nonform{
+	border-radius: 2px;
+	display:inline-block;
+	background-color:silver;
+	padding:5px;
+	width: 200px;
+	margin-bottom: 10px;
+	
+}

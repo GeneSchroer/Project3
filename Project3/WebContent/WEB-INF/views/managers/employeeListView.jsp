@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+   <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+	
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,7 +34,9 @@
 				<td>${employee.lastName}</td>
 				<td>${employee.firstName}</td>
 				<td>${employee.address}</td>
-				<td>${employee.startDate}</td>
+				<td>
+					<fmt:formatDate type="date" value="${employee.startDate}"/>
+				</td>
 				<td>${employee.telephone }</td>
 				<td><a href="employeeDetails?id=${employee.id}">Details</a></td>
 				<c:choose>

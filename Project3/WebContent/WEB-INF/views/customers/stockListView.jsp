@@ -12,9 +12,36 @@
 <body>
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
+    <h3>List of all stocks:</h3>
 	<c:choose>
 	<c:when test="${not empty stockList}">
-		<h3>List of all stocks:</h3>
+		
+		<div style="float:right;"  class="portfoliolist">
+			<button class="hasStock">Hover here for best-selling stocks</button>
+			<div class="portfoliolist-content">
+				<div class="bestseller">
+				<table >
+				<c:forEach items="${bestSellerList }" var="bestSeller">
+				<tr>
+					<th>Symbol</th>
+					<th>Total Sold</th>
+				</tr>
+				<tr>
+					<td>
+						${bestSeller.stockId }
+					</td>
+					<td >
+						${bestSeller.totalShares }
+					</td>
+				</tr>
+				</c:forEach>
+				</table>	
+				</div>
+			</div>
+		
+		</div>
+		
+		
 		<table border="2" cellpadding="5" cellspacing="1">
 			<tr>
 				<th>Stock Symbol</th>
@@ -48,7 +75,7 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-		No stocks are available.
+		<p>No stocks are available.</p>
 	</c:otherwise>
 	</c:choose>
 	<a class="returnbtn" href="${pageContext.request.contextPath}/customers/placeOrder">Place Order</a>

@@ -15,7 +15,16 @@
     <jsp:include page="_menu.jsp"></jsp:include>
 
 	<c:if test="${not empty client}">
-	Name: ${client.firstName} ${client.lastName}
+	<p style="
+		border: solid gold 1px;
+		border-radius:3px;
+		display: inline-block;
+		font-size: 1.1em;
+		background-color: silver;
+		padding: 8px;
+	">
+		Name: ${client.firstName} ${client.lastName}
+	</p>
 	</c:if>
 	<br>
 
@@ -35,12 +44,21 @@
 		</table>
 		
 		</c:when>
-		<c:otherwise>No accounts available</c:otherwise>
+		<c:otherwise>
+			<p style="
+			background-color: black;
+			color: white;
+			display:inline-block;
+			font-size:1.05em;
+			padding: 5px;">
+			No accounts available
+			</p>
+		</c:otherwise>
 	</c:choose>
 	<br>
-	<a href="${pageContext.request.contextPath}/representatives/createAccount?id=${client.id}">Create new account</a>
-	<a href="${pageContext.request.contextPath}/representatives/clientList">Return to client list</a>
-	<a href="${pageContext.request.contextPath}/representatives">Return to representative view</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/createAccount?id=${client.id}">Create new account</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives/clientList">Return to client list</a>
+	<a class="returnbtn" href="${pageContext.request.contextPath}/representatives">Return to representative view</a>
     <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>

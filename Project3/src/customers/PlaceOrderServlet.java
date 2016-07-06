@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import beans.Account;
+import beans.BestSeller;
 import beans.HasStock;
 import beans.Stock;
 import utils.CustomerUtils;
@@ -34,12 +35,15 @@ public class PlaceOrderServlet extends HttpServlet{
 		List<Stock> stockList=null;
 		List<Account> accountList=null;
 		List<HasStock> hasStockList=null;
+		List<BestSeller> bestSellerList=null;
 		try {
 			stockList=CustomerUtils.getStockList(conn);
 			HttpSession session = request.getSession();
 			int clientId =  LoginUtils.getId(session);
 			accountList=CustomerUtils.getAccountList(conn, clientId);
+			
 			hasStockList=CustomerUtils.getStockPortfolio(conn, clientId);
+			bestSellerList=CustomerUtils.getBestSellerList(conn);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -47,6 +51,8 @@ public class PlaceOrderServlet extends HttpServlet{
 		}
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("stockList", stockList);
+		if(bestSellerList!=null && !bestSellerList.isEmpty())
+			request.setAttribute("bestSellerList", bestSellerList);
 		if(accountList!=null && !accountList.isEmpty())
 			request.setAttribute("accountList", accountList);
 		if(hasStockList!=null && !hasStockList.isEmpty())

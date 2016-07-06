@@ -3,8 +3,16 @@
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     
 <div style="padding: 5px;">
- 	<a href="${pageContext.request.contextPath}/">Home</a>
-   |
-   <a href="${pageContext.request.contextPath}/loginPage">Log In</a>
  	
+ 	<ul>
+ 		<li>
+ 		<br>
+ 		</li>
+	 	<li>
+	 		<a href="${pageContext.request.contextPath}/">Home</a>
+	   	</li>
+	   	<li>
+	   		<a href="${pageContext.request.contextPath}/loginPage">Log In</a>
+	 	</li>
+ 	</ul>
 </div>  

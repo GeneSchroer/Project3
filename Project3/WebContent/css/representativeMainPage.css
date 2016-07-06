@@ -1,0 +1,44 @@
+.mainmenu ul{
+	list-style-type:none;
+}
+.mainmenu li{
+	
+}
+
+.mainmenu li a{
+	border-radius: 5px;
+	background-color:#f9f9a9;
+	color: crimson;
+	display:inline-block;
+	border:solid 1px purple;
+	border-collapse: collapse;
+	transition:0.5s;
+	
+	padding: 10px;
+	width:120px;
+	text-decoration:none;
+}
+
+.mainmenu li a:hover{
+	background-color:#c8c878;
+	transition:0.5s;
+}
+
+.mainmenu li .menutooltip{
+	visibility:hidden;
+	width: 120px;
+	background-color: #454545;
+	color:#ffffff;
+	text-align: center;
+	border-radius:6px;
+	padding: 5px 0;
+	left: 20%;
+	margin-left: 90px;
+	margin-bottom:10px;
+	position: absolute;
+	z-index: 1;
+}
+
+.mainmenu li:hover .menutooltip{
+	visibility: visible;
+}

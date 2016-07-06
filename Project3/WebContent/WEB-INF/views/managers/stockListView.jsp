@@ -4,6 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerForms.css">
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>Stock List</title>
@@ -47,7 +48,10 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-		No stocks are available.
+		<p class="nonform">
+			No stocks are available.
+		</p>
+		<br/>
 	</c:otherwise>
 	</c:choose>
 	<a class="returnbtn" href="${pageContext.request.contextPath}/managers/stockList/createStock">Create new stock</a>

@@ -109,18 +109,18 @@ public class RepresentativeUtils {
 	}
 
 	public static Client findClient(Connection conn, int id) throws SQLException {
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM Client WHERE Id = ?;"
+				+ " COMMIT";
+		
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		
-		sql = "select * from Client where id = ?";
-		pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, id);
-		ResultSet rs = pstm.executeQuery();
-		
-		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		
+		conn.commit();
 		if(rs.next()){
 		
 			Person person 			= findPerson(conn, rs.getInt("Id"));
@@ -147,15 +147,19 @@ public class RepresentativeUtils {
 		return null;
 	}
 	public static Person findPerson(Connection conn, int PSSN) throws SQLException {
-		String sql = "START TRANSACTION";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT P.*"
+				+ " FROM Person P"
+				+ " WHERE P.SSN = ?;"
+				+ " COMMIT";
+
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
-		
-		sql = "SELECT P.* FROM Person P WHERE P.SSN = ?";
-		pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, PSSN);
-		ResultSet rs = pstm.executeQuery();
-		
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			Person person = new Person(rs.getInt("SSN"),
 								rs.getString("LastName"),
@@ -236,7 +240,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else 
 			return 0;
 	}
-	public static void deleteClient(Connection conn, int id) throws SQLException {
+	public static boolean deleteClient(Connection conn, int clientId) throws SQLException {
 		//This is a work in progress.
 		
 		// What will likely happen is the foreign keys constraints
@@ -246,43 +250,88 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		// The Client values in the Person table, 
 		// which will cause a chain reaction on each table
 		
+		conn.setAutoCommit(false);
 		
-		String sql = "START TRANSACTION"
+		String sql = "START TRANSACTION;"
+				+ " SELECT Id "
+				+ " FROM Account"
+				+ " WHERE Client=?;"
+				+ "COMMIT;";
 				
-					+" ALTER TABLE Trade"
-					+ " DROP FOREIGN KEY trade_ibfk_1"
-					+ " DROP FOREIGN KEY trade_ibfk_1"
-					+ " DROP FOREIGN KEY trade_ibfk_1"
-					+ " DROP FOREIGN KEY trade_ibfk_1"
-					+ " DROP FOREIGN KEY trade_ibfk_1"
-					+ " ALTER TABLE Trade"
-					+ " ADD FOREIGN KEY temp AccountId REFERENCE"
-					+ " Account";
 		PreparedStatement pstm = conn.prepareStatement(sql);
+		
+		pstm.setInt(1, clientId);
 		pstm.execute();
-		sql = "delete from Client where id = ?";
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		List<Integer> accountList=new ArrayList<Integer>();
+		while(rs.next()){
+			accountList.add(rs.getInt("Id"));
+		}
 		
+		for(int i=0;i<accountList.size(); ++i){
+			int accountId=accountList.get(i);
+			sql = "START TRANSACTION;"
+				+ " DELETE FROM Trade"
+				+ " WHERE AccountId=?;"
+				+ " DELETE FROM Transaction"
+				+ " WHERE Id NOT IN"
+				+ "				(SELECT DISTINCT TransactionId"
+				+ "				 FROM Trade);"
+				+ " DELETE FROM TrailHistory"
+				+ " WHERE OrderId NOT IN"
+				+ "				(SELECT DISTINCT OrderId"
+				+ "				FROM Trade);"
+				+ " DELETE FROM Orders"
+				+ " WHERE Id NOT IN"
+				+ "				(SELECT DISTINCT OrderId"
+				+ "				FROM Trade);"
+				+ " DELETE FROM HasStock"
+				+ " WHERE AccountId=?;"
+				+ " DELETE FROM Account"
+				+ " WHERE Id = ?;"
+				+ " DELETE FROM UserAccount"
+				+ " WHERE Id = ?;"
+				+ " COMMIT";
+		
+			pstm = conn.prepareStatement(sql);
+			pstm.setInt(1, accountId);
+			pstm.setInt(2, accountId);
+			pstm.setInt(3, accountId);
+			pstm.setInt(4, clientId);
+			pstm.execute();
+				}
+		sql= "START TRANSACTION;"
+				+ "DELETE FROM Client"
+				+  " WHERE ID=?;"
+				+ "DELETE FROM Person"
+				+ " WHERE SSN=?;"
+				+ "DELETE FROM UserAccount"
+				+ " WHERE Id=?;"
+				+ "COMMIT;";
 		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, id);
-		pstm.executeUpdate();
-		
-		
-		sql = "delete from Person where SSN = ?";
-		pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, id);
-		pstm.executeUpdate();
-		pstm = conn.prepareStatement("COMMIT");
+		pstm.setInt(1, clientId);
+		pstm.setInt(2, clientId);
+		pstm.setInt(3, clientId);
 		pstm.execute();
+		conn.commit();
+		return true;
 	}
 	public static List<ClientInfo> getMailingList(Connection conn, int brokerId) throws SQLException{
-		String sql = "START TRANSACTION";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.execute();
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM ClientInfo"
+				+ " WHERE BrokerId = ?"
+				+ " ORDER BY LastName ASC;"
+				+ " COMMIT;";
 
-		sql = "SELECT * FROM ClientInfo WHERE BrokerId = ? ORDER BY LastName ASC";
-		pstm = conn.prepareStatement(sql);
+		PreparedStatement pstm = conn.prepareStatement(sql);
+
 		pstm.setInt(1, brokerId);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		List<ClientInfo> list = new ArrayList<ClientInfo>();
 		while(rs.next()){
 			ClientInfo client= new ClientInfo(
@@ -300,16 +349,24 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 									rs.getString("State"));
 			list.add(client);
 		}
-		pstm = conn.prepareStatement("COMMIT");
-		pstm.execute();
+		conn.commit();
 		return list;
 		}
 	public static Stock getStock(Connection conn, String inputStockSymbol) throws SQLException{
-		String sql = "select PricePerShare from Stock where StockSymbol = ?";
+		conn.setAutoCommit(false);
+		
+		String sql = "START TRANSACTION;"
+				+ " SELECT PricePerShare"
+				+ " FROM Stock"
+				+ " WHERE StockSymbol = ?;"
+				+ " COMMIT;";
 		
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, inputStockSymbol);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
+		conn.commit();
 		if(rs.next()){
 			Stock stock = new Stock(rs.getString("stockSymbol"), rs.getString("companyName"), rs.getString("type"), rs.getFloat("pricePerShare"));
 			return stock;
@@ -319,9 +376,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		}
 	}
 	public static List<Stock> getStockList(Connection conn) throws SQLException{
-		String sql = "select * from Stock";
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT *"
+				+ " FROM Stock;"
+				+ " COMMIT";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
@@ -333,8 +396,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			list.add(stock);
 			
 		}
+		conn.commit();
 		return list;
-}
+	}
 
 	public static void recordOrder(Connection conn, String stockSymbol, String orderType, String priceType, Timestamp dateTime,
 			Integer numSharesParsed, Double percentageParsed, Float pricePerShareParsed, int accountId, int brokerId) throws SQLException {
@@ -475,11 +539,16 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.executeUpdate();
 	}
 	public static List<OpenOrder> getOpenOrderList(Connection conn, int brokerId) throws SQLException{
-		String sql = "SELECT O.*, Trd.AccountId AS AccountId, S.StockSymbol, S.CompanyName"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT O.*, Trd.AccountId AS AccountId, S.StockSymbol, S.CompanyName"
 				+ " FROM Orders O, Trade Trd, Transaction Trns, Stock S"
-				+ " WHERE Trd.OrderId = O.Id AND Trd.StockId=S.StockSymbol AND Trd.TransactionId=Trns.Id AND Trns.DateTime is null; ";
+				+ " WHERE Trd.OrderId = O.Id AND Trd.StockId=S.StockSymbol AND Trd.TransactionId=Trns.Id AND Trns.DateTime IS NULL;"
+				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		
 		List<OpenOrder> list = new ArrayList<OpenOrder>();
 		while(rs.next()){
@@ -496,10 +565,13 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			OpenOrder openOrder = new OpenOrder(numShares, pricePerShare, orderId, dateTime, percentage, priceType, orderType, accountId, stockSymbol, companyName);
 			list.add(openOrder);
 		}
+		conn.commit();
 		return list;
 	}
 	public static List<Stock> getStockSuggestionList(Connection conn, int customerId) throws SQLException{
-		String sql = "SELECT * FROM Stock"
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ " SELECT * FROM Stock"
 				+ " WHERE Type IN"
 				+ " (SELECT DISTINCT S.Type FROM Account A, Client C, Orders O, Stock S, Trade Trd"
 				+ " WHERE C.Id = ?"
@@ -508,10 +580,13 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 				+ " AND Trd.OrderId = O.Id"
 				+ " AND S.StockSymbol = Trd.StockId"
 				+ " GROUP BY S.Type)"
-				+ " LIMIT 20";
+				+ " LIMIT 20;"
+				+ " COMMIT";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, customerId);
-		ResultSet rs = pstm.executeQuery();
+		pstm.execute();
+		pstm.getMoreResults();
+		ResultSet rs = pstm.getResultSet();
 		
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
@@ -522,6 +597,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 							rs.getFloat("pricePerShare"));
 			list.add(stock);
 		}
+		conn.commit();
 		return list;
 		
 	}

@@ -6,9 +6,7 @@
  	<c:choose>
  	<c:when test="${not empty loginedUser and loginedUser.userType=='Customer'}">
  	<ul class="menulist">
-   		<li class="menulist">
-   			<a class="menulist" href="${pageContext.request.contextPath}/">Home</a>
-   		</li>
+   		
    		<li class="menulist">
    			<a class="menulist" href="${pageContext.request.contextPath}/customers">Main Page</a>
    		</li>
@@ -16,6 +14,7 @@
 	   		<div id="menubar">
 	   			<a class="menulist">Quick Links</a>
 	   		<div id="menubar-content">
+	   			<a class="menuopt" href="${pageContext.request.contextPath}/customers/orderList">OrderList</a><br/>
 	   			<a class="menuopt" href="${pageContext.request.contextPath}/customers/stockHolding">Portfolio</a><br/>
 				<a class="menuopt" href="${pageContext.request.contextPath}/customers/stockHistory">Stock History</a><br/>
 				<a class="menuopt" href="${pageContext.request.contextPath}/customers/stockList">Stock List</a><br/>
@@ -24,7 +23,7 @@
 	   		</div>
  		</li>
 	   	<li class="menulist">
-	   		<a class="menulist" href="${pageContext.request.contextPath}/customers/orderList">View Orders</a>
+	   		<a class="menulist" href="${pageContext.request.contextPath}/customers/personalInfo">Personal Info</a>
 	   	</li>
    		<li class="menulist">
    			<a class="menulist" href="${pageContext.request.contextPath}/changePassword">Change Password</a>

@@ -4,9 +4,14 @@ import java.sql.Date;
 
 public class Employee extends Person {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private Date startDate;
 	private Integer hourlyRate;
+	
 	public Employee(){
 		id=null;
 		startDate=null;

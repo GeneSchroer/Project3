@@ -21,9 +21,6 @@
 			<a class="mainlist" href="${pageContext.request.contextPath}/customers/stockList">View List of all stocks</a><br/>
 		</li>
 		<li>
-			<a class="mainlist" href="${pageContext.request.contextPath}/customers/bestSellerList">View best seller list</a><br/>
-		</li>
-		<li>
 			<a class="mainlist" href="${pageContext.request.contextPath}/customers/suggestedStock">View list of suggested stocks</a><br/>
 		</li>
 		<li>

@@ -16,46 +16,63 @@
 
 <c:choose>
 	<c:when test="${not empty employeeList}">
+	<div class="tabledetails">
 	<table border="2" cellpadding="5" cellspacing="1">
 		<tr>
 			<th>Id</th>
 			<th>Last Name</th>
 			<th>First Name</th>
-			<th>Address</th>
 			<th>Start Date</th>
 			<th>Telephone</th>
-			<th>Details</th>
 			<th>Edit</th>
 			<th>Delete</th>
+			<th>Move Accounts</th>
 		</tr>
 		<c:forEach items="${employeeList}" var="employee">
 			<tr>
 				<td>${employee.id}</td>
 				<td>${employee.lastName}</td>
 				<td>${employee.firstName}</td>
-				<td>${employee.address}</td>
+					
 				<td>
 					<fmt:formatDate type="date" value="${employee.startDate}"/>
+					<div class="tabledetails-content">
+						<span>
+							${employee.firstName} ${employee.lastName}
+						</span><br/>
+						<span>
+							SSN: ${employee.SSN }
+						</span><br/>
+						<span>
+							${employee.address}
+						</span><br/>
+						<span>
+							Rate: <fmt:formatNumber type="currency" value="${employee.hourlyRate}"/>
+						</span>
+						
+					</div>	
 				</td>
 				<td>${employee.telephone }</td>
-				<td><a href="employeeDetails?id=${employee.id}">Details</a></td>
 				<c:choose>
 				<c:when test="${employee.id!=loginedUser.id }">
 					<td><a href="editEmployee?id=${employee.id}">Edit</a></td>
 					<td><a href="deleteEmployee?id=${employee.id}">Delete</a></td>
+					<td><a href="moveAccount?id=${employee.id}">Move</a></td>
 				</c:when>
 				<c:otherwise>
 					<td>Edit</td>
 					<td>Delete</td>
+					<td>N/A</td>
 				</c:otherwise>
 				
 				</c:choose>
-			
+				
 			</tr>
 		
 		</c:forEach>
 	
 	</table>
+	</div>
 	</c:when>
 	<c:otherwise>No Employees available</c:otherwise>
 		

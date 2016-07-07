@@ -22,6 +22,7 @@ import beans.SalesReport;
 import beans.Stock;
 import beans.SummaryListing;
 import beans.UserAccount;
+import conn.ConnectionUtils;
 import conn.MySQLConnUtils;
 //Add employee information
 public class ManagerUtils {
@@ -250,19 +251,13 @@ public class ManagerUtils {
 		conn.commit();
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static boolean deleteEmployee(Connection conn, int brokerId, int SSN) throws SQLException {
-		Date dateNow = new Date(System.currentTimeMillis());
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-		boolean backedUp = false;
+		boolean backedUp;
 		try {
-			backedUp = MySQLConnUtils.backupDatabase("C:\\Users\\Work\\Project3Backup" 
-					+ dateNow.toString() + "--" 
-					+ now.getHours() + "-" + now.getMinutes() + "-" + now.getSeconds() +  ".sql");
+			backedUp = ConnectionUtils.defaultBackup();
 		} catch (ClassNotFoundException | IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
+			backedUp=false;
 			e.printStackTrace();
-			return false;
 		}
 		if(!backedUp)
 			return false;
@@ -572,12 +567,12 @@ public class ManagerUtils {
 	public static List<Stock> getMostActivelyTradedStock(Connection conn) throws SQLException{
 		conn.setAutoCommit(false);
 		String sql = "START TRANSACTION;"
-				+ "SELECT COUNT(*) AS TimesTrades, S.*"
+				+ " SELECT S.*, COUNT(*) AS TimesTraded "
 				+ " FROM Stock S, Trade Trd"
 				+ " WHERE S.StockSymbol = Trd.StockId"
-				+ " GROUPS BY S.StockSymbol"
+				+ " GROUP BY Trd.StockId"
 				+ " ORDER BY TimesTraded DESC"
-				+ " LIMIT BY 20"
+				+ " LIMIT 5;"
 				+ " COMMIT;";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
@@ -589,7 +584,8 @@ public class ManagerUtils {
 							rs.getString("StockSymbol"),
 							rs.getString("CompanyName"),
 							rs.getString("Type"),
-							rs.getFloat("PricePerShare")
+							rs.getFloat("PricePerShare"),
+							rs.getInt("TimesTraded")
 							);
 			list.add(stock);
 		}
@@ -748,6 +744,21 @@ public class ManagerUtils {
 			return true;
 		else
 			return false;
+	}
+
+	public static boolean moveAccount(Connection conn, int clientId, int brokerId) throws SQLException {
+		conn.setAutoCommit(false);
+		String sql = "START TRANSACTION;"
+				+ "	UPDATE Client"
+				+ " SET BrokerId = ?"
+				+ " WHERE Id = ?;"
+				+ " COMMIT;";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setInt(1, brokerId);
+		pstm.setInt(2, clientId);
+		pstm.execute();
+		conn.commit();
+		return true;
 	}
 		
 

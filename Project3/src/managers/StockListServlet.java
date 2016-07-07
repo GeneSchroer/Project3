@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import beans.MostActive;
 import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
@@ -29,8 +30,10 @@ public class StockListServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String errorString=null;
 		List<Stock> list=null;
+		List<Stock> mostActiveList = null;
 		try{
 			list = ManagerUtils.getStockList(conn);
+			mostActiveList = ManagerUtils.getMostActivelyTradedStock(conn);
 		}catch(SQLException e){
 			e.printStackTrace();
 			errorString = e.getMessage();
@@ -38,9 +41,10 @@ public class StockListServlet extends HttpServlet{
 		
 		//Store the information before forwarding
 		request.setAttribute("errorString", errorString);
-		if(!list.isEmpty())
+		if(list!=null && !list.isEmpty())
 			request.setAttribute("stockList", list);
-		
+		if(mostActiveList!=null && !mostActiveList.isEmpty())
+			request.setAttribute("mostActiveList", mostActiveList );
 		
 		//Forward to stockListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/managers/stockListView.jsp");

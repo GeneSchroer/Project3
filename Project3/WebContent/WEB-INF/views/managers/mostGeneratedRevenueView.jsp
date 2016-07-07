@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+       <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+    
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -22,7 +24,9 @@
 		<td>${bestRepresentative.firstName}</td>
 		<td>${bestRepresentative.lastName}</td>
 		<td>${bestRepresentative.id}</td>
-		<td>$${bestRepresentative.revenue}</td>
+		<td>
+			<fmt:formatNumber type="currency" value="${bestRepresentative.revenue * 0.05}"/>
+		</td>
 	</tr>
 	</table>
 

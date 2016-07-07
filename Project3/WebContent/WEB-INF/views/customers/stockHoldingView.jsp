@@ -35,7 +35,7 @@
 					${stockHold.stockSymbol}
 					</td>
 				<td class="stockdetails">${stockHold.totalShares}
-				<div class="stockdetails-content">
+					<div class="stockdetails-content">
 						<span>
 							Current Share Price: 
 							<fmt:formatNumber type="currency" value="${stockHold.pricePerShare}"/><br/>
@@ -45,7 +45,7 @@
 							<fmt:formatNumber type="currency" value="${stockHold.pricePerShare * stockHold.totalShares }"/><br/>
 						</span>
 					</div>
-						</td>
+				</td>
 			</tr>
 		
 			

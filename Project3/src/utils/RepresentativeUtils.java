@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,6 +21,7 @@ import beans.OpenOrder;
 import beans.Person;
 import beans.Stock;
 import beans.UserAccount;
+import conn.MySQLConnUtils;
 
 public class RepresentativeUtils {
 
@@ -37,7 +39,7 @@ public class RepresentativeUtils {
 		ResultSet rs = pstm.getResultSet();
 		List<Client> list = new ArrayList<Client>();
 		while(rs.next()){
-			Client client = new Client(rs.getInt("SSN"), rs.getString("firstName"), rs.getString("lastName"), rs.getString("address"), rs.getInt("zipCode"), rs.getString("telephone"),
+			Client client = new Client(rs.getInt("SSN"), rs.getString("lastName"), rs.getString("firstName"), rs.getString("address"), rs.getInt("zipCode"), rs.getString("telephone"),
 					rs.getString("email"), rs.getInt("rating"), rs.getString("creditCardNumber"), rs.getInt("BrokerId"));
 			list.add(client);
 		}
@@ -240,7 +242,24 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else 
 			return 0;
 	}
+	@SuppressWarnings("deprecation")
 	public static boolean deleteClient(Connection conn, int clientId) throws SQLException {
+		Date dateNow = new Date(System.currentTimeMillis());
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		boolean backedUp = false;
+		try {
+			backedUp = MySQLConnUtils.backupDatabase("C:\\Users\\Work\\git\\project-3\\Project3\\src\\Project3Backup" 
+					+ dateNow.toString() + "--" 
+					+ now.getHours() + "-" + now.getMinutes() + "-" + now.getSeconds() +  ".sql");
+		} catch (ClassNotFoundException | IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		if(!backedUp)
+			return false;
+		
+		
 		//This is a work in progress.
 		
 		// What will likely happen is the foreign keys constraints

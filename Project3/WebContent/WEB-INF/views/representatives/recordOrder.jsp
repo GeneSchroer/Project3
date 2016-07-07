@@ -130,7 +130,12 @@
 			<div class="managerform">
 			<ul>
 				<li>
-				<span style="width:130px;"class="nonform">Client's stocks</span>
+					<span style="width:130px;"class="nonform">
+					Client's stocks
+					<span class="managertooltip">
+						List of all of a client's stocks
+					</span>
+				</span>
 			<c:choose>
 				<c:when test="${not empty hasStockList}">		
 					<select name="hasStockList">
@@ -181,7 +186,7 @@
 				
 				<%--Order Type --%>
 				<li>
-					<span style="width: 90px; margin-bottom:5px;">
+					<span style="width: 110px; margin-bottom:5px;">
 						Order Type
 						<span class="managertooltip">
 							Choose whether to buy or sell a stock
@@ -194,7 +199,7 @@
 				</li>			
 				<%--Price Type --%>
 				<li>
-					<span>
+					<span style="width: 110px;">
 						Price Type
 						<span class="managertooltip">
 							Choose which type of order to place
@@ -212,7 +217,7 @@
 					<span class="errordetails">
 						${errorStrDateTime}
 					</span>
-					<span>
+					<span style="width: 110px;">
 						DateTime
 						<span class="managertooltip">
 							Date the order was placed
@@ -236,7 +241,7 @@
 					<span class="errordetails">
 						${errorStrNumShares}
 					</span>
-					<span>
+					<span style="width: 110px;">
 						Shares
 						<span class="managertooltip">
 							The number of shares to buy/sell
@@ -250,7 +255,7 @@
 					<span class="errordetails">
 						${errorStrPricePerShare}
 					</span>
-					<span>
+					<span style="width: 110px;">
 						Stop Price
 						<span class="managertooltip">
 							The stop price of a hidden/trailing stop
@@ -264,7 +269,7 @@
 					<span class="errordetails" id="errorStrPercentage" >
 						${errorStrPercentage}
 					</span>
-					<span>
+					<span style="width: 110px;">
 						Percentage
 						<span class="managertooltip">
 							The trailing percentage for a trailing stop

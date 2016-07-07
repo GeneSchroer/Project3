@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
  
 public class MySQLConnUtils {
  
@@ -36,7 +37,16 @@ public static Connection getMySQLConnection()
 	            password);
 	    return conn;
 	}
+	/**
+	 * 
+	 * @param fileLocation - the directory where this backup will be placed
+	 * @return true if the file is 
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static boolean backupDatabase(String fileName) throws ClassNotFoundException, IOException, InterruptedException{
+		
 		Class.forName("com.mysql.jdbc.Driver");
 		String command = "\"C:\\Program Files\\MySQL\\MySQL Server 5.7\\bin\\mysqldump\" --databases -u root --password=BraveNewWorld1 project3 --result-file=" + fileName;
 		Process runtimeProcess=Runtime.getRuntime().exec(command);

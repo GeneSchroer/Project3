@@ -18,18 +18,18 @@
 }
 
 .menubar li a{
-	background-color:#f9f9a9;
+	background-color:#aa99aa;
 	border-radius: 8px;
 	display: block;
 	padding: 10px;
 	text-decoration: none;
-	color: crimson;
+	color: #ffff40;
 	transition:0.5s;
 	
 	margin:5px;
 }
 .menubar li a:hover{
-	background-color: #c8c878;
+	background-color: #996699;
 	transition: 0.5s;
 }
 
@@ -39,7 +39,7 @@
 
 .quicklinks-content{
 	position:absolute;
-	background-color:silver;	
+	background-color:#dddddd;	
 	border:solid crimson 1px;
 
 	text-decoration:none;
@@ -54,7 +54,8 @@
 
 h3{
 	border-radius: 4px;
-	background-color:#f9f9a9;
+	background-color:#aa77aa;
+	color:gold;
 	display:inline-block;
 	padding:10px;
 	margin-left: 30px;
@@ -135,41 +136,41 @@ input[type=submit].employeedetails:hover{
 	transition:0.5s;
 }
 body{
-	background-color: #1f03a3;
+	background-color: #bbbbbb;
 }
 
 table{
 	border-collapse:collapse;
 }
 th{
-	background-color:#f9f9a9;
-	color:black;
+	background-color:#994499;
+	color:#cccc40;
 }
 
 tr{
-	background-color: #504080;
-	color:#dddddd;
+	background-color: #eeeeee;
+	color:#333333;
 	transition: 0.5s;
 }
 
 tr:hover{
-	background-color :#9940b0;	
+	background-color :#cccccc;
 	transition: 0.5s;
 }
 tr:nth-child(odd){
-	background-color: #c3c3c3;
-	color: #504080;
+	background-color: #444444;
+	color: #eeeeee;
 	transition:0.5s;
 }
 tr:nth-child(odd):hover{
-	background-color: #fefefe;
+	background-color: #666666;
 	transition: 0.5s;
 }
 tr a{
 	border-radius:3px;
 	
-	background-color: #fd9050;
-	color:black;
+	background-color: #5588cc;
+	color:gold;
 	text-decoration:none;
 	padding:3px;
 	transition:0.5s;
@@ -177,23 +178,22 @@ tr a{
 
 
 tr a:hover{
-	background-color: #fd6050;
+	background-color: #3366aa;
 	transition:0.5s;
 }
 
 a.returnbtn{
 	border:solid purple 1px;
 	border-radius:5px;
-	background-color: #e6f420;
-	color:black;
+	background-color:#aa77aa;
+	color:gold;
 	display:inline-block;
 	text-decoration:none;
 	padding:10px;
 	transition:0.5s;
 }
 a.returnbtn:hover{
-	background-color: #a69420;
-	color:#dddddd;
+	background-color: #885588;
 	transition:0.5s;
 }
 
@@ -203,7 +203,27 @@ span.errordetails{
 }
 
 
+/*TABLE DETAILS */
+.tabledetails tr {
+   
+}
 
+.tabledetails-content {
+	border: 1px solid blue;
+    display: none;
+    position: absolute;
+    background-color: #b9b9f9;
+    color:#6b6b44;
+    min-width: 160px;
+    padding: 12px 16px;
+    margin: 30px;
+    border-color:red;
+    z-index:1;
+}
+
+.tabledetails tr:hover .tabledetails-content {
+    display: inline-block;
+}
 
 /* DELETE */
 

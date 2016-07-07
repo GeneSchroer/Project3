@@ -7,10 +7,10 @@
 
 .mainmenu li a{
 	border-radius: 5px;
-	background-color:#f9f9a9;
-	color: crimson;
+	background-color:#aa99aa;
+	color: #ffff40;
 	display:inline-block;
-	border:solid 1px purple;
+	border:solid 1px black;
 	border-collapse: collapse;
 	transition:0.5s;
 	
@@ -20,7 +20,7 @@
 }
 
 .mainmenu li a:hover{
-	background-color:#c8c878;
+	background-color:#996699;
 	transition:0.5s;
 }
 

@@ -22,10 +22,7 @@
 	color:#323232;
 	transition:0.5s;
 }
-.managerform span:hover{
-	background-color: #00dd00;
-	transition:0.5s;
-}
+
 .managerform input[type=text]:disabled{
 	background-color: #333333;
 	color:white;
@@ -51,7 +48,8 @@
 }
 .managerform input[type=submit]:hover{
 	display:inline-block;
-	background-color: #bbbbbb;
+	border: solid black 1px;
+	background-color: #ffffff;
 	color:black;
 	transition:0.5s;
 }
@@ -78,10 +76,10 @@
 	color:#323232;
 }
 .managerform span{
-	background-color:#80df80;
-	color:navy;
 	
 	
+	background-color: #406090;
+	color:#cccc40;
 	
 	
 	display: inline-block;
@@ -93,7 +91,11 @@
 	text-align:center;
 	transition:0.5s;
 }
-
+.managerform span:hover{
+	background-color:#40b0e0;
+	color: #555500;
+	transition:0.5s;
+}
 .managerform span.errordetails{
 	background:none;
 	background-color:none;
@@ -115,7 +117,8 @@
 span.nonform{
 	border-radius: 2px;
 	display:inline-block;
-	background-color:silver;
+	background-color:#333333;
+	color:white;
 	padding:5px;
 	width: 200px;
 	margin-bottom: 10px;
@@ -145,7 +148,8 @@ span.nonform{
 p.nonform{
 	border-radius: 2px;
 	display:inline-block;
-	background-color:silver;
+	background-color:#333333;
+	color:white;
 	padding:5px;
 	width: 200px;
 	margin-bottom: 10px;

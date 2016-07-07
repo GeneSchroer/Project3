@@ -4,6 +4,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+	<style>
+		
+	
+	</style>
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerForms.css">
 	<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/managerStyle.css">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -15,6 +19,25 @@
 	<c:choose>
 	<c:when test="${not empty stockList}">
 		<p style="background-color:silver; font-size:2em;display:inline-block; padding: 5px; margin-bottom:10px; border-radius:2px;">Stock List</p>
+		
+		
+		<div class="dropdown" style="float:right;">
+			Most Actively Traded
+			<div class="dropdown-content">
+				<table border="1" cellspacing="4">
+					<tr>
+						 <th>Symbol</th>
+						 <th>Times Traded</th>
+					</tr>
+					<c:forEach items="${mostActiveList}" var="mostActive">
+					<tr>
+						<td>${mostActive.stockSymbol}</td>
+						<td>${mostActive.numShares }</td>
+					</tr>
+					</c:forEach>
+				</table>
+			</div></div>
+		
 		<table border="2" cellpadding="5" cellspacing="1">
 			<tr>
 				<th>Stock Symbol</th>

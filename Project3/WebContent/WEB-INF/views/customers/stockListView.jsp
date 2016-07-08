@@ -20,22 +20,40 @@
 			<button class="hasStock">Hover here for best-selling stocks</button>
 			<div class="portfoliolist-content">
 				<div class="bestseller">
-				<table >
-				<c:forEach items="${bestSellerList }" var="bestSeller">
-				<tr>
-					<th>Symbol</th>
-					<th>Total Sold</th>
-				</tr>
-				<tr>
-					<td>
-						${bestSeller.stockId }
-					</td>
-					<td >
-						${bestSeller.totalShares }
-					</td>
-				</tr>
-				</c:forEach>
-				</table>	
+				Customer Representative with most generated revenue:
+	<table border="2" cellpadding="5">
+	<tr>
+		<th>First Name</th>
+		<th>Last Name</th>
+		<th>Id</th>
+		<th>Revenue</th>
+	</tr>
+	<tr>
+		<td>${bestRepresentative.firstName}</td>
+		<td>${bestRepresentative.lastName}</td>
+		<td>${bestRepresentative.id}</td>
+		<td>
+			<fmt:formatNumber type="currency" value="${bestRepresentative.revenue * 0.05}"/>
+		</td>
+	</tr>
+	</table>
+
+
+Customer with most generated revenue:
+<table border="2" cellpadding="5">
+	<tr>
+		<th>First Name</th>
+		<th>Last Name</th>
+		<th>Id</th>
+		<th>Revenue</th>
+	</tr>
+	<tr>
+		<td>${bestCustomer.firstName}</td>
+		<td>${bestCustomer.lastName}</td>
+		<td>${bestCustomer.id}</td>
+		<td>$${bestCustomer.revenue}</td>
+	</tr>
+	</table>
 				</div>
 			</div>
 		

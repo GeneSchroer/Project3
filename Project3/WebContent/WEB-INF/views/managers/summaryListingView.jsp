@@ -55,6 +55,47 @@
     <jsp:include page="_menu.jsp"></jsp:include>
 	<h3>Revenue Summary</h3>
 	
+	<div style="float:right; margin-right:200px; z-index:2;"  class="dropdown">
+			<button class="hasStock">Hover here for best-selling stocks</button>
+			<div class="dropdown-content">
+				Customer Representative with most generated revenue:
+				<table border="2" cellpadding="5">
+					<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Id</th>
+						<th>Revenue</th>
+					</tr>
+					<tr>
+						<td>${bestRepresentative.firstName}</td>
+						<td>${bestRepresentative.lastName}</td>
+						<td>${bestRepresentative.id}</td>
+						<td>
+							<fmt:formatNumber type="currency" value="${bestRepresentative.revenue * 0.05}"/>
+						</td>
+					</tr>
+				</table>
+				Customer with most generated revenue:
+				<table border="2" cellpadding="5">
+					<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Id</th>
+						<th>Revenue</th>
+					</tr>
+					<tr>
+						<td>${bestCustomer.firstName}</td>
+						<td>${bestCustomer.lastName}</td>
+						<td>${bestCustomer.id}</td>
+						<td>$${bestCustomer.revenue}</td>
+					</tr>
+					</table>
+				</div>
+			</div>
+		
+		</div>
+	
+	
 <p style="color:red;">${errorString}</p>
 <form method="POST"  action="doSummaryListing">
 	<div class="managerform">

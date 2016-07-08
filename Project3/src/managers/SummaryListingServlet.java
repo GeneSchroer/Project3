@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import beans.HighRoller;
 import beans.Stock;
 import utils.ManagerUtils;
 import utils.MyUtils;
@@ -29,9 +30,15 @@ public class SummaryListingServlet extends HttpServlet{
 		String errorString=null;
 		List<Stock> stockList = null;
 		List<String> stockTypeList = null;
+		
+		HighRoller bestRepresentative = null;
+		HighRoller bestCustomer = null;
+			
 		try{
 			stockList = RepresentativeUtils.getStockList(conn);
 			stockTypeList = ManagerUtils.getStockTypes(conn);
+			bestRepresentative = ManagerUtils.findRepresentativeWithMostRevenue(conn);
+			bestCustomer = ManagerUtils.findCustomerWithMostRevenue(conn);
 		}catch(SQLException e){
 			e.printStackTrace();
 			errorString = e.getMessage();
@@ -39,6 +46,8 @@ public class SummaryListingServlet extends HttpServlet{
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("stockSymbolList", stockList);
 		request.setAttribute("stockTypeList", stockTypeList);
+		request.setAttribute("bestRepresentativeList", bestRepresentative);
+		request.setAttribute("bestCustomer", bestCustomer);
 		RequestDispatcher dispatcher = request.getServletContext()
 				.getRequestDispatcher("/WEB-INF/views/managers/summaryListingView.jsp");
 		

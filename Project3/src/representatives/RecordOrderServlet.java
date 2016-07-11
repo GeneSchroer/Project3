@@ -37,11 +37,12 @@ public class RecordOrderServlet extends HttpServlet{
 		int clientId = Integer.parseInt(request.getParameter("clientId"));
 		boolean haveAccount=false;
 		int brokerId = LoginUtils.getId(session);
-		List<Stock> stockList = null;
-		List<HasStock> hasStockList= null;
-		List<Client> clientList = null;
-		List<Account> accountList=null;
+		List<Stock> stockList = null; //list of stocks
+		List<HasStock> hasStockList= null;//list of client's stocks
+		List<Client> clientList = null;//list of clients
+		List<Account> accountList=null;// list of a certain client's accounts
 		try{
+			//get all lists
 			stockList=RepresentativeUtils.getStockList(conn);
 			hasStockList = CustomerUtils.getStockPortfolio(conn, clientId);
 			clientList = RepresentativeUtils.getClientList(conn, brokerId);
@@ -50,6 +51,7 @@ public class RecordOrderServlet extends HttpServlet{
 			e.printStackTrace();
 		}
 		
+		//pass all values to page
 		if(accountList!=null && !accountList.isEmpty()){
 			haveAccount=true;
 			request.setAttribute("accountList", accountList);	}

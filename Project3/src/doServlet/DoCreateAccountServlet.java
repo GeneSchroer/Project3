@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import beans.Account;
 import utils.MyUtils;
 import utils.RepresentativeUtils;
 
@@ -28,29 +27,22 @@ public class DoCreateAccountServlet extends HttpServlet{
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
 		int clientId = Integer.parseInt(request.getParameter("clientId") );
-		//String id = request.getParameter("id"); 
+
 		String dateOpened=request.getParameter("dateOpened");
 		String now = request.getParameter("now");
-		//String errorStrId=null;
 		String errorStrDateOpened=null;
-		//Integer idParsed=null;
 		boolean hasError=false;
-		//error check
 		Date dateOpenedParsed=null;
-		//id
-		/*try{
-			idParsed = Integer.parseInt(id);
-		}catch(Exception e){
-			hasError=true;
-			errorStrId="Error: Invalid Account Id!";
-		}
-		*/
-		//Date Opened
-		//check if dateOpened value is null
+
 		
+		//Date Opened
+		
+		/* If the checkbox was clicked */
+		/* Then the account will be "created" right now*/
 		if(now !=null){
 			dateOpenedParsed = new Date(System.currentTimeMillis());
 		}
+		// Otherwise, it will be created at another time
 		else{
 			try{
 				dateOpenedParsed= Date.valueOf(dateOpened);
@@ -59,7 +51,7 @@ public class DoCreateAccountServlet extends HttpServlet{
 				errorStrDateOpened="Error: Invalid Date!";
 			}
 		}
-		
+		// if there is no error, then add the account
 		if(!hasError){
 			try{
 				RepresentativeUtils.addAccount(conn, dateOpenedParsed, clientId);
@@ -69,11 +61,11 @@ public class DoCreateAccountServlet extends HttpServlet{
 			}
 			
 		}
+		// if there is still no error, return to the client list
+		// otherwise stay on this page but return some error information
 		if(hasError){
 			request.setAttribute("clientId", clientId);
-//			request.setAttribute("id", id);
 			request.setAttribute("dateOpened", dateOpened);
-			//request.setAttribute("errorStrId", errorStrId);
 			request.setAttribute("errorStrDateOpened", errorStrDateOpened);
 			
 			RequestDispatcher dispatcher = request.getServletContext()

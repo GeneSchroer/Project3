@@ -25,11 +25,13 @@ public class DoCreateStockServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
+		//Get data from forms
 		String stockSymbol 		= request.getParameter("stockSymbol");
 		String companyName 		= request.getParameter("companyName");
 		String type 			= request.getParameter("type");
 		String pricePerShare 	= request.getParameter("pricePerShare");
 		String numShares		= request.getParameter("numShares");
+		//these will store the numerical data
 		float pricePerShareParsed=0;
 		int numSharesParsed=0;
 		String errorStrStockSymbol, errorStrCompanyName, errorStrType, errorStrPricePerShare, errorStrNumShares;
@@ -42,6 +44,8 @@ public class DoCreateStockServlet extends HttpServlet{
 		//Stock Symbol
 		errorStrStockSymbol=null;
 		regex="[A-Z]+";
+		//throw error if stock symbol is not uppercase
+		//(eg YHAA, IBM, etc.)
 		if(stockSymbol==null||!stockSymbol.matches(regex)){
 			hasError=true;
 			errorStrStockSymbol = "Error: Invalid Stock Symbol!";
@@ -51,9 +55,9 @@ public class DoCreateStockServlet extends HttpServlet{
 		//check if the stock symbol was taken
 		Stock hasStock=null;
 		try {
+			//throw error if stock symbol is already in use
 			 hasStock = ManagerUtils.findStock(conn, stockSymbol);
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		if (hasStock != null){
@@ -64,13 +68,17 @@ public class DoCreateStockServlet extends HttpServlet{
 		
 		//Company Name
 		errorStrCompanyName=null;
-		if(companyName==null){
+		//Throw error if company name is empty
+		if(companyName==null || companyName.isEmpty()){
 			hasError=true;
 			errorStrCompanyName = "Error: Company Name cannot be null!";
 		}
 		
 		//Stock Type
 		errorStrType=null;
+		//Throw error is stock type is not valid
+		//(eg Automobile, Computer, etc.)
+		//(basically, only first letter is uppercase
 		regex="[A-Z][a-z]+[\\s[A-Z][a-z]+]*";
 		if(type==null){
 			hasError=true;
@@ -84,8 +92,10 @@ public class DoCreateStockServlet extends HttpServlet{
 		
 		//Price Per Share
 		errorStrPricePerShare=null;
+		//throw error is not a valid number
 		try{
 			pricePerShareParsed=Float.parseFloat(pricePerShare);
+			//throw error if price is 0 or less
 			if(pricePerShareParsed<=0){
 				hasError=true;
 				errorStrPricePerShare="Error: Price must be positive!";
@@ -95,11 +105,13 @@ public class DoCreateStockServlet extends HttpServlet{
 			errorStrPricePerShare="Error: Not a valid price!";
 		}
 		
-		//Price Per Share
+		//Num Shares
 		errorStrNumShares=null;
+		//throw error if not a valid number 
 		try{
 			numSharesParsed=Integer.parseInt(numShares);
-			if(pricePerShareParsed < 0){
+			//throw error if number of shares is negative
+			if(numSharesParsed < 0){
 				hasError=true;
 				errorStrNumShares="Error: Shares available cannot be negative!";
 			}
@@ -108,6 +120,7 @@ public class DoCreateStockServlet extends HttpServlet{
 			errorStrNumShares="Error: Not a valid amount!";
 		}
 		
+		// if everything went well, add new stock
 		if(!hasError){
 			stock = new Stock(stockSymbol, companyName, type, pricePerShareParsed, numSharesParsed);
 			try{
@@ -117,6 +130,7 @@ public class DoCreateStockServlet extends HttpServlet{
 				String errorString = e.getMessage();
 			}
 		}
+		// if there was an error, return to page with error messages
 		if(hasError){
 			request.setAttribute("errorStrStockSymbol", errorStrStockSymbol);
 			request.setAttribute("errorStrCompanyName", errorStrCompanyName);
@@ -132,7 +146,7 @@ public class DoCreateStockServlet extends HttpServlet{
 				.getRequestDispatcher("/WEB-INF/views/managers/createStockView.jsp");
 			dispatcher.forward(request, response);
 		}			
-		//If everything worked, redirect to the employeeList
+		//If everything worked, redirect to the stock list
 		else
 			response.sendRedirect(request.getContextPath() + "/managers/stockList");
 			

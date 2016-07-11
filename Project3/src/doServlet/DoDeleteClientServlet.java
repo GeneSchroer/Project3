@@ -27,14 +27,17 @@ public class DoDeleteClientServlet extends HttpServlet{
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
 		int clientId = Integer.parseInt(request.getParameter("clientId"));
-		boolean hasDeleted=false;
+		boolean hasDeleted=false; // boolean to check if person was deleted
 		try{
+			//delete the client, which also backsup database
 			hasDeleted = RepresentativeUtils.deleteClient(conn, clientId);
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+		//if everything went well, return to client list
 		if(hasDeleted)
 			response.sendRedirect(request.getContextPath() + "/representatives/clientList");
+		//otherwise stay on the page
 		else{
 			RequestDispatcher dispatcher = request.getServletContext()
 					.getRequestDispatcher("/WEB-INF/views/representatives/deleteClientView.jsp");

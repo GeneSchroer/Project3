@@ -20,10 +20,8 @@ import utils.MyUtils;
 import utils.RepresentativeUtils;
 
 @WebServlet(urlPatterns={"/customers/personalInfo"})
+// get your personal info
 public class PersonalInfoServlet extends HttpServlet{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,13 +31,14 @@ public class PersonalInfoServlet extends HttpServlet{
 		Client client=null;
 		Location location=null;
 		try {
+			// get the client's information
 			client = RepresentativeUtils.findClient(conn, clientId);
 			location = ManagerUtils.findLocation(conn, client.getZipCode());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		//pass client information to page
 		request.setAttribute("client", client);
 		request.setAttribute("location", location);
 		RequestDispatcher dispatcher = request.getServletContext()

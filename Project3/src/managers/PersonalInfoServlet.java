@@ -26,16 +26,16 @@ public class PersonalInfoServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		HttpSession session = request.getSession();
 		int employeeId = LoginUtils.getId(session);
-		Employee employee=null;
-		Location location=null;
+		Employee employee=null;//your information
+		Location location=null;// your location
 		try {
+			//get your information and your location
 			employee = ManagerUtils.findEmployee(conn, employeeId);
 			location = ManagerUtils.findLocation(conn, employee.getZipCode());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		//pass all information to page
 		request.setAttribute("employee", employee);
 		request.setAttribute("location", location);
 		RequestDispatcher dispatcher = request.getServletContext()

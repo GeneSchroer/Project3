@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import beans.UserAccount;
 import utils.CustomerUtils;
+import utils.LoginUtils;
 import utils.MyUtils;
 
 @WebServlet(urlPatterns={"/doChangePassword"})
@@ -47,7 +48,7 @@ public class DoChangePasswordServlet extends HttpServlet{
 			try{
 				HttpSession session = request.getSession();
 				user = (UserAccount)session.getAttribute("loginedUser");
-				CustomerUtils.changePassword(conn, user.getUserName(), password1);
+				LoginUtils.changePassword(conn, user.getUserName(), password1);
 			}catch(SQLException e){
 				hasError = true;
 				e.printStackTrace();

@@ -22,6 +22,7 @@ import utils.LoginUtils;
 import utils.MyUtils;
 
 @WebServlet(urlPatterns = {"/customers/placeOrder"})
+//Place an order for a stock
 public class PlaceOrderServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	public PlaceOrderServlet(){
@@ -32,11 +33,12 @@ public class PlaceOrderServlet extends HttpServlet{
 		throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String errorString=null;
-		List<Stock> stockList=null;
-		List<Account> accountList=null;
-		List<HasStock> hasStockList=null;
-		List<BestSeller> bestSellerList=null;
+		List<Stock> stockList=null;		// need the list of stocks to buy/sell
+		List<Account> accountList=null;	// need the user's accounts
+		List<HasStock> hasStockList=null;	// user needs to know his own portfolio
+		List<BestSeller> bestSellerList=null; // user may want to know best selling stocks
 		try {
+			//get all lists
 			stockList=CustomerUtils.getStockList(conn);
 			HttpSession session = request.getSession();
 			int clientId =  LoginUtils.getId(session);
@@ -45,10 +47,11 @@ public class PlaceOrderServlet extends HttpServlet{
 			hasStockList=CustomerUtils.getStockPortfolio(conn, clientId);
 			bestSellerList=CustomerUtils.getBestSellerList(conn);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			errorString = e.getMessage();
 		}
+		
+		//pass all values to page
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("stockList", stockList);
 		if(bestSellerList!=null && !bestSellerList.isEmpty())

@@ -11,8 +11,15 @@
 	<jsp:include page="_header.jsp"></jsp:include>
     <jsp:include page="_menu.jsp"></jsp:include>
 	<ul class="mainlist">
+		
+		<li>
+			<a class="mainlist" href="${pageContext.request.contextPath}/customers/placeOrder">Place an Order</a><br/>
+		</li>
 		<li>
 			<a class="mainlist" href="${pageContext.request.contextPath}/customers/stockHolding">View your stock portfolio</a><br/>
+			<div class="menutooltip">
+				View your stock portfolio
+			</div>
 		</li>
 		<li>
 			<a class="mainlist" href="${pageContext.request.contextPath}/customers/stockHistory">Look at history of a stock</a><br/>

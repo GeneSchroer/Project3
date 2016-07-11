@@ -29,8 +29,9 @@ public class EmployeeListServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		
 		String errorString = null;
-		List<Employee> list = null;
+		List<Employee> list = null;//list of employees
 		try{
+			//get list of employees
 			list = ManagerUtils.getEmployeeList(conn);
 		}catch(SQLException e){
 			e.printStackTrace();

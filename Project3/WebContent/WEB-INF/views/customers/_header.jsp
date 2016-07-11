@@ -11,7 +11,13 @@
      Hello <b>${loginedUser.userName}</b><br/>
   
      <form method="POST" action="${pageContext.request.contextPath}/customers/doSearchStocks">
-    <label for="search"> Stock Search:</label> <input id="search" type = "search" name="search" placeholder="Search">
+    	<div class="searchbar">
+    		<span>Stock Search:</span>
+    		<div class="searchbar-content">
+    			Search for a stock by keyword.
+    		</div>
+    	</div>
+    	<input id="search" type = "search" name="search" placeholder="Search">
     </form>
     
    

@@ -29,22 +29,19 @@ public class OrderListServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		String errorString=null;
 		HttpSession session = request.getSession();
 		UserAccount user = (UserAccount)session.getAttribute("loginedUser");
 		
 		int clientId=user.getId();
 		List<FullOrder> fullList=null;
+		//get list of orders
 		try{
 			fullList  = CustomerUtils.getFullOrderList2(conn, clientId);
 		}catch(SQLException e){
 			e.printStackTrace();
-			errorString = e.getMessage();
 		}
 		
 		
-		//request.setAttribute("errorString", errorString);
-		//request.setAttribute("orderList", list);
 		request.setAttribute("fullOrderList", fullList);
 		//Forward to customerOrderListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/customers/orderListView.jsp");

@@ -30,8 +30,9 @@ public class AccountListServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		int clientId = Integer.parseInt(request.getParameter("id"));
 		Client client = null;
-		List<Account> accountList=null;
+		List<Account> accountList=null;//list of client's accounts
 		try {
+			//get client and his/her account list
 			client = RepresentativeUtils.findClient(conn, clientId);
 			accountList = RepresentativeUtils.getAccountList(conn, clientId);
 
@@ -39,7 +40,7 @@ public class AccountListServlet extends HttpServlet{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		//pass values to page
 		request.setAttribute("client", client);
 		request.setAttribute("accountList", accountList);
 		

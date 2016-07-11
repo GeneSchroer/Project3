@@ -27,14 +27,16 @@ private static final long serialVersionUID = 1L;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException{
 		Connection conn=MyUtils.getStoredConnection(request);
-		List<Stock> mostActivelyTradedStocksList=null;
+		List<Stock> mostActivelyTradedStocksList=null; // list of most actively traded stocks
 		
 		try{
+			//get list of stocks
 			mostActivelyTradedStocksList=ManagerUtils.getMostActivelyTradedStock(conn);
 		}catch(SQLException e){
 			e.printStackTrace();
 			
 		}
+		//pass list to the page
 		if(!mostActivelyTradedStocksList.isEmpty())
 			request.setAttribute("mostActivelyTradeStocksList", mostActivelyTradedStocksList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/managers/mostActivelyTradedStocksView.jsp");

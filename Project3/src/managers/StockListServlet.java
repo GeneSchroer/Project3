@@ -29,9 +29,10 @@ public class StockListServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String errorString=null;
-		List<Stock> list=null;
-		List<Stock> mostActiveList = null;
+		List<Stock> list=null;//list of stocks
+		List<Stock> mostActiveList = null; //list of most actively traded stocks
 		try{
+			//get all lists
 			list = ManagerUtils.getStockList(conn);
 			mostActiveList = ManagerUtils.getMostActivelyTradedStock(conn);
 		}catch(SQLException e){

@@ -32,8 +32,9 @@ public class ClientListServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		int brokerId = LoginUtils.getId(session); 
 		String errorString = null;
-		List<Client> list = null;
+		List<Client> list = null; //list of clients
 		try{
+			//get list of clients
 			list = RepresentativeUtils.getClientList(conn, brokerId);
 		}catch(SQLException e){
 		e.printStackTrace();
@@ -46,7 +47,7 @@ public class ClientListServlet extends HttpServlet {
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("clientList", list);
 		
-		//Forward to employeeListView.jsp
+		//Forward to clientListView.jsp
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/clientListView.jsp");
 		dispatcher.forward(request, response);
 	}

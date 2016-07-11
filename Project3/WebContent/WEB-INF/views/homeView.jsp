@@ -21,7 +21,7 @@
 			<a class="returnbtn" href="${pageContext.request.contextPath}/representatives">Customer Representatives</a><br>
 		</c:when>
 		<c:when test ="${not empty loginedUser and loginedUser.userType eq 'Customer'}">
-			<a class="returnbtn" href="${pageContext.request.contextPath}/representatives">Customer Representatives</a><br>
+			<a class="returnbtn" href="${pageContext.request.contextPath}/customers">Customers</a><br>
 		</c:when>
 		
  	</c:choose>

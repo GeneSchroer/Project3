@@ -142,7 +142,7 @@
 			Client's zip code
 		</span>
   		</span>
-  		<input type="number" name="zipCode" min="1" max="99999"value="${zipCode}" required>
+  		<input type="number" name="zipCode" min="1" max="99999"value="${zipCode}" placeholder="#####" required>
   	</li>
   	<li>
   		<span class="errordetails">
@@ -154,7 +154,7 @@
 			Client's telephone number
 		</span>
  	 	</span>
-		<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required><br>
+		<input type="text" name= "telephone" min="1" max="9999999999" value="${telephone}" required placeholder="###-###-####"><br>
   	</li>
   	
   	<li>

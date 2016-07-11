@@ -28,7 +28,7 @@ public class EditStockServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String stockSymbol = request.getParameter("stockSymbol");
 		
-		Stock stock = null;
+		Stock stock = null; // stock to be edited
 		String errorString=null;
 		boolean hasError = false;
 		try{
@@ -46,6 +46,7 @@ public class EditStockServlet extends HttpServlet{
 			response.sendRedirect(request.getServletPath() + "/managers/stockList");
 			return;
 		}
+		//pass values to page
 		if(!hasError){
 		request.setAttribute("errorString", errorString);
 		request.setAttribute("stockSymbol", stock.getStockSymbol());

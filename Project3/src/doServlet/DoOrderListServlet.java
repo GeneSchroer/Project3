@@ -30,8 +30,9 @@ public class DoOrderListServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
+		//Get user information
 		Connection conn = MyUtils.getStoredConnection(request);
-		String errorString=null;
+		String errorString=null;	//strings to hold error messages
 		String errorStrLastName=null;
 		String errorStrFirstName=null;
 		boolean hasError=false;
@@ -70,6 +71,7 @@ public class DoOrderListServlet extends HttpServlet {
 			hasError=true;
 			errorString = "Error: Must include an option!";
 		}
+		//if everything worked, get the order list
 		if(!hasError){
 			try {
 				list = ManagerUtils.getOrderList(conn, lastName, firstName, stockSymbol);

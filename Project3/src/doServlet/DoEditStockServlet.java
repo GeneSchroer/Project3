@@ -20,6 +20,8 @@ public class DoEditStockServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
+		
+		//Get information from form
 		String stockSymbol=request.getParameter("stockSymbol");
 		String companyName=request.getParameter("companyName");
 		String type = request.getParameter("type");
@@ -32,6 +34,7 @@ public class DoEditStockServlet extends HttpServlet{
 		
 		//Company Name
 		errorStrCompanyName=null;
+		//throw error if company name is empty
 		if(companyName==null||companyName.isEmpty()){
 			hasError=true;
 			errorStrCompanyName="Error: Company Name cannot be null!";
@@ -39,6 +42,8 @@ public class DoEditStockServlet extends HttpServlet{
 		
 		errorStrType=null;
 		regex="[A-Z][a-z]+[\\s[A-Z][a-z]+]*";
+		// throw error if not valid stock type
+		//(mainly if first letter is not uppercase)
 		if(type==null){
 			hasError=true;
 			errorStrType = "Error: Stock Type cannot be null!";
@@ -48,6 +53,7 @@ public class DoEditStockServlet extends HttpServlet{
 			hasError=true;
 			errorStrType = "Error: Invalid Stock Type!";
 		}
+		//if all went well, edit the stock
 		if(!hasError){
 			stock=new Stock(stockSymbol, companyName, type, pricePerShare);
 			try{
@@ -57,6 +63,7 @@ public class DoEditStockServlet extends HttpServlet{
 				String errorString = e.getMessage();
 			}
 		}
+		// if error occured, stay on page and pass error messages
 		if(hasError){
 			request.setAttribute("stockSymbol", stockSymbol);
 			request.setAttribute("companyName", companyName);
@@ -69,7 +76,7 @@ public class DoEditStockServlet extends HttpServlet{
 					.getRequestDispatcher("/WEB-INF/views/managers/editStockView.jsp");
 			dispatcher.forward(request, response);
 		}
-		//If everything worked, redirect to the employeeList
+		//If everything worked, redirect to the stockList
 		else{
 			response.sendRedirect(request.getContextPath() + "/managers/stockList");
 		}

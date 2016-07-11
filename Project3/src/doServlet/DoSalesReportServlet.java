@@ -27,23 +27,31 @@ public class DoSalesReportServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		String errorString=null;
+		
+		String errorString=null;// stringts to pass error messages
 		String errorStrMonth=null;
 		String errorStrYear=null;
+		//booleans to track stuff
 		boolean hasError=false;
 		boolean doSales=true;
-		String regex=null;
-		List<SalesReport> list = null;
+		List<SalesReport> list = null; //holds the Sales Reports
+
+		//get user inputs
 		String year = request.getParameter("year");
 		String month = request.getParameter("month");
+		
+		//Year
+		//throw error if this is not a valid year
 		try{
 			Integer.parseInt(year);
 		}catch(Exception e){
 			hasError=true;
 			errorStrYear="Error: Invalid year";
 		}
+		// throw an error if not a number
 		try{
 			int monthParsed= Integer.parseInt(month);
+			//throw error if not a valid month
 			if(monthParsed<0 || monthParsed>12){
 				hasError=true;
 				errorStrMonth="Error: Invalid month!";
@@ -53,7 +61,7 @@ public class DoSalesReportServlet extends HttpServlet {
 			errorStrMonth="Error: Invalid month!";
 		}
 		
-		
+		//if all went well, get the list of Sales Reports
 		if(!hasError){
 			try{
 				list = ManagerUtils.getSalesReport(conn, year, month);

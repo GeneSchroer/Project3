@@ -20,10 +20,11 @@ a.returnbtn:hover{
 }
 
 .portfoliolist{
-	
+	display:inline-block;
 }
 .portfoliolist-content{
 	display:none;	
+	
 }
 .portfoliolist:hover .portfoliolist-content{
 	border: solid lightblue 1px;
@@ -123,6 +124,7 @@ a.menubtn{
 	border:solid lightblue 1px;
 	position: absolute;
 	height: 160px;
+		z-index:2;
 	
 }
 #menubar:hover #menubar-content{
@@ -235,6 +237,7 @@ li.menulist{
 	border-color:white;
 	float: left;
 	transition:0.5s;
+
 }
 li.menulist:hover{
 	background-color:#03206f;
@@ -247,6 +250,7 @@ li a.menulist{
 	padding: 10px;
 	text-align: center;
 	text-decoration: none;
+	
 }
 
 
@@ -269,6 +273,18 @@ a.mainlist{
 a.mainlist:hover{
 	background-color: #706065;
 	transition:0.5s;
+}
+.menutooltip{
+	display:none;
+	background-color: #555555;
+	color: white;
+	padding: 5px;
+	
+	position: absolute;
+	z-index:3;
+}
+a.mainlist:hover .menutooltip{
+	display:block;
 }
 
 ul.mainlist{
@@ -333,4 +349,36 @@ span.placeorder:hover .customertooltip{
 .portfoliolist td, .portfoliolist th{
 	border: 1px solid black;
 	padding:5px;
+}
+
+.searchbar{
+	display:inline-block;
+}
+
+.searchbar span{
+	display:inline-block;
+	border-radius:3px;
+	background-color:#8080c0;
+	color:white;
+	padding:3px;
+}
+.searchbar span:hover{
+	
+	background-color:#704065;
+	transition:0.5s;
+	
+}
+.searchbar-content{
+	
+	display:none;
+	background-color: #555555;
+	color: white;
+	padding: 5px;
+	transition:0.5s;
+	position: absolute;
+	z-index:1;
+}
+
+.searchbar:hover .searchbar-content{
+	display: block;
 }

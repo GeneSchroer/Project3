@@ -33,16 +33,20 @@ public class DoRepStockSuggestionList extends HttpServlet{
 		List<Client> clientList = null; 
 		List<Stock> stockList = null;
 		Client targetClient = null;
+		//attempt to get the stock suggestion list for a particular client
 		try {
 			stockList = RepresentativeUtils.getStockSuggestionList(conn, clientId);
+			//these two are needed in case there's an error
 			clientList = RepresentativeUtils.getClientList(conn, brokerId);
 			targetClient = RepresentativeUtils.findClient(conn, clientId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//if the list isn't empty, pass it to page
 		if(stockList!=null && !stockList.isEmpty())
 			request.setAttribute("suggestedStockList", stockList);
+		//otherwise, pass a parameter letting the page no there were no stocks
 		else
 			request.setAttribute("noStocks", "none");
 		request.setAttribute("clientList", clientList);

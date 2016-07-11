@@ -28,12 +28,14 @@ public class StockSuggestionServlet extends HttpServlet{
 		HttpSession session = request.getSession();
 		UserAccount user = (UserAccount)session.getAttribute("loginedUser");
 		int clientId= user.getId();
-		List<Stock> list = null;
+		List<Stock> list = null; //list of suggested stocks
 		try{
+			//get stock list
 			list=CustomerUtils.getStockSuggestionList(conn, clientId);
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+		//pass stock list to page
 		request.setAttribute("stockList", list);
 		RequestDispatcher dispatcher = request.getServletContext()
 				.getRequestDispatcher("/WEB-INF/views/customers/stockSuggestionView.jsp");

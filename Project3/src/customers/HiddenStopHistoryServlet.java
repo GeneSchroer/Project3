@@ -22,7 +22,9 @@ import utils.MyUtils;
 public class HiddenStopHistoryServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
-
+	
+	
+	// Get history for a hidden stop order
 	public HiddenStopHistoryServlet(){
 		super();
 	}@Override
@@ -37,15 +39,17 @@ public class HiddenStopHistoryServlet extends HttpServlet{
 		Orders order = null;
 		List<History> list = null;
 		try{
+			//get the order row
 			order = CustomerUtils.findOrder(conn, orderId);
-			System.out.println(order.getDateTime());
+			// get transaction row
 			transaction=CustomerUtils.findTransaction(conn, transactionId);
-			System.out.println(transaction.getDateTime());
+			//get hidden stop history from order and transaction
 			list = CustomerUtils.getHiddenStopHistory(conn, stockId, order.getDateTime(), transaction.getDateTime());
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 		
+		//pass the values to page
 		request.setAttribute("transaction", transaction);
 		request.setAttribute("order", order);
 		request.setAttribute("hiddenHistoryList", list);

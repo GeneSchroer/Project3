@@ -26,15 +26,18 @@ public class RecordOrderBServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		HttpSession session = request.getSession();
-		List<Client> clientList=null;
+		List<Client> clientList=null; //list of clients
 		int brokerId = LoginUtils.getId(session);
 		try{
+			
+			//get list of clients
 			clientList = RepresentativeUtils.getClientList(conn, brokerId);
 			
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
 		
+		//pass values to page
 		request.setAttribute("clientList", clientList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/recordOrder.jsp");
 		dispatcher.forward(request, response);

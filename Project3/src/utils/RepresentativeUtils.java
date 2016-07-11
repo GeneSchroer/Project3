@@ -21,12 +21,16 @@ import beans.OpenOrder;
 import beans.Person;
 import beans.Stock;
 import beans.UserAccount;
+import conn.ConnectionUtils;
 import conn.MySQLConnUtils;
 
 public class RepresentativeUtils {
 
+	/* Return a list of clients based on their broker*/
 	public static List<Client> getClientList(Connection conn, int brokerId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed*/
 		conn.setAutoCommit(false);
+		/* Set up statement */
 		String sql = "START TRANSACTION;"
 					+ " SELECT C.*, P.*"
 					+ " FROM Client C, Person P"
@@ -36,6 +40,7 @@ public class RepresentativeUtils {
 		pstm.setInt(1, brokerId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set */
 		ResultSet rs = pstm.getResultSet();
 		List<Client> list = new ArrayList<Client>();
 		while(rs.next()){
@@ -43,12 +48,15 @@ public class RepresentativeUtils {
 					rs.getString("email"), rs.getInt("rating"), rs.getString("creditCardNumber"), rs.getInt("BrokerId"));
 			list.add(client);
 		}
+		/* Commit to reestablish autocommit mode */
 		conn.commit();
 		return list;
 	}
-
+	/* Add a client to the system */
 	public static void addClient(Connection conn, Client client, Location location, UserAccount user) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed*/
 		conn.setAutoCommit(false);
+		/* Set up statement */
 		String sql = "START TRANSACTION;"
 					+ " INSERT IGNORE Location(ZipCode, City, State)"
 					+ " VALUES(?, ?, ?);"
@@ -107,11 +115,14 @@ public class RepresentativeUtils {
 		// Insert UserAccount(Id)
 		pstm.setInt(18, user.getId());
 		pstm.execute();
+		/* Commit to reestablish autocommit mode */
 		conn.commit();
 	}
-
+	/* find a client based on their id */
 	public static Client findClient(Connection conn, int id) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed*/
 		conn.setAutoCommit(false);
+		/* Set up statement */
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM Client WHERE Id = ?;"
 				+ " COMMIT";
@@ -121,8 +132,9 @@ public class RepresentativeUtils {
 		pstm.execute();
 		pstm.getMoreResults();
 		ResultSet rs = pstm.getResultSet();
-		
+		/* Commit to reestablish autocommit mode */
 		conn.commit();
+		/* Check result set and return the result */
 		if(rs.next()){
 		
 			Person person 			= findPerson(conn, rs.getInt("Id"));
@@ -148,8 +160,11 @@ public class RepresentativeUtils {
 		
 		return null;
 	}
+	/* Find a person based on their SSN */
 	public static Person findPerson(Connection conn, int PSSN) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed*/
 		conn.setAutoCommit(false);
+		/* Set up statement */
 		String sql = "START TRANSACTION;"
 				+ " SELECT P.*"
 				+ " FROM Person P"
@@ -161,7 +176,9 @@ public class RepresentativeUtils {
 		pstm.execute();
 		pstm.getMoreResults();
 		ResultSet rs = pstm.getResultSet();
+		/* Commit to reestablish autocommit mode */
 		conn.commit();
+		/* Check result set and return the result */
 		if(rs.next()){
 			Person person = new Person(rs.getInt("SSN"),
 								rs.getString("LastName"),
@@ -174,9 +191,11 @@ public class RepresentativeUtils {
 		else		
 			return null;
 		}
-
+	/* Update the information of a client */
 	public static void updateClient(Connection conn, Client client, Location location) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed*/
 		conn.setAutoCommit(false);
+		/* Set up statement */
 		String sql = "START TRANSACTION;"
 				+ " INSERT IGNORE INTO Location(ZipCode, City, State)"
 				+ " VALUES(?, ?, ?);"
@@ -219,9 +238,11 @@ public class RepresentativeUtils {
 		pstm.setInt		(13, client.getId());
 		
 		pstm.execute();
+		/* Commit to reestablish autocommit mode */
 		conn.commit();
 	}
 	
+	/* Return the last Order Id */
 	private static Integer getMostRecentOrderId(Connection conn) throws SQLException{
 		
 		String sql = "SELECT Id FROM Orders ORDER BY Id DESC LIMIT 1";
@@ -232,7 +253,8 @@ public class RepresentativeUtils {
 		else 
 			return null;
 	}
-private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
+	/* Return the most recent Transaction Id */
+	private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
 		
 		String sql = "SELECT Id FROM Transaction ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -243,14 +265,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			return 0;
 	}
 	@SuppressWarnings("deprecation")
+	/* Delete a client from the system */
 	public static boolean deleteClient(Connection conn, int clientId) throws SQLException {
-		Date dateNow = new Date(System.currentTimeMillis());
-		Timestamp now = new Timestamp(System.currentTimeMillis());
+
+		/* Back up the database prior to deleting an client
+		 * If the database does not back up, do not delete the client*/
+		
 		boolean backedUp = false;
 		try {
-			backedUp = MySQLConnUtils.backupDatabase("C:\\Users\\Work\\git\\project-3\\Project3\\src\\Project3Backup" 
-					+ dateNow.toString() + "--" 
-					+ now.getHours() + "-" + now.getMinutes() + "-" + now.getSeconds() +  ".sql");
+			backedUp = ConnectionUtils.defaultBackup();
 		} catch (ClassNotFoundException | IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -260,17 +283,13 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			return false;
 		
 		
-		//This is a work in progress.
-		
-		// What will likely happen is the foreign keys constraints
-		// For a bunch of tables will temporarily be switched
-		// to ON DELETE CASCADE
-		// Then it is a simple matter to delete 
-		// The Client values in the Person table, 
-		// which will cause a chain reaction on each table
-		
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
 		
+		/* Set up statement */
+		
+		/* Deleting a client is a multi-step process*/
+		/* 1) Obtain a list of all account Ids from accounts a client possesses */
 		String sql = "START TRANSACTION;"
 				+ " SELECT Id "
 				+ " FROM Account"
@@ -282,31 +301,40 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, clientId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set */
 		ResultSet rs = pstm.getResultSet();
 		List<Integer> accountList=new ArrayList<Integer>();
 		while(rs.next()){
 			accountList.add(rs.getInt("Id"));
 		}
 		
+		/* 2) For each account, delete all orders associated with it */ 
 		for(int i=0;i<accountList.size(); ++i){
 			int accountId=accountList.get(i);
 			sql = "START TRANSACTION;"
+					/* Delete all Trade rows with the account's Id*/
 				+ " DELETE FROM Trade"
 				+ " WHERE AccountId=?;"
+				/* Delete all Transaction rows without a corresponding Trade row*/
 				+ " DELETE FROM Transaction"
 				+ " WHERE Id NOT IN"
 				+ "				(SELECT DISTINCT TransactionId"
 				+ "				 FROM Trade);"
+				/* Delete all TrailHistory rows without a corresponding Trade row*/
 				+ " DELETE FROM TrailHistory"
 				+ " WHERE OrderId NOT IN"
 				+ "				(SELECT DISTINCT OrderId"
 				+ "				FROM Trade);"
+				/* Delete all Order rows without a corresponding Trade row*/
 				+ " DELETE FROM Orders"
 				+ " WHERE Id NOT IN"
 				+ "				(SELECT DISTINCT OrderId"
 				+ "				FROM Trade);"
+				/* Delete the stock portfolio for that account
+				 * By deleting all HasStock rows with that account's Id*/
 				+ " DELETE FROM HasStock"
 				+ " WHERE AccountId=?;"
+				/* Finally, delete that account */
 				+ " DELETE FROM Account"
 				+ " WHERE Id = ?;"
 				+ " DELETE FROM UserAccount"
@@ -320,11 +348,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			pstm.setInt(4, clientId);
 			pstm.execute();
 				}
+		/* 3) Delete the client from the system */
 		sql= "START TRANSACTION;"
+				/* Delete Client row from System */
 				+ "DELETE FROM Client"
 				+  " WHERE ID=?;"
+				/* Delete Person row from system */
 				+ "DELETE FROM Person"
 				+ " WHERE SSN=?;"
+				/* Delete UserAccount row from system */
 				+ "DELETE FROM UserAccount"
 				+ " WHERE Id=?;"
 				+ "COMMIT;";
@@ -333,11 +365,16 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(2, clientId);
 		pstm.setInt(3, clientId);
 		pstm.execute();
+		/* Finally, commit all changes to the database */
 		conn.commit();
 		return true;
 	}
+	
+	/* Return a list of the broker's customers, generating a mailing list for the broker*/
 	public static List<ClientInfo> getMailingList(Connection conn, int brokerId) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT *"
 				+ " FROM ClientInfo"
@@ -350,6 +387,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, brokerId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.getResultSet();
 		List<ClientInfo> list = new ArrayList<ClientInfo>();
 		while(rs.next()){
@@ -368,12 +406,16 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 									rs.getString("State"));
 			list.add(client);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 		}
+	/* get a stock's information based on its stock symbol*/
 	public static Stock getStock(Connection conn, String inputStockSymbol) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
 		
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT PricePerShare"
 				+ " FROM Stock"
@@ -385,7 +427,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.execute();
 		pstm.getMoreResults();
 		ResultSet rs = pstm.getResultSet();
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
+		/* Check result set and return the result */
 		if(rs.next()){
 			Stock stock = new Stock(rs.getString("stockSymbol"), rs.getString("companyName"), rs.getString("type"), rs.getFloat("pricePerShare"));
 			return stock;
@@ -394,8 +438,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			return null;
 		}
 	}
+	/* Return a list of all available stocks*/
 	public static List<Stock> getStockList(Connection conn) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT *"
 				+ " FROM Stock;"
@@ -406,6 +453,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		ResultSet rs = pstm.getResultSet();
 		
 		List<Stock> list = new ArrayList<Stock>();
+		/* Create list and add members to it from result set*/
 		while(rs.next()){
 			String stockSymbol = rs.getString("stockSymbol");
 			String companyName = rs.getString("companyName");
@@ -415,18 +463,21 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			list.add(stock);
 			
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}
-
+	/* Record an order for a client*/
 	public static void recordOrder(Connection conn, String stockSymbol, String orderType, String priceType, Timestamp dateTime,
 			Integer numSharesParsed, Double percentageParsed, Float pricePerShareParsed, int accountId, int brokerId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
 		float stockPrice=0;
 		float finalPricePerShare=0;
 		//If this is a trailing stop, we need to determine the current Price Per Share of the stock is
 		// In order to detertmine what the stop price and percentage to stop is;
 		
+		/* Set up statement, used to get the current stock price*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT PricePerShare"
 				+ " FROM STOCK"
@@ -441,6 +492,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		stockPrice = rs.getFloat("PricePerShare");
 		finalPricePerShare = rs.getFloat("PricePerShare");
 		
+		/* Set up main statement*/
 		sql = "START TRANSACTION;"
 				+ " INSERT INTO Orders (NumShares, PricePerShare, Id, DateTime, Percentage, PriceType, OrderType)"
 				+ " VALUES(?, ? ,?, ?, ?, ?, ?);"
@@ -530,9 +582,13 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setString(16, stockSymbol);
 		
 		pstm.execute();
-		
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 	}
+	
+	/* This private method is used to fill out a trailing order */
+	/* Since the user only fills out either the stop price or percentage but not both, */
+	/* this calculates what the other should be*/
 	private static double calculateStopPriceOrPercentage(Float pricePerShare, Float stopPrice, Double percentage){
 			//return Stop Price
 			if(stopPrice == null || stopPrice==0)
@@ -587,8 +643,12 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		conn.commit();
 		return list;
 	}
+	
+	/* Generate a list of Suggested Stock for a particular customer*/
 	public static List<Stock> getStockSuggestionList(Connection conn, int customerId) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM Stock"
 				+ " WHERE Type IN"
@@ -605,8 +665,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, customerId);
 		pstm.execute();
 		pstm.getMoreResults();
-		ResultSet rs = pstm.getResultSet();
 		
+		/* Create list and add members to it from result set*/
+		ResultSet rs = pstm.getResultSet();
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
 			Stock stock = new Stock(
@@ -616,15 +677,20 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 							rs.getFloat("pricePerShare"));
 			list.add(stock);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 		
 	}
-
+	/* Return a list of all accounts a particular customer possesses*/
 	public static List<Account> getAccountList(Connection conn, int clientId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql="SELECT * FROM Account WHERE Client = ?";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		List<Account> list = new ArrayList<Account>(); 
 		while(rs.next()){
@@ -634,10 +700,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 									rs.getInt("Client"));
 			list.add(account);
 		}
-		
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		return list;
 	}
-
+	/* Add an account for a customer */
 	public static void addAccount(Connection conn, Date dateOpenedParsed, int clientId) throws SQLException {
 		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -659,6 +726,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.execute();
 	}
 	
+	/* Get the most recent account Id created to generate a new account Id */
 	private static int getMostRecentAccountId(Connection conn) throws SQLException{
 		String sql = "SELECT Id From Account ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -668,9 +736,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else
 			return 0;
 	}
-
+	/* Return all of the account details for a client */
 	public static List<AccountDetails> getAccountDetails(Connection conn, int brokerId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 					+ "	SELECT 	A.* "
 					+ " FROM 	AccountDetails A, Client C"
@@ -680,6 +750,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, brokerId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.getResultSet();
 		List<AccountDetails> list = new ArrayList<AccountDetails>();
 		while(rs.next()){
@@ -694,6 +765,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 										rs.getString("Telephone"));
 			list.add(account);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}

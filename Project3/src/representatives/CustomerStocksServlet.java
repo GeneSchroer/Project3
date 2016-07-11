@@ -27,13 +27,14 @@ public class CustomerStocksServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		int clientId = Integer.parseInt(request.getParameter("clientId"));
-		List<HasStock> hasStockList = null;
+		List<HasStock> hasStockList = null; //client's list of stocks
 		try {
+			//get client's stock portfolio
 			hasStockList = CustomerUtils.getStockPortfolio(conn, clientId);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//pass values to page
 		request.setAttribute("hasStockList", hasStockList);
 	}
 	@Override

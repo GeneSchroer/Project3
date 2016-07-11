@@ -31,14 +31,18 @@ public class DoSearchStocksServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
+		//get user input
 		String searchString = request.getParameter("search");
+		//used to break up user string
 		StringTokenizer tokenizer = new StringTokenizer(searchString);
-		List<String> searchList = new ArrayList<String>();
+		List<String> searchList = new ArrayList<String>(); //holds keywords
 		List<Stock> stockList = null;
+		//break up user string into list of tokens
 		while(tokenizer.hasMoreTokens()){
 			searchList.add(tokenizer.nextToken());
 		}
 		
+		//get list based on user keywords
 		try{
 			stockList = CustomerUtils.searchStocks(conn, searchList);
 			

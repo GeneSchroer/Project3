@@ -29,6 +29,8 @@ public class DoPlaceOrderServlet extends HttpServlet{
 	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+		
+		//get user information
 		Connection conn = MyUtils.getStoredConnection(request);
 		String stockSymbol = request.getParameter("stockSymbol");
 		String orderType = request.getParameter("orderType");
@@ -183,6 +185,7 @@ public class DoPlaceOrderServlet extends HttpServlet{
 				e.getMessage();
 			}
 		}
+		//if the order couldn't be placed, go back to the page and pass error messages
 		if(hasError){
 			request.setAttribute("errorStrNumShares", errorStrNumShares);
 			request.setAttribute("errorStrPercentage", errorStrPercentage);
@@ -206,6 +209,7 @@ public class DoPlaceOrderServlet extends HttpServlet{
 				.getRequestDispatcher("/WEB-INF/views/customers/placeOrderView.jsp");
 			dispatcher.forward(request, response);
 		}
+		//otherwise return to order list
 		else{
 			response.sendRedirect(request.getContextPath() + "/customers/orderList");
 		}

@@ -32,6 +32,7 @@ public class DoEditClientServlet extends HttpServlet{
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
 		
+		//get all information from form
 		String firstName		= request.getParameter("firstName");
 		String lastName 		= request.getParameter("lastName"); 
 		String address 			= request.getParameter("address");
@@ -49,6 +50,8 @@ public class DoEditClientServlet extends HttpServlet{
 		Integer brokerId = null;
 		
 		boolean hasError=false;
+		
+		// strings to hold error messages
 		String errorStrLastName, errorStrFirstName, errorStrAddress, 
 		errorStrCity, errorStrState, errorStrZipCode, errorStrTelephone,	
 		errorStrEmail, errorStrRating, errorStrCreditCardNumber, errorStrId;
@@ -59,29 +62,36 @@ public class DoEditClientServlet extends HttpServlet{
 		
 		//LastName
 		String regex, regex2;
-		regex="[a-zA-Z]+";
+		regex="[a-zA-Z]+[\\s[a-zA-z]]*";
 		errorStrLastName=null;
+		//throw error if not a proper last name
 		if(lastName==null || !lastName.matches(regex)){
 			hasError=true;
 			errorStrLastName="Last Name invalid!";
 		}
 		//FirstName
+		regex="[a-zA-Z]+";
 		errorStrFirstName=null;
+		// ditto for first name
 		if(firstName==null || !firstName.matches(regex)){
 			hasError=true;
 			errorStrFirstName="First Name invalid!";
 		}
 		//Address
-		regex="[0-9]+?[\\s[a-zA-Z]]{1,}[\\s[a-zA-Z]\\x2E]?";
+		regex="[0-9]+?[\\s[a-zA-Z_0-9]]{1,}[\\s[a-zA-Z]\\x2E]?";
 		errorStrAddress=null;
+		// throw error if not a proper address
+		// (Eg 123 success street, etc)
 		if(address==null || !address.matches(regex)){
 			hasError=true;
 			errorStrAddress="Address invalid!";
 		}
 		//City
-		regex = "[[A-Z][a-zA-z]]+[\\s[A-Z][a-zA-Z]]*";	//regex = One or more words, 
+		regex = "[[A-Z][a-zA-Z]]+[\\s[A-Z][a-zA-Z]]*";	//regex = One or more words, 
 															  	//each beginning with a capital letter 
 		errorStrCity=null;
+		//throw error if not proper city
+		//(eg. New York City, etc.)
 		if(city==null|| !city.matches(regex)){
 			hasError=true;
 			errorStrCity = "Error: Invalid City!";
@@ -89,9 +99,11 @@ public class DoEditClientServlet extends HttpServlet{
 		
 		
 		//Zip Code
+		//throw error if not a number
 		try{
 			errorStrZipCode=null;
 			zipCode = Integer.parseInt(zipCodeStr);
+			// throw error if not a valid zip code
 			if(zipCode<0 || zipCode>99999){
 				hasError=true;
 				errorStrZipCode = "Invalid Zip Code";
@@ -105,6 +117,7 @@ public class DoEditClientServlet extends HttpServlet{
 		regex2="[0-9]{3}\\x2D[0-9]{3}\\x2D[0-9]{4}";
 		errorStrTelephone=null;
 			telephone = request.getParameter("telephone");
+		//throw error if not a valid telephone number
 		if(telephone==null|| (!telephone.matches(regex)&&!telephone.matches(regex2) )){
 			hasError=true;
 			errorStrTelephone="Invalid Telephone Number!";
@@ -121,6 +134,7 @@ public class DoEditClientServlet extends HttpServlet{
 			errorStrEmail="Error: Invalid email!";
 		}
 		//Rating
+		//throw error if not a number
 		try{
 			errorStrRating=null;
 			rating = Integer.parseInt(ratingStr);
@@ -136,6 +150,8 @@ public class DoEditClientServlet extends HttpServlet{
 		regex2="[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"
 				+"-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]";
 		errorStrCreditCardNumber=null;
+		
+		//throw error if not a valid telephone number
 		if(creditCardNumber == null || (!creditCardNumber.matches(regex)
 				&& !creditCardNumber.matches(regex2) ) ){
 			hasError=true;
@@ -143,6 +159,7 @@ public class DoEditClientServlet extends HttpServlet{
 		}
 		System.out.println(hasError);
 		//Id
+		// throw error if not a number
 		try{
 			errorStrId=null;
 			id = Integer.parseInt(request.getParameter("id"));
@@ -156,12 +173,11 @@ public class DoEditClientServlet extends HttpServlet{
 
 		
 		
-		String errorString = null;
-		
+		// if all went well, proceed to edit the client's information
 		if(!hasError){
 			HttpSession session = request.getSession();
 			brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
-			client = new Client(id, firstName, lastName, address, zipCode, telephone, email, rating, creditCardNumber, brokerId);
+			client = new Client(id, lastName, firstName, address, zipCode, telephone, email, rating, creditCardNumber, brokerId);
 			Location location = new Location(zipCode, city, state);
 			try{
 				RepresentativeUtils.updateClient(conn, client, location);

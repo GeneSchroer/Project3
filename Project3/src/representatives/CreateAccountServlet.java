@@ -19,8 +19,9 @@ public class CreateAccountServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
-		String clientId = request.getParameter("id");
+		String clientId = request.getParameter("id");//client id
 		
+		//pass client id to page
 		request.setAttribute("clientId", clientId);
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/createAccountView.jsp");
 		

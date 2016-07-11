@@ -29,13 +29,14 @@ public class RepStockSuggestionServlet extends HttpServlet{
 		Connection conn = MyUtils.getStoredConnection(request);
 		HttpSession session = request.getSession();
 		int brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
-		List<Client> clientList = null;
+		List<Client> clientList = null; //list of clients
 		try {
+			//get list of clients
 			clientList = RepresentativeUtils.getClientList(conn, brokerId);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+		//pass values to page
 		if(clientList!=null && !clientList.isEmpty())
 			request.setAttribute("clientList", clientList);
 		RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/representatives/stockSuggestionListView.jsp");

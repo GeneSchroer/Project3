@@ -107,5 +107,19 @@ public class LoginUtils {
 		
 		return ((UserAccount)session.getAttribute("loginedUser")).getId();
 	}
+	
+	/* Change your password*/
+	public static void changePassword(Connection conn, String userName, String password1) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
+		String sql = "UPDATE UserAccount SET Password = ? WHERE UserName = ?";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setString(1, password1);
+		pstm.setString(2, userName);
+		pstm.executeUpdate();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
+	}
 	 
 	}

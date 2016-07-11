@@ -27,14 +27,16 @@ package managers;
 				throws ServletException, IOException{
 			Connection conn = MyUtils.getStoredConnection(request);
 			String errorString = null;
-			List<Stock> list = null;
+			List<Stock> list = null; //list of all stocks
 			try{
+				//get list of stocks
 				list=RepresentativeUtils.getStockList(conn);
 			}catch(SQLException e){
 				e.printStackTrace();
 				errorString = e.getMessage();
 			}
 			
+			// pass all values to page
 			request.setAttribute("errorSting", errorString);
 			request.setAttribute("stockList", list);
 			RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/WEB-INF/views/managers/orderListView.jsp");

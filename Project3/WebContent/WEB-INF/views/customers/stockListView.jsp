@@ -15,50 +15,33 @@
     <h3>List of all stocks:</h3>
 	<c:choose>
 	<c:when test="${not empty stockList}">
-		
-		<div style="float:right;"  class="portfoliolist">
-			<button class="hasStock">Hover here for best-selling stocks</button>
-			<div class="portfoliolist-content">
-				<div class="bestseller">
-				Customer Representative with most generated revenue:
-	<table border="2" cellpadding="5">
-	<tr>
-		<th>First Name</th>
-		<th>Last Name</th>
-		<th>Id</th>
-		<th>Revenue</th>
-	</tr>
-	<tr>
-		<td>${bestRepresentative.firstName}</td>
-		<td>${bestRepresentative.lastName}</td>
-		<td>${bestRepresentative.id}</td>
-		<td>
-			<fmt:formatNumber type="currency" value="${bestRepresentative.revenue * 0.05}"/>
-		</td>
-	</tr>
-	</table>
-
-
-Customer with most generated revenue:
-<table border="2" cellpadding="5">
-	<tr>
-		<th>First Name</th>
-		<th>Last Name</th>
-		<th>Id</th>
-		<th>Revenue</th>
-	</tr>
-	<tr>
-		<td>${bestCustomer.firstName}</td>
-		<td>${bestCustomer.lastName}</td>
-		<td>${bestCustomer.id}</td>
-		<td>$${bestCustomer.revenue}</td>
-	</tr>
-	</table>
+		<c:choose>
+			<c:when test="${not empty bestSellerList}">
+				<div style="float:right;"  class="portfoliolist">
+					<button class="hasStock">Hover here for best-selling stocks</button>
+					<div class="portfoliolist-content">
+						<div class="bestseller">
+						<table>
+							<tr>
+								<th>Stock</th>
+								<th>Sold</th>
+						
+							</tr>
+							<c:forEach items="${bestSellerList}" var="bestSeller">
+							<tr>
+								<td>${bestSeller.stockId}</td>
+								<td>${bestSeller.totalShares}</td>
+							</tr>					
+							</c:forEach>
+						</table>		
 				</div>
 			</div>
-		
 		</div>
-		
+	</c:when>
+	<c:otherwise>
+		<button class="hasStock">No stocks have been sold</button>
+	</c:otherwise>
+	</c:choose>	
 		
 		<table border="2" cellpadding="5" cellspacing="1">
 			<tr>

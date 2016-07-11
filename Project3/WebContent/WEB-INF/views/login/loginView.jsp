@@ -45,7 +45,7 @@
        </div>
     </form>
  
-    <p style="color:blue;">User Name/password: WSmith/password(manager), DSmith/password (representative), VDu/password(customer) </p>
+    <p style="color:blue;">User Name/password: DWarren/password(manager)</p>
  
     <jsp:include page="_footer.jsp"></jsp:include>
  

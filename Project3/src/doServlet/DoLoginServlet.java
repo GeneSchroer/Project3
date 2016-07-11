@@ -29,23 +29,28 @@ public class DoLoginServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+		//get information from the login page
 		String userName = request.getParameter("userName");
 		String password = request.getParameter("password");
 		String rememberMeStr = request.getParameter("rememberMe");
+		//decided not to use this
 		boolean remember = "Y".equals(rememberMeStr);
 		
 		UserAccount user = null;
 		boolean hasError = false;
 		String errorString = null;
 		
+		// throw error if username and password are empty
 		if (userName == null || password == null|| userName.length()==0 || password.length() == 0){
 			hasError = true;
 			errorString = "Required username and password!";
 		}
+		//otherwise attempt to log in
 		else{
 			Connection conn = MyUtils.getStoredConnection(request);
 			try{
 				user = LoginUtils.findUser(conn, userName, password);
+				//throw error if you weren't able to find the user
 				if (user == null){
 					hasError = true;
 					errorString= "User Name or Password invalid!";

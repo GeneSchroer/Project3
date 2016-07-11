@@ -30,15 +30,16 @@ public class EditClientServlet extends HttpServlet{
 		// connect to the database
 		Connection conn = MyUtils.getStoredConnection(request);
 		
-		//find the employee with this id
+		//find the client with this id
 		String s= (String)request.getParameter("id");
 		
 		int id = Integer.parseInt(s);
 		
-		Client client= null;
-		Location location=null;
+		Client client= null; //client
+		Location location=null; //location
 		String errorString = null;
 		try{
+			//get client and location
 			client = RepresentativeUtils.findClient(conn, id);
 			location = ManagerUtils.findLocation(conn, client.getZipCode());
 

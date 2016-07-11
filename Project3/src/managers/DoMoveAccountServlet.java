@@ -26,11 +26,14 @@ public class DoMoveAccountServlet extends HttpServlet{
 		int brokerId = Integer.parseInt(request.getParameter("brokerId"));
 		boolean moved = false;
 		try {
+			//check to see if employee's client was successfully moved
 			moved= ManagerUtils.moveAccount(conn, clientId, brokerId);
 		} catch (SQLException e) {
 			moved=false;
 			e.printStackTrace();
 		}
+		
+		//forward values to page
 		if(moved)
 			response.sendRedirect(request.getContextPath()+"/managers/employeeList");
 		else{

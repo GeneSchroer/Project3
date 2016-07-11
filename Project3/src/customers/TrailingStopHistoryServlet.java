@@ -20,27 +20,28 @@ import utils.MyUtils;
 
 @WebServlet(urlPatterns="/customers/trailingStopHistory")
 public class TrailingStopHistoryServlet extends HttpServlet{
-	/**
-	 *  
-	 */
 	private static final long serialVersionUID = 1L;
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
-		int orderId = Integer.parseInt(request.getParameter("id")); 
-		int transactionId=Integer.parseInt(request.getParameter("tId"));
+		int orderId = Integer.parseInt(request.getParameter("id")); // order row
+		int transactionId=Integer.parseInt(request.getParameter("tId")); //transaction row
 
-		List<TrailingHistory> list = null;
+		List<TrailingHistory> list = null; //trailing history of a particular stock
 		Transaction transaction = null;
 		Orders order = null;
 		try{
-			list = CustomerUtils.getTrailingHistory(conn, orderId);
+			//get trailing list history
+			list = CustomerUtils.getTrailingHistory(conn, orderId); 
+			// find transaction and order
 			transaction=CustomerUtils.findTransaction(conn, transactionId);
 			 order = CustomerUtils.findOrder(conn, orderId); 
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+		
+		//pass values to page
 		request.setAttribute("trailingHistoryList", list);
 		request.setAttribute("transaction", transaction);
 		request.setAttribute("order", order);

@@ -30,9 +30,10 @@ public class StockListServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		String errorString=null;
-		List<Stock> list=null;
-		List<BestSeller> bestSellerList=null;
+		List<Stock> list=null; // list of stocks
+		List<BestSeller> bestSellerList=null; // list of best selling stocks
 		try{
+			// get lists
 			list = CustomerUtils.getStockList(conn);
 			bestSellerList=CustomerUtils.getBestSellerList(conn);
 		}catch(SQLException e){

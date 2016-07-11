@@ -15,6 +15,7 @@ public class DoLogoutServlet extends HttpServlet{
 	
 	 protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {
+		 //simply remove the usering information from the session
 		 HttpSession session = request.getSession();
 		 session.removeAttribute("user");
 		 

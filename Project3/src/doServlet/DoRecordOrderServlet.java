@@ -33,7 +33,7 @@ public class DoRecordOrderServlet extends HttpServlet{
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
 		HttpSession session = request.getSession();
-		
+		//get user inputs
 		String stockSymbol = request.getParameter("stockSymbol");
 		String orderType = request.getParameter("orderType");
 		String priceType = request.getParameter("priceType");
@@ -181,6 +181,7 @@ public class DoRecordOrderServlet extends HttpServlet{
 							hasError=true;
 							errorStrPercentage="Error: Invalid Percentage!";	}	}
 				}
+		// if everything worked out, record the order
 		if(!hasError){
 			try{
 				
@@ -193,6 +194,7 @@ public class DoRecordOrderServlet extends HttpServlet{
 			}
 			
 		}
+		//if there was an error, stay on page and pass error messages
 		if(hasError){
 			boolean haveAccount=true;
 			int clientId = Integer.parseInt(request.getParameter("clientId"));
@@ -223,6 +225,7 @@ public class DoRecordOrderServlet extends HttpServlet{
 				.getRequestDispatcher("/WEB-INF/views/representatives/recordOrder.jsp");
 		dispatcher.forward(request, response);
 		}
+		//otherwise go back to main menu
 		else
 			response.sendRedirect(request.getContextPath()+"/representatives");
 	}

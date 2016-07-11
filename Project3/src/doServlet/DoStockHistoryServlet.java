@@ -25,6 +25,7 @@ public class DoStockHistoryServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException{
 		Connection conn=MyUtils.getStoredConnection(request);
+		//get user input
 		String stockSymbol = request.getParameter("stockSymbol");
 		String fromDate = request.getParameter("fromDate");
 		String toDate = request.getParameter("toDate");
@@ -40,6 +41,7 @@ public class DoStockHistoryServlet extends HttpServlet{
 		
 		
 		//fromDate
+		//throw if not valid date
 		try{
 			fromDateParsed = Date.valueOf(fromDate);
 		}catch(Exception e){
@@ -47,16 +49,18 @@ public class DoStockHistoryServlet extends HttpServlet{
 			errorStrFromDate="Error: Format must be in YYYY-MM-DD!"; }
 		
 		//toDate
+		//throw error if not valid date
 		try{
 			toDateParsed = Date.valueOf(toDate);
 		}catch(Exception e){
 			hasError=true;
 			errorStrToDate="Error: Format must be in YYYY-MM-DD!";	}
-		
+		//throw error if date after right now
 		if (toDateParsed != null && toDateParsed.after( new Date(System.currentTimeMillis() ) )){
 			hasError=true;
 			errorStrToDate="Error: Cannot be after the current time!";
 		}
+		//throw error if from date after to date
 		if(fromDateParsed != null && toDateParsed != null && fromDateParsed.after(toDateParsed)){
 			hasError=true;
 			errorStrFromDate="Error: From Date cannot be after To Date![";

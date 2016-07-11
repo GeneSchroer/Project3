@@ -31,7 +31,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 		Connection conn = MyUtils.getStoredConnection(request);
-		
+		// get user input
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String address = request.getParameter("address");
@@ -94,6 +94,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		//allows for last names with multiple parts
 		regex="[a-zA-Z]+[\\s[a-zA-z]]*";
 		errorStrLastName=null;
+		//throw error if not a valid name
 		if(lastName==null || !lastName.matches(regex)){
 			hasError=true;
 			errorStrLastName="Last Name invalid!";	}
@@ -107,16 +108,19 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		
 		//Address
 		//Regular expression with a number and any number of words
-		regex="[0-9]+?[\\s[a-zA-Z]]{1,}[\\s[a-zA-Z]\\x2E]?";
+		regex="[0-9]+?[\\s[a-zA-Z_0-9]]{1,}[\\s[a-zA-Z]\\x2E]?";
 		errorStrAddress=null;
+		//throw error if not valid address
+		//(eg 123 Success Street)
 		if(address==null || !address.matches(regex)){
 			hasError=true;
 			errorStrAddress="Address invalid!";	}
 		
 		//City
 		//Regular Expression = Single-or-Multi named city
-		regex = "[[A-Z][a-zA-z]][\\s[A-Z][a-zA-Z]]*";
+		regex = "[[A-Z][a-zA-z]+][\\s[A-Z][a-zA-Z]]*";
 		errorStrCity=null;
+		//(eg New York City, etc.)
 		if(city==null|| !city.matches(regex)){
 			hasError=true;
 			errorStrCity = "Error: Invalid City!";	}
@@ -131,6 +135,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		
 		//Zip Code
 		try{
+			//throw if not valid zip code
 			errorStrZipCode=null;
 			zipCode = Integer.parseInt(request.getParameter("zipCode"));
 			if(zipCode<0 || zipCode>99999){
@@ -147,6 +152,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		regex2="[0-9]{3}\\x2D[0-9]{3}\\x2D[0-9]{4}";
 		errorStrTelephone=null;
 			telephone = request.getParameter("telephone");
+			//throw error if not valid telephone number
 		if(telephone==null||(!telephone.matches(regex)&&!telephone.matches(regex2))){
 			hasError=true;
 			errorStrTelephone="Invalid Telephone Number!";
@@ -154,12 +160,14 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		
 		
 		//UserName
-		if(userName==null){
+		regex="[a-zA-Z]+";
+		if(userName==null || !userName.matches(regex)){
 			hasError = true;
 			errorStrUserName = "Error: User Name cannot be null!";
 		}
 		
 		//Password
+		regex="[^\\s]+";
 		if(password==null){
 			hasError=true;
 			errorStrPassword = "Error: Password cannot be null!";
@@ -185,6 +193,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		//Hourly Rate
 		try{
 			errorStrHourlyRate=null;
+			//throw error if not valid hourly rate
 			hourlyRate = Integer.parseInt(request.getParameter("hourlyRate"));
 			if(hourlyRate<0){
 				errorStrHourlyRate="Invalid Hourly Rate";
@@ -197,7 +206,7 @@ public class DoCreateEmployeeServlet extends HttpServlet{
 		
 		String errorString = null;
 		
-
+		// if everything OK, create new employee
 		if(!hasError){
 			try{
 				employee = new Employee(SSN, firstName, lastName, address, zipCode, telephone, 

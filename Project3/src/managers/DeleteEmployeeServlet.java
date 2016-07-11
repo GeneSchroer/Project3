@@ -29,9 +29,10 @@ public class DeleteEmployeeServlet extends HttpServlet {
         Connection conn = MyUtils.getStoredConnection(request);
  
         int employeeId = Integer.parseInt(request.getParameter("id"));
-        Employee employee = null;
-        boolean hasClients = false;
+        Employee employee = null;//employee to be deleted
+        boolean hasClients = false; // check if he/she has clients
         try {
+        	//get employee and check if they have clients
         	employee = ManagerUtils.findEmployee(conn, employeeId);
         	hasClients = ManagerUtils.hasClients(conn, employeeId);
 
@@ -39,6 +40,7 @@ public class DeleteEmployeeServlet extends HttpServlet {
             e.printStackTrace();
         }
          	
+        //pass values to page
         if(employee!=null){
         	request.setAttribute("employee", employee);
         	request.setAttribute("hasClients", hasClients);

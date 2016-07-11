@@ -24,10 +24,11 @@ public class CustomerUtils {
 	
 	
 	
-	
+	/* Return the customer's stock portfolio*/
 	public static List<HasStock> getStockPortfolio(Connection conn, int customerId) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
-		
+		/* Set up statement*/
 		String sql="SELECT H.*, S.PricePerShare"
 				+ " FROM Account A, HasStock H, Stock S"
 				+ " WHERE A.Client = ?"
@@ -37,6 +38,7 @@ public class CustomerUtils {
 	
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, customerId);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		List<HasStock> list = new ArrayList<HasStock>();
 		while(rs.next()){
@@ -51,31 +53,10 @@ public class CustomerUtils {
 	
 	return list;
 	}
+	
+	
 
-	public static List<Orders> getOrderList(Connection conn, int clientId) throws SQLException {
-		String sql = "START TRANSACTION;"
-				+ " SELECT O.*"
-				+ " FROM Account A, Trade Trd, Orders O"
-				+ " WHERE A.Client = ? AND A.Id = Trd.AccountId AND Trd.OrderId = O.Id"
-				+ " ORDER BY DateTime DESC;";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, clientId);
-		ResultSet rs = pstm.executeQuery();
-		List<Orders> list = new ArrayList<Orders>();
-		while(rs.next()){
-			int numShares = rs.getInt("NumShares");
-			int pricePerShare = rs.getInt("PricePerShare");
-			int id = rs.getInt("Id");
-			Timestamp dateTime = rs.getTimestamp("DateTime");
-			double percentage = rs.getDouble("percentage");
-			String priceType = rs.getString("PriceType");
-			String orderType = rs.getString("OrderType");
-			Orders orders = new Orders(numShares, pricePerShare, id, dateTime, percentage, priceType, orderType);
-			list.add(orders);
-		}
-		return list;
-	}
-
+	/* Place an order for a stock */
 	public static void placeOrder(Connection conn, FullOrder fullOrder) throws SQLException {
 		String sql=null;
 		PreparedStatement pstm = null;
@@ -197,8 +178,8 @@ public class CustomerUtils {
 		conn.commit();
 		
 	}
-	
-private static Integer getMostRecentOrderId(Connection conn) throws SQLException{
+	/* Return the id of the last order to generate an id for a new order*/
+	private static Integer getMostRecentOrderId(Connection conn) throws SQLException{
 		
 		String sql = "SELECT Id FROM Orders ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -208,7 +189,8 @@ private static Integer getMostRecentOrderId(Connection conn) throws SQLException
 		else 
 			return 0;
 	}
-private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
+	/* Return the id of the last Transaction to generate an id for a new transaction*/
+	private static Integer getMostRecentTransactionId(Connection conn) throws SQLException{
 		
 		String sql = "SELECT Id FROM Transaction ORDER BY Id DESC LIMIT 1";
 		PreparedStatement pstm = conn.prepareStatement(sql);
@@ -219,7 +201,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 			return 0;
 	}
 
+	/* Return a list of all stocks*/
 	public static List<Stock> getStockList(Connection conn) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "SELECT * FROM STOCK";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		ResultSet rs= pstm.executeQuery();
@@ -233,13 +219,19 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								rs.getInt("NumShares"));
 			list.add(stock);
 		}
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		return list;
 	}
-
+	/* Return a list of all of the accounts a customer possesses*/
 	public static List<Account> getAccountList(Connection conn, int clientId) throws SQLException {
-		String sql="SELECT * FROM Account WHERE Client = ?";// TODO Auto-generated method stub
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
+		String sql="SELECT * FROM Account WHERE Client = ?";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		List<Account> list = new ArrayList<Account>(); 
 		while(rs.next()){
@@ -249,7 +241,8 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 									rs.getInt("Client"));
 			list.add(account);
 		}
-		
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		return list;
 	}
 
@@ -280,9 +273,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		}
 		return list;
 	}
-
+	/* Return a list of suggested stocks to purchase*/
 	public static List<Stock> getStockSuggestionList(Connection conn, int clientId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM Stock"
 				+ " WHERE Type IN"
@@ -299,7 +294,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, clientId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.getResultSet();
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		List<Stock> list = new ArrayList<Stock>();
 		while(rs.next()){
@@ -313,7 +310,10 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		return list;
 		
 	}
-	
+	/* This private method is used to fill out a trailing order */
+	/* Since the user only fills out either the stop price or percentage but not both, */
+	/* this calculates what the other should be*/
+
 	private static double calculateStopPriceOrPercentage(Float pricePerShare, Float stopPrice, Double percentage) {
 		//return Stop Price
 		if(stopPrice == null || stopPrice==0)
@@ -324,9 +324,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else 
 			return 0;
 	}
-
+	/* Return the trailing history of a particular order*/
 	public static List<TrailingHistory> getTrailingHistory(Connection conn, int orderId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT *"
 				+ " FROM TrailHistory"
@@ -337,6 +339,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, orderId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs= pstm.getResultSet();
 		List<TrailingHistory> list = new ArrayList<TrailingHistory>();
 		while(rs.next()){
@@ -346,11 +349,16 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 											rs.getFloat("PricePerShare"));
 			list.add(trailingHistory);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}
-
+	/* Find a particular transaction row based on its id*/
 	public static Transaction findTransaction(Connection conn, int transactionId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM Transaction WHERE Id = ?;"
 				+ " COMMIT;";
@@ -358,7 +366,10 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, transactionId);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Check result set and return the result */
 		ResultSet rs = pstm.getResultSet();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		if(rs.next()){
 			Transaction transaction = new Transaction(
 											rs.getInt("Id"),
@@ -370,9 +381,11 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else
 			return null;
 	}
-
+	/* Return the hidden stop history for a particular order*/
 	public static List<History> getHiddenStopHistory(Connection conn, String stockId, Timestamp fromDate, Timestamp toDate) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM History "
 				+ " WHERE StockSymbol = ?"
@@ -383,12 +396,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stockId);
 		pstm.setTimestamp(2, fromDate);
+		/* If their is no toDate, which represents when the order was executed
+		 * assume set toDate to null*/
 		if(toDate!=null)
 			pstm.setTimestamp(3, toDate);
 		else
 			pstm.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs= pstm.getResultSet();
 		List<History> list = new ArrayList<History>();
 		while(rs.next()){
@@ -398,14 +414,17 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								rs.getFloat("PricePerShare"));
 			list.add(history);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}
 		
 	
-
+	/* Return the history of a stock from some period of time*/
 	public static List<History> getStockHistoryList(Connection conn, String stockSymbol, Date fromDateParsed, Date toDateParsed) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT *"
 				+ " FROM History"
@@ -420,6 +439,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setDate(3, toDateParsed);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.getResultSet();
 		List<History> list = new ArrayList<History>();
 		while(rs.next()){
@@ -430,20 +450,16 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								);
 			list.add(history);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}
 
-	public static void changePassword(Connection conn, String userName, String password1) throws SQLException {
-		String sql = "UPDATE UserAccount SET Password = ? WHERE UserName = ?";
-		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.setString(1, password1);
-		pstm.setString(2, userName);
-		pstm.executeUpdate();
-	}
-
+	/* find an order based upon its id*/
 	public static Orders findOrder(Connection conn, int orderId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION;"
 				+ " SELECT * FROM Orders WHERE Id = ?;"
 				+ " COMMIT;";
@@ -453,7 +469,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.execute();
 		pstm.getMoreResults();
 		ResultSet rs = pstm.getResultSet();
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
+		/* Check result set and return the result */
 		if(rs.next()){
 			Orders order = new Orders(
 								rs.getInt("NumShares"),
@@ -467,22 +485,29 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		}
 		return null;
 	}
-
+	/* Search for stocks based upon a set of keywords*/
 	public static List<Stock> searchStocks(Connection conn, List<String> searchList) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
 		sql = "SELECT S.* FROM Stock S WHERE CompanyName LIKE ?";
 		
+		/* For each keyword, extend the SQL statement*/
 		for(int i=1; i<searchList.size();++i){
 			sql += " OR CompanyName LIKE ?";
 		}
+		
 		pstm = conn.prepareStatement(sql);
+		
 		for(int i=1; i<searchList.size()+1;++i){
 			pstm.setString(i, "%" + searchList.get(i-1) + "%");
 		}
 		ResultSet rs =pstm.executeQuery();
 		
+		/* Create list and add members to it from result set*/
 		List<Stock> stockList = new ArrayList<Stock>();
 		while(rs.next()){
 			Stock stock = new Stock(
@@ -496,10 +521,15 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		sql = "COMMIT";
 		pstm = conn.prepareStatement(sql);
 		pstm.execute();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		return stockList;
 	}
-
+	/* Return a list of a client's recent orders*/
 	public static List<FullOrder> getRecentOrders(Connection conn, int clientId, String stockSymbol) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
@@ -509,6 +539,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
 		pstm.setString(2, stockSymbol);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		List<FullOrder> list = new ArrayList<FullOrder>();
 		while(rs.next()){
@@ -532,19 +563,28 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		sql = "COMMIT";
 		pstm = conn.prepareStatement(sql);
 		pstm.execute();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		return list;
 	}
-
+	/* Find a stock based on its stock symbol*/
 	public static Stock findStock(Connection conn, String stockSymbol) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
 		sql = "SELECT * FROM Stock WHERE StockSymbol = ?";
 		pstm = conn.prepareStatement(sql);
 		pstm.setString(1, stockSymbol);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		pstm = conn.prepareStatement("COMMIT");
 		pstm.execute();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
+		
 		if(rs.next()){
 			Stock stock = new Stock(
 							rs.getString("StockSymbol"),
@@ -557,24 +597,33 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		else
 			return null;
 	}
-
+	/* Return the id of a client's broker*/
 	public static Integer getBrokerId(Connection conn, Integer clientId) throws SQLException {
+		/* Turn off auto commit so a transaction may be executed */
+		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql = "START TRANSACTION";
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
 		sql = "SELECT BrokerId FROM Client WHERE Id = ?";
 		pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, clientId);
+		/* Create list and add members to it from result set*/
 		ResultSet rs = pstm.executeQuery();
 		pstm = conn.prepareStatement("COMMIT");
+		pstm.execute();
+		/* Commit to reestablish autocommmit mode*/
+		conn.commit();
 		if(rs.next()){
 			return rs.getInt("BrokerId");
 		}
 		return null;
 	}
-
+	/* Return the number of shares a client has in their account*/
 	public static int getSharesInAccount(Connection conn, Integer accountId, String stockSymbol) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql="SELECT *"
 				+ " FROM HasStock"
 				+ " WHERE AccountId = ? AND StockSymbol = ?";
@@ -582,14 +631,19 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		pstm.setInt(1, accountId);
 		pstm.setString(2, stockSymbol);
 		ResultSet rs = pstm.executeQuery();
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
+		/* Check result set and return the result */
 		if(rs.next())
 			return rs.getInt("NumShares");
 		else
 			return 0;
 	}
+	/* Return a list of stocks that have sold best and relevent information*/
 	public static List<BestSeller> getBestSellerList(Connection conn) throws SQLException{
+		/* Turn off auto commit so a transaction may be executed */
 		conn.setAutoCommit(false);
+		/* Set up statement*/
 		String sql="START TRANSACTION;"
 				+ " SELECT 	Trd1.StockId,"
 				+ " SUM(Trd2.TotalNumShares) AS TotalShares"
@@ -608,7 +662,9 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.execute();
 		pstm.getMoreResults();
+		/* Create list and add members to it from result set*/
 		ResultSet rs =pstm.getResultSet();
+		
 		List<BestSeller> list = new ArrayList<BestSeller>();
 		while(rs.next()){
 			BestSeller bs = new BestSeller(
@@ -617,6 +673,7 @@ private static Integer getMostRecentTransactionId(Connection conn) throws SQLExc
 								);
 			list.add(bs);
 		}
+		/* Commit to reestablish autocommmit mode*/
 		conn.commit();
 		return list;
 	}

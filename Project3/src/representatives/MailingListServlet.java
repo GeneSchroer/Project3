@@ -32,8 +32,9 @@ public class MailingListServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		int brokerId = ((UserAccount)session.getAttribute("loginedUser")).getId();
 		String errorString = null;
-		List<ClientInfo> list = null;
+		List<ClientInfo> list = null; //full list of client information
 		try{
+			//get list of clients
 			list = RepresentativeUtils.getMailingList(conn, brokerId);
 		}catch(SQLException e){
 		e.printStackTrace();

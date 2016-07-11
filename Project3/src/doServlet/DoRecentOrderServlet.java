@@ -29,10 +29,11 @@ public class DoRecentOrderServlet extends HttpServlet{
 			throws ServletException, IOException{
 		Connection conn = MyUtils.getStoredConnection(request);
 		HttpSession session = request.getSession();
-		String stockSymbol = request.getParameter("stockId");
-		int clientId = ((UserAccount)session.getAttribute("loginedUser")).getId();
+		String stockSymbol = request.getParameter("stockId"); //id of stock we want
+		int clientId = ((UserAccount)session.getAttribute("loginedUser")).getId(); //id of client
 		List<FullOrder> orderList = null;
 	
+		//get list of client's recent orders
 		try{
 			orderList = CustomerUtils.getRecentOrders(conn, clientId, stockSymbol);
 		}catch(SQLException e){

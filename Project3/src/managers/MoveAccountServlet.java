@@ -32,18 +32,19 @@ public class MoveAccountServlet extends HttpServlet{
 		int brokerId = Integer.parseInt(request.getParameter("id"));
 		int userId=LoginUtils.getId(session);
 		boolean hasError=false;
-		List<Client> clientList = null;
-		List<Employee> employeeList = null;
+		List<Client> clientList = null;//list of clients a certain employee has
+		List<Employee> employeeList = null; //list of employees
 		
 		
 		try {
+			//get lists of people
 			clientList = RepresentativeUtils.getClientList(conn, brokerId);
 			employeeList = ManagerUtils.getEmployeeList(conn);
 		} catch (SQLException e) {
 			hasError=true;
 			e.printStackTrace();
 		}
-		
+		//pass all values to the page
 		request.setAttribute("userId", userId);
 		request.setAttribute("brokerId", brokerId);
 		request.setAttribute("clientList", clientList);
